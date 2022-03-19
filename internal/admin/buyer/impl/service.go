@@ -10,6 +10,7 @@ import (
 )
 
 type BuyerServiceImpl struct {
+	// Repository GOes here
 }
 
 func (b *BuyerServiceImpl) Ping(ctx context.Context) dto.PingResponse {

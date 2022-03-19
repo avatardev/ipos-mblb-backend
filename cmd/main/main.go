@@ -23,7 +23,7 @@ func main() {
 	db := database.Init()
 	db.Ping()
 
-	router.Init(m)
+	router.Init(m, db)
 
 	httputil.ListenAndServe(conf.ServerAddress, m)
 	log.Println("[main] stopping server gracefully")

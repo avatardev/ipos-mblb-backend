@@ -25,7 +25,7 @@ func BaseResponseWriter(rw http.ResponseWriter, status int, data interface{}, er
 		log.Printf("[WriteSuccessResponse] json conversion error: %v", err)
 		return
 	}
-
+	rw.Header().Add("Content-Type", "application/json")
 	rw.WriteHeader(status)
 	rw.Write(jsonData)
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type BuyerService interface {
+	// Services Controller goes here
 	Ping(ctx context.Context) dto.PingResponse
 	PingError(ctx context.Context) error
 }
