@@ -56,6 +56,7 @@ func (c *CategoryHandler) GetCategoryById() http.HandlerFunc {
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
 	}
 }
+
 func NewCategoryHandler(service CategoryService) *CategoryHandler {
 	return &CategoryHandler{Service: service}
 }

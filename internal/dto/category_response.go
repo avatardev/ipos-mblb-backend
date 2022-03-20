@@ -2,17 +2,17 @@ package dto
 
 import "github.com/avatardev/ipos-mblb-backend/internal/admin/category/entity"
 
-type Category struct {
+type CategoryResponse struct {
 	Id     uint64 `json:"id"`
 	Name   string `json:"category_name"`
 	Pajak  int64  `json:"tax"`
 	Status bool   `json:"status"`
 }
 
-type Categories []*Category
+type CategoriesResponse []*CategoryResponse
 
-func MapToCategory(category entity.Category) *Category {
-	return &Category{
+func NewCategoryReponse(category entity.Category) *CategoryResponse {
+	return &CategoryResponse{
 		Id:     category.Id,
 		Name:   category.Name,
 		Pajak:  category.Pajak,
@@ -20,11 +20,11 @@ func MapToCategory(category entity.Category) *Category {
 	}
 }
 
-func MapToCategories(categories entity.Categories) Categories {
-	data := Categories{}
+func NewCategoriesResponse(categories entity.Categories) CategoriesResponse {
+	data := CategoriesResponse{}
 
 	for _, category := range categories {
-		temp := MapToCategory(*category)
+		temp := NewCategoryReponse(*category)
 		data = append(data, temp)
 	}
 

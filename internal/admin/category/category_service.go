@@ -8,8 +8,8 @@ import (
 )
 
 type CategoryService interface {
-	GetCategory(ctx context.Context) (dto.Categories, error)
-	GetCategoryById(ctx context.Context, id uint64) (*dto.Category, error)
+	GetCategory(ctx context.Context) (dto.CategoriesResponse, error)
+	GetCategoryById(ctx context.Context, id uint64) (*dto.CategoryResponse, error)
 }
 
 func NewCategoryService(Cr *impl.CategoryRepositoryImpl) CategoryService {

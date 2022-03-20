@@ -11,22 +11,22 @@ type CategoryServiceImpl struct {
 	Cr *CategoryRepositoryImpl
 }
 
-func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.Categories, error) {
+func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.CategoriesResponse, error) {
 	categories := c.Cr.GetAll(ctx)
 	if categories == nil {
 		return nil, errors.ErrInvalidResources
 	}
 
-	return dto.MapToCategories(categories), nil
+	return dto.NewCategoriesResponse(categories), nil
 }
 
-func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id uint64) (*dto.Category, error) {
+func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id uint64) (*dto.CategoryResponse, error) {
 	category := c.Cr.GetById(ctx, id)
 	if category == nil {
 		return nil, errors.ErrInvalidResources
 	}
 
-	return dto.MapToCategory(*category), nil
+	return dto.NewCategoryReponse(*category), nil
 }
 
 // TODO make POST, UPDATE, DELETE Routes
