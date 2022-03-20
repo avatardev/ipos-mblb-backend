@@ -12,7 +12,11 @@ type CategoryServiceImpl struct {
 }
 
 func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.CategoriesResponse, error) {
-	categories := c.Cr.GetAll(ctx)
+	categories, err := c.Cr.GetAll(ctx)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
 	if categories == nil {
 		return nil, errors.ErrInvalidResources
 	}
@@ -21,7 +25,11 @@ func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.CategoriesRe
 }
 
 func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*dto.CategoryResponse, error) {
-	category := c.Cr.GetById(ctx, id)
+	category, err := c.Cr.GetById(ctx, id)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
 	if category == nil {
 		return nil, errors.ErrNotFound
 	}
@@ -31,7 +39,11 @@ func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*d
 
 func (c *CategoryServiceImpl) StoreCategory(ctx context.Context, req *dto.CategoryRequest) (*dto.CategoryResponse, error) {
 	category := req.ToEntity()
-	data := c.Cr.Store(ctx, category)
+	data, err := c.Cr.Store(ctx, category)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
 	if data == nil {
 		return nil, errors.ErrUnknown
 	}
@@ -43,11 +55,20 @@ func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, id int64, req 
 	category := req.ToEntity()
 	category.Id = id
 
-	if exists := c.Cr.GetById(ctx, id); exists == nil {
+	exists, err := c.Cr.GetById(ctx, id)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if exists == nil {
 		return nil, errors.ErrNotFound
 	}
 
-	data := c.Cr.Update(ctx, category)
+	data, err := c.Cr.Update(ctx, category)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
 	if data == nil {
 		return nil, errors.ErrUnknown
 	}
@@ -56,11 +77,16 @@ func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, id int64, req 
 }
 
 func (c *CategoryServiceImpl) DeleteCategory(ctx context.Context, id int64) error {
-	if exists := c.Cr.GetById(ctx, id); exists == nil {
+	exists, err := c.Cr.GetById(ctx, id)
+	if err != nil {
+		return errors.ErrUnknown
+	}
+
+	if exists == nil {
 		return errors.ErrNotFound
 	}
 
-	if res := c.Cr.Delete(ctx, id); !res {
+	if err := c.Cr.Delete(ctx, id); err != nil {
 		return errors.ErrUnknown
 	}
 
