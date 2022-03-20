@@ -39,7 +39,7 @@ func (c *CategoryHandler) GetCategoryById() http.HandlerFunc {
 			return
 		}
 
-		parsedId, err := strconv.ParseUint(id, 10, 64)
+		parsedId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -78,12 +78,75 @@ func (c *CategoryHandler) StoreCategory() http.HandlerFunc {
 			return
 		}
 
-		if err := c.Service.StoreCategory(r.Context(), category); err != nil {
+		res, err := c.Service.StoreCategory(r.Context(), category)
+		if err != nil {
 			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
 			return
 		}
 
-		responseutil.WriteSuccessResponse(w, http.StatusOK, nil)
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (c *CategoryHandler) UpdateCategory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, exist := mux.Vars(r)["categoryId"]
+		if !exist {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+		}
+
+		category := &dto.CategoryRequest{}
+		if err := category.FromJSON(r.Body); err != nil {
+			log.Printf("[FromJSON] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		v := validator.New()
+		if err := v.StructCtx(r.Context(), category); err != nil {
+			for _, e := range err.(validator.ValidationErrors) {
+				log.Printf("[Validation Error] error: %v\n", e.Field())
+			}
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := c.Service.UpdateCategory(r.Context(), parsedId, category)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (c *CategoryHandler) DeleteCategory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, exists := mux.Vars(r)["categoryId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			return
+		}
+
+		if err := c.Service.DeleteCategory(r.Context(), parsedId); err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, "category deleted")
 	}
 }
 

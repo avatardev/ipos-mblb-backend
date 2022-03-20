@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/category/entity"
@@ -17,7 +18,8 @@ type CategoryRepositoryImpl struct {
 var (
 	COUNT_CATEGORY  = sq.Select("COUNT(*)").From("kategoris")
 	SELECT_CATEGORY = sq.Select("id", "nama_kategori", "pajak", "status", "deleted_at", "created_at", "updated_at").From("kategoris")
-	INSERT_CATEGORY = sq.Insert("kategoris").Columns("nama_kategori", "pajak", "status")
+	INSERT_CATEGORY = sq.Insert("kategoris").Columns("nama_kategori", "pajak", "status", "created_at", "updated_at")
+	UPDATE_CATEGORY = sq.Update("kategoris")
 )
 
 func NewCategoryRepository(db *database.DatabaseClient) *CategoryRepositoryImpl {
@@ -80,7 +82,7 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context) entity.Categories {
 }
 
 func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) *entity.Category {
-	stmt, params, err := SELECT_CATEGORY.Where(sq.Eq{"id": id}).ToSql()
+	stmt, params, err := SELECT_CATEGORY.Where(sq.And{sq.Eq{"id": id}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, err)
 		return nil
@@ -105,7 +107,8 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) *entity.
 }
 
 func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Category) *entity.Category {
-	stmt, params, err := INSERT_CATEGORY.Values(category.Name, category.Pajak, category.Status).ToSql()
+	currTime := time.Now()
+	stmt, params, err := INSERT_CATEGORY.Values(category.Name, category.Pajak, category.Status, currTime, currTime).ToSql()
 	if err != nil {
 		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Status, category.Status, err)
 		return nil
@@ -130,4 +133,61 @@ func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Cate
 	}
 
 	return cr.GetById(ctx, lid)
+}
+
+func (cr CategoryRepositoryImpl) Update(ctx context.Context, category entity.Category) *entity.Category {
+	updateMap := map[string]interface{}{
+		"nama_kategori": category.Name,
+		"pajak":         category.Pajak,
+		"status":        category.Status,
+		"updated_at":    time.Now(),
+	}
+
+	stmt, params, err := UPDATE_CATEGORY.SetMap(updateMap).Where(sq.Eq{"id": category.Id}).ToSql()
+	if err != nil {
+		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		return nil
+	}
+
+	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		return nil
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		return nil
+	}
+
+	return cr.GetById(ctx, category.Id)
+}
+
+func (cr CategoryRepositoryImpl) Delete(ctx context.Context, id int64) bool {
+	currTime := time.Now()
+
+	updateMap := map[string]interface{}{
+		"status":     false,
+		"updated_at": currTime,
+		"deleted_at": currTime,
+	}
+
+	stmt, params, err := UPDATE_CATEGORY.SetMap(updateMap).Where(sq.Eq{"id": id}).ToSql()
+	if err != nil {
+		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
+		return false
+	}
+
+	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
+		return false
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
+		return false
+	}
+
+	return true
 }

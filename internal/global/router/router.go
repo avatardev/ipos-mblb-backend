@@ -24,4 +24,6 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminCategory, categoryHandler.GetCategory()).Methods(http.MethodGet)
 	r.HandleFunc(AdminCategory, categoryHandler.StoreCategory()).Methods(http.MethodPost)
 	r.HandleFunc(AdminCategoryId, categoryHandler.GetCategoryById()).Methods(http.MethodGet)
+	r.HandleFunc(AdminCategoryId, categoryHandler.UpdateCategory()).Methods(http.MethodPut)
+	r.HandleFunc(AdminCategoryId, categoryHandler.DeleteCategory()).Methods(http.MethodDelete)
 }
