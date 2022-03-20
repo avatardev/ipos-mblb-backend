@@ -3,7 +3,7 @@ package dto
 import "github.com/avatardev/ipos-mblb-backend/internal/admin/category/entity"
 
 type CategoryResponse struct {
-	Id     uint64 `json:"id"`
+	Id     int64 `json:"id"`
 	Name   string `json:"category_name"`
 	Pajak  int64  `json:"tax"`
 	Status bool   `json:"status"`

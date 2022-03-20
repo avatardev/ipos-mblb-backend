@@ -22,5 +22,6 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	categoryHandler := category.NewCategoryHandler(categoryService)
 
 	r.HandleFunc(AdminCategory, categoryHandler.GetCategory()).Methods(http.MethodGet)
+	r.HandleFunc(AdminCategory, categoryHandler.StoreCategory()).Methods(http.MethodPost)
 	r.HandleFunc(AdminCategoryId, categoryHandler.GetCategoryById()).Methods(http.MethodGet)
 }

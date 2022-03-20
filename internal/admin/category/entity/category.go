@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Category struct {
-	Id      uint64     `db:"id"`
+	Id      int64     `db:"id"`
 	Name    string     `db:"nama_kategori"`
 	Pajak   int64      `db:"pajak"`
 	Status  bool       `db:"status"`

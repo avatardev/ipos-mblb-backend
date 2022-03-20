@@ -17,6 +17,7 @@ type CategoryRepositoryImpl struct {
 var (
 	COUNT_CATEGORY  = sq.Select("COUNT(*)").From("kategoris")
 	SELECT_CATEGORY = sq.Select("id", "nama_kategori", "pajak", "status", "deleted_at", "created_at", "updated_at").From("kategoris")
+	INSERT_CATEGORY = sq.Insert("kategoris").Columns("nama_kategori", "pajak", "status")
 )
 
 func NewCategoryRepository(db *database.DatabaseClient) *CategoryRepositoryImpl {
@@ -78,7 +79,7 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context) entity.Categories {
 	return categories
 }
 
-func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id uint64) *entity.Category {
+func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) *entity.Category {
 	stmt, params, err := SELECT_CATEGORY.Where(sq.Eq{"id": id}).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, err)
@@ -101,4 +102,32 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id uint64) *entity
 	}
 
 	return category
+}
+
+func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Category) *entity.Category {
+	stmt, params, err := INSERT_CATEGORY.Values(category.Name, category.Pajak, category.Status).ToSql()
+	if err != nil {
+		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Status, category.Status, err)
+		return nil
+	}
+
+	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		return nil
+	}
+
+	res, err := prpd.ExecContext(ctx, params...)
+	if err != nil {
+		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		return nil
+	}
+
+	lid, err := res.LastInsertId()
+	if err != nil {
+		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		return nil
+	}
+
+	return cr.GetById(ctx, lid)
 }
