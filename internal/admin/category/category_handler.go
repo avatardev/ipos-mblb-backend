@@ -16,6 +16,10 @@ type CategoryHandler struct {
 	Service CategoryService
 }
 
+func NewCategoryHandler(service CategoryService) *CategoryHandler {
+	return &CategoryHandler{Service: service}
+}
+
 func (c *CategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := c.Service.GetCategory(r.Context())
@@ -148,8 +152,4 @@ func (c *CategoryHandler) DeleteCategory() http.HandlerFunc {
 
 		responseutil.WriteSuccessResponse(w, http.StatusOK, "category deleted")
 	}
-}
-
-func NewCategoryHandler(service CategoryService) *CategoryHandler {
-	return &CategoryHandler{Service: service}
 }

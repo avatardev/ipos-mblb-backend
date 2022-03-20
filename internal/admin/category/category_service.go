@@ -15,6 +15,6 @@ type CategoryService interface {
 	DeleteCategory(ctx context.Context, id int64) error
 }
 
-func NewCategoryService(Cr *impl.CategoryRepositoryImpl) CategoryService {
+func NewCategoryService(Cr impl.CategoryRepositoryImpl) CategoryService {
 	return &impl.CategoryServiceImpl{Cr: Cr}
 }

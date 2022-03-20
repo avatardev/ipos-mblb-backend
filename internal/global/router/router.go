@@ -5,7 +5,6 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/category"
-	"github.com/avatardev/ipos-mblb-backend/internal/admin/category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 	"github.com/gorilla/mux"
 )
@@ -17,7 +16,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminPing, buyerHandler.PingBuyer()).Methods(http.MethodGet)
 	r.HandleFunc(AdminPingError, buyerHandler.PingError()).Methods(http.MethodGet)
 
-	categoryRepostory := impl.NewCategoryRepository(db)
+	categoryRepostory := category.NewCategoryRepository(db)
 	categoryService := category.NewCategoryService(categoryRepostory)
 	categoryHandler := category.NewCategoryHandler(categoryService)
 

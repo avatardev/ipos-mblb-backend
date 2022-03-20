@@ -8,7 +8,7 @@ import (
 )
 
 type CategoryServiceImpl struct {
-	Cr *CategoryRepositoryImpl
+	Cr CategoryRepositoryImpl
 }
 
 func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.CategoriesResponse, error) {
@@ -66,5 +66,3 @@ func (c *CategoryServiceImpl) DeleteCategory(ctx context.Context, id int64) erro
 
 	return nil
 }
-
-// TODO make DELETE Routes

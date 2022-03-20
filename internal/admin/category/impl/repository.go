@@ -8,11 +8,10 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/category/entity"
-	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 )
 
 type CategoryRepositoryImpl struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 var (
@@ -22,9 +21,9 @@ var (
 	UPDATE_CATEGORY = sq.Update("kategoris")
 )
 
-func NewCategoryRepository(db *database.DatabaseClient) *CategoryRepositoryImpl {
-	return &CategoryRepositoryImpl{db: db.DB}
-}
+// func NewCategoryRepository(db *database.DatabaseClient) *CategoryRepositoryImpl {
+// 	return &CategoryRepositoryImpl{db: db.DB}
+// }
 
 func (cr CategoryRepositoryImpl) Count(ctx context.Context) uint64 {
 	stmt, _, err := COUNT_CATEGORY.ToSql()
@@ -33,7 +32,7 @@ func (cr CategoryRepositoryImpl) Count(ctx context.Context) uint64 {
 		return 0
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.Count] error: %v\n", err)
 		return 0
@@ -56,7 +55,7 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context) entity.Categories {
 		return nil
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
 		return nil
@@ -88,7 +87,7 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) *entity.
 		return nil
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, err)
 		return nil
@@ -114,7 +113,7 @@ func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Cate
 		return nil
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
 		return nil
@@ -149,7 +148,7 @@ func (cr CategoryRepositoryImpl) Update(ctx context.Context, category entity.Cat
 		return nil
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
 		return nil
@@ -178,7 +177,7 @@ func (cr CategoryRepositoryImpl) Delete(ctx context.Context, id int64) bool {
 		return false
 	}
 
-	prpd, err := cr.db.PrepareContext(ctx, stmt)
+	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
 		return false
