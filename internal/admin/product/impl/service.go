@@ -36,3 +36,18 @@ func (p *ProductServiceImpl) GetProductById(ctx context.Context, id int64) (*dto
 
 	return dto.NewProductResponse(*product), nil
 }
+
+func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductRequest) (*dto.ProductResponse, error) {
+	product := req.ToEntity()
+
+	data, err := p.Pr.Store(ctx, product)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewProductResponse(*data), nil
+}

@@ -1,11 +1,14 @@
 package product
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
@@ -56,6 +59,34 @@ func (p *ProductHandler) GetProductById() http.HandlerFunc {
 
 		if res == nil {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (p *ProductHandler) StoreProduct() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		product := &dto.ProductRequest{}
+		if err := product.FromJSON(r.Body); err != nil {
+			log.Printf("[FromJSON] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		v := validator.New()
+		if err := v.StructCtx(r.Context(), product); err != nil {
+			for _, err := range err.(validator.ValidationErrors) {
+				log.Printf("[Validation Error] error: %v\n", err)
+			}
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := p.Service.StoreProduct(r.Context(), product)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			return
 		}
 
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)

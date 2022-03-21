@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
@@ -19,8 +20,9 @@ func NewProductRepository(db *database.DatabaseClient) ProductRepositoryImpl {
 }
 
 var (
-	SELECT_PRODUCT = sq.Select("id", "id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "deleted_at", "created_at", "updated_at").From("produks")
 	COUNT_PRODUCT  = sq.Select("COUNT(*)")
+	SELECT_PRODUCT = sq.Select("id", "id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "deleted_at", "created_at", "updated_at").From("produks")
+	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
 )
 
 func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, error) {
@@ -82,4 +84,32 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 	}
 
 	return product, nil
+}
+
+func (pr ProductRepositoryImpl) Store(ctx context.Context, product entity.Product) (*entity.Product, error) {
+	currTime := time.Now()
+	stmt, params, err := INSERT_PRODUCT.Values(product.CategoryId, product.Name, product.Price, product.Description, product.Status, currTime, currTime).ToSql()
+	if err != nil {
+		log.Printf("[Product.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	prpd, err := pr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Product.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	res, err := prpd.ExecContext(ctx, params...)
+	if err != nil {
+		log.Printf("[Product.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	lid, err := res.LastInsertId()
+	if err != nil {
+		log.Printf("[Product.Store] error: %v\n", err)
+	}
+
+	return pr.GetById(ctx, lid)
 }
