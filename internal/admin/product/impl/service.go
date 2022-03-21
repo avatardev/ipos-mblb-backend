@@ -23,3 +23,16 @@ func (p *ProductServiceImpl) GetProduct(ctx context.Context) (dto.ProductsRespon
 
 	return dto.NewProductsResponse(products), nil
 }
+
+func (p *ProductServiceImpl) GetProductById(ctx context.Context, id int64) (*dto.ProductResponse, error) {
+	product, err := p.Pr.GetById(ctx, id)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if product == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	return dto.NewProductResponse(*product), nil
+}

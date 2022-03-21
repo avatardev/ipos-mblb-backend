@@ -58,3 +58,28 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, er
 
 	return data, err
 }
+
+func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.Product, error) {
+	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"id": id}, sq.Eq{"deleted_at": nil}}).ToSql()
+	if err != nil {
+		log.Printf("[Product.GetById] id: %v, error: %v\n", id, err)
+		return nil, err
+	}
+
+	prpd, err := pr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Product.GetById] id: %v, error: %v\n", id, err)
+		return nil, err
+	}
+
+	rows := prpd.QueryRowContext(ctx, params...)
+
+	product := &entity.Product{}
+	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.Name, &product.Price, &product.Description, &product.Status, &product.Deleted, &product.Created, &product.Updated)
+	if queryErr != nil {
+		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
+		return nil, queryErr
+	}
+
+	return product, nil
+}

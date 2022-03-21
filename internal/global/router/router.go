@@ -34,5 +34,5 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	productHandler := product.NewProductHandler(productService)
 
 	r.HandleFunc(AdminProduct, productHandler.GetProduct()).Methods(http.MethodGet)
-
+	r.HandleFunc(AdminProductId, productHandler.GetProductById()).Methods(http.MethodGet)
 }
