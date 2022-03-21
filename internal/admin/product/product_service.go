@@ -12,6 +12,7 @@ type ProductService interface {
 	GetProductById(ctx context.Context, id int64) (*dto.ProductResponse, error)
 	StoreProduct(ctx context.Context, req *dto.ProductRequest) (*dto.ProductResponse, error)
 	UpdateProduct(ctx context.Context, id int64, req *dto.ProductRequest) (*dto.ProductResponse, error)
+	DeleteProduct(ctx context.Context, id int64) error
 }
 
 func NewProductService(Pr impl.ProductRepositoryImpl) ProductService {

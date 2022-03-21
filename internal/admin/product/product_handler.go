@@ -132,3 +132,26 @@ func (p *ProductHandler) UpdateProduct() http.HandlerFunc {
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
 	}
 }
+
+func (p *ProductHandler) DeleteProduct() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productId, exists := mux.Vars(r)["productId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(productId, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			return
+		}
+
+		if err := p.Service.DeleteProduct(r.Context(), parsedId); err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, "product deleted")
+	}
+}

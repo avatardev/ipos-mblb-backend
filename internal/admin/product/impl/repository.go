@@ -148,3 +148,32 @@ func (pr ProductRepositoryImpl) Update(ctx context.Context, product entity.Produ
 
 	return pr.GetById(ctx, product.Id)
 }
+
+func (pr ProductRepositoryImpl) Delete(ctx context.Context, id int64) error {
+	currTime := time.Now()
+
+	updateMap := map[string]interface{}{
+		"status":     false,
+		"updated_at": currTime,
+		"deleted_at": currTime,
+	}
+
+	stmt, params, err := UPDATE_PRODUCT.SetMap(updateMap).Where(sq.Eq{"id": id}).ToSql()
+	if err != nil {
+		log.Printf("[Product.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	prpd, err := pr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Product.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Product.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	return nil
+}

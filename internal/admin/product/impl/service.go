@@ -76,3 +76,20 @@ func (p *ProductServiceImpl) UpdateProduct(ctx context.Context, id int64, req *d
 
 	return dto.NewProductResponse(*data), nil
 }
+
+func (p *ProductServiceImpl) DeleteProduct(ctx context.Context, id int64) error {
+	exists, err := p.Pr.GetById(ctx, id)
+	if err != nil {
+		return errors.ErrUnknown
+	}
+
+	if exists == nil {
+		return errors.ErrNotFound
+	}
+
+	if err := p.Pr.Delete(ctx, id); err != nil {
+		return errors.ErrUnknown
+	}
+
+	return nil
+}

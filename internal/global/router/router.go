@@ -37,4 +37,5 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminProduct, productHandler.StoreProduct()).Methods(http.MethodPost)
 	r.HandleFunc(AdminProductId, productHandler.GetProductById()).Methods(http.MethodGet)
 	r.HandleFunc(AdminProductId, productHandler.UpdateProduct()).Methods(http.MethodPut)
+	r.HandleFunc(AdminProductId, productHandler.DeleteProduct()).Methods(http.MethodDelete)
 }
