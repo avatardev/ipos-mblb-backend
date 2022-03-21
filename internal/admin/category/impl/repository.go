@@ -99,9 +99,12 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*entity
 
 	rows := prpd.QueryRowContext(ctx, params...)
 	queryErr := rows.Scan(&category.Id, &category.Name, &category.Pajak, &category.Status, &category.Deleted, &category.Created, &category.Updated)
-	if queryErr != nil {
+	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, queryErr)
-		return nil, err
+		return nil, queryErr
+	} else if queryErr == sql.ErrNoRows {
+		log.Printf("[Category.GetById] id: %v, error: %v\n", id, queryErr)
+		return nil, nil
 	}
 
 	return category, nil

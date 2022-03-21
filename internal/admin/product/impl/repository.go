@@ -23,6 +23,7 @@ var (
 	COUNT_PRODUCT  = sq.Select("COUNT(*)")
 	SELECT_PRODUCT = sq.Select("id", "id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "deleted_at", "created_at", "updated_at").From("produks")
 	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
+	UPDATE_PRODUCT = sq.Update("produks")
 )
 
 func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, error) {
@@ -78,9 +79,12 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 
 	product := &entity.Product{}
 	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.Name, &product.Price, &product.Description, &product.Status, &product.Deleted, &product.Created, &product.Updated)
-	if queryErr != nil {
+	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
 		return nil, queryErr
+	} else if queryErr == sql.ErrNoRows {
+		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
+		return nil, nil
 	}
 
 	return product, nil
@@ -90,26 +94,57 @@ func (pr ProductRepositoryImpl) Store(ctx context.Context, product entity.Produc
 	currTime := time.Now()
 	stmt, params, err := INSERT_PRODUCT.Values(product.CategoryId, product.Name, product.Price, product.Description, product.Status, currTime, currTime).ToSql()
 	if err != nil {
-		log.Printf("[Product.Store] error: %v\n", err)
+		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
 		return nil, err
 	}
 
 	prpd, err := pr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
-		log.Printf("[Product.Store] error: %v\n", err)
+		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
 		return nil, err
 	}
 
 	res, err := prpd.ExecContext(ctx, params...)
 	if err != nil {
-		log.Printf("[Product.Store] error: %v\n", err)
+		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
 		return nil, err
 	}
 
 	lid, err := res.LastInsertId()
 	if err != nil {
-		log.Printf("[Product.Store] error: %v\n", err)
+		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
+		return nil, err
 	}
 
 	return pr.GetById(ctx, lid)
+}
+
+func (pr ProductRepositoryImpl) Update(ctx context.Context, product entity.Product) (*entity.Product, error) {
+	updateMap := map[string]interface{}{
+		"id_kategori":  product.CategoryId,
+		"nama_produk":  product.Name,
+		"harga_std_m3": product.Price,
+		"keterangan":   product.Description,
+		"status":       product.Status,
+		"updated_at":   time.Now(),
+	}
+
+	stmt, params, err := UPDATE_PRODUCT.SetMap(updateMap).Where(sq.Eq{"id": product.Id}).ToSql()
+	if err != nil {
+		log.Printf("[Product.Update] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
+		return nil, err
+	}
+
+	prpd, err := pr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Product.Update] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
+		return nil, err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Product.Update] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
+		return nil, err
+	}
+
+	return pr.GetById(ctx, product.Id)
 }

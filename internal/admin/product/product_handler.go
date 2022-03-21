@@ -85,7 +85,47 @@ func (p *ProductHandler) StoreProduct() http.HandlerFunc {
 
 		res, err := p.Service.StoreProduct(r.Context(), product)
 		if err != nil {
-			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (p *ProductHandler) UpdateProduct() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productId, exists := mux.Vars(r)["productId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(productId, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		product := &dto.ProductRequest{}
+		if err := product.FromJSON(r.Body); err != nil {
+			log.Printf("[FromJSON] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		v := validator.New()
+		if err := v.StructCtx(r.Context(), product); err != nil {
+			for _, err := range err.(validator.ValidationErrors) {
+				log.Printf("[Validation Error] error: %v\n", err)
+			}
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := p.Service.UpdateProduct(r.Context(), parsedId, product)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
 			return
 		}
 

@@ -51,3 +51,28 @@ func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductR
 
 	return dto.NewProductResponse(*data), nil
 }
+
+func (p *ProductServiceImpl) UpdateProduct(ctx context.Context, id int64, req *dto.ProductRequest) (*dto.ProductResponse, error) {
+	product := req.ToEntity()
+	product.Id = id
+
+	exists, err := p.Pr.GetById(ctx, id)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if exists == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	data, err := p.Pr.Update(ctx, product)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewProductResponse(*data), nil
+}

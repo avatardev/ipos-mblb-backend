@@ -18,6 +18,7 @@ func NewProductResponse(product entity.Product) *ProductResponse {
 		Id:          product.Id,
 		CategoryId:  product.CategoryId,
 		Name:        product.Name,
+		Price:       product.Price,
 		Description: product.Description,
 		Status:      product.Status,
 	}

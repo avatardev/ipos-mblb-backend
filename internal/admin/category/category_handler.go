@@ -84,8 +84,12 @@ func (c *CategoryHandler) StoreCategory() http.HandlerFunc {
 
 		res, err := c.Service.StoreCategory(r.Context(), category)
 		if err != nil {
-			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			responseutil.WriteErrorResponse(w, err)
 			return
+		}
+
+		if res == nil {
+			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
 		}
 
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
@@ -103,6 +107,7 @@ func (c *CategoryHandler) UpdateCategory() http.HandlerFunc {
 		parsedId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
+			return
 		}
 
 		category := &dto.CategoryRequest{}
