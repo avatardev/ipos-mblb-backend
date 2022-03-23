@@ -19,7 +19,7 @@ func CorsMiddleware() mux.MiddlewareFunc {
 
 			rw.Header().Set("Access-Control-Allow-Origin", "*")
 			rw.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH")
-			rw.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token")
+			rw.Header().Set("Access-Control-Allow-Headers", "*")
 
 			rw.Write([]byte("OKOK"))
 		})
