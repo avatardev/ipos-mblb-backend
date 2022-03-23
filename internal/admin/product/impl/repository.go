@@ -20,14 +20,38 @@ func NewProductRepository(db *database.DatabaseClient) ProductRepositoryImpl {
 }
 
 var (
-	COUNT_PRODUCT  = sq.Select("COUNT(*)")
-	SELECT_PRODUCT = sq.Select("id", "id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "deleted_at", "created_at", "updated_at").From("produks")
+	COUNT_PRODUCT  = sq.Select("COUNT(*)").From("produks")
+	SELECT_PRODUCT = sq.Select("produks.id", "k.nama_kategori", "produks.nama_produk", "produks.harga_std_m3", "produks.keterangan", "produks.status").From("produks").LeftJoin("kategoris AS k ON produks.id_kategori = k.id")
 	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_PRODUCT = sq.Update("produks")
 )
 
-func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, error) {
-	stmt, params, err := SELECT_PRODUCT.Where(sq.Eq{"deleted_at": nil}).ToSql()
+func (pr ProductRepositoryImpl) Count(ctx context.Context) (uint64, error) {
+	stmt, params, err := COUNT_PRODUCT.Where(sq.Eq{"produks.deleted_at": nil}).ToSql()
+	if err != nil {
+		log.Printf("[Product.Count] error: %v\n", err)
+		return 0, err
+	}
+
+	prpd, err := pr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Product.Count] error: %v\n", err)
+		return 0, err
+	}
+
+	var productCount uint64
+	row := prpd.QueryRowContext(ctx, params...)
+	queryErr := row.Scan(&productCount)
+	if queryErr != nil {
+		log.Printf("[Product.Count] error: %v\n", err)
+		return 0, err
+	}
+
+	return productCount, nil
+}
+
+func (pr ProductRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.Products, error) {
+	stmt, params, err := SELECT_PRODUCT.Where(sq.Eq{"produks.deleted_at": nil}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Product.GetAll] error: %v\n", err)
 		return nil, err
@@ -50,7 +74,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, er
 
 	for rows.Next() {
 		temp := &entity.Product{}
-		err := rows.Scan(&temp.Id, &temp.CategoryId, &temp.Name, &temp.Price, &temp.Description, &temp.Status, &temp.Deleted, &temp.Created, &temp.Updated)
+		err := rows.Scan(&temp.Id, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Description, &temp.Status)
 		if err != nil {
 			log.Printf("[Product.GetAll] error: %v\n", err)
 			return nil, err
@@ -63,7 +87,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context) (entity.Products, er
 }
 
 func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.Product, error) {
-	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"id": id}, sq.Eq{"deleted_at": nil}}).ToSql()
+	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"produks.id": id}, sq.Eq{"produks.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, err)
 		return nil, err
@@ -78,7 +102,7 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 	rows := prpd.QueryRowContext(ctx, params...)
 
 	product := &entity.Product{}
-	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.Name, &product.Price, &product.Description, &product.Status, &product.Deleted, &product.Created, &product.Updated)
+	queryErr := rows.Scan(&product.Id, &product.CategoryName, &product.Name, &product.Price, &product.Description, &product.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
 		return nil, queryErr

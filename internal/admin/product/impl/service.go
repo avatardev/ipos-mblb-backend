@@ -11,17 +11,22 @@ type ProductServiceImpl struct {
 	Pr ProductRepositoryImpl
 }
 
-func (p *ProductServiceImpl) GetProduct(ctx context.Context) (dto.ProductsResponse, error) {
-	products, err := p.Pr.GetAll(ctx)
+func (p *ProductServiceImpl) GetProduct(ctx context.Context, limit uint64, offset uint64) (*dto.ProductsResponse, error) {
+	productCount, err := p.Pr.Count(ctx)
 	if err != nil {
 		return nil, errors.ErrUnknown
 	}
 
-	if products == nil {
+	if productCount == 0 {
 		return nil, errors.ErrInvalidResources
 	}
 
-	return dto.NewProductsResponse(products), nil
+	products, err := p.Pr.GetAll(ctx, limit, offset)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewProductsResponse(products, limit, offset, productCount), nil
 }
 
 func (p *ProductServiceImpl) GetProductById(ctx context.Context, id int64) (*dto.ProductResponse, error) {

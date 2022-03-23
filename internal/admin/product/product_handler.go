@@ -22,7 +22,28 @@ func NewProductHandler(service ProductService) *ProductHandler {
 
 func (p *ProductHandler) GetProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := p.Service.GetProduct(r.Context())
+		// TODO Add offset and limit url query
+		query := r.URL.Query()
+
+		limit := query.Get("limit")
+		limitParsed, err := strconv.ParseUint(limit, 10, 64)
+		if err != nil {
+			log.Printf("[GetProduct] error: %v\n", err)
+			if limit == "" {
+				limitParsed = 10
+			}
+		}
+
+		offset := query.Get("offset")
+		offestParsed, err := strconv.ParseUint(offset, 10, 64)
+		if err != nil {
+			log.Printf("[GetProduct] error: %v\n", err)
+			if offset == "" {
+				offestParsed = 0
+			}
+		}
+
+		res, err := p.Service.GetProduct(r.Context(), limitParsed, offestParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
