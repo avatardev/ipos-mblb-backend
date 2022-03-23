@@ -22,9 +22,32 @@ func NewCategoryHandler(service CategoryService) *CategoryHandler {
 
 func (c *CategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := c.Service.GetCategory(r.Context())
+		query := r.URL.Query()
+
+		limit := query.Get("limit")
+		limitParsed, err := strconv.ParseUint(limit, 10, 64)
 		if err != nil {
-			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			log.Printf("[GetCategory] limit: %v, error: %v\n", limit, err)
+
+			if limit == "" {
+				limitParsed = 10
+			}
+		}
+
+		offset := query.Get("offset")
+		offsetParsed, err := strconv.ParseUint(offset, 10, 64)
+		if err != nil {
+			log.Printf("[GetCategory] offset: %v, error: %v\n", offset, err)
+
+			if offset == "" {
+				offsetParsed = 0
+			}
+		}
+
+		res, err := c.Service.GetCategory(r.Context(), limitParsed, offsetParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
 		}
 
 		if res == nil {

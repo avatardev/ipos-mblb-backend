@@ -27,7 +27,7 @@ var (
 )
 
 func (cr CategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
-	stmt, _, err := COUNT_CATEGORY.ToSql()
+	stmt, params, err := COUNT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).ToSql()
 	if err != nil {
 		log.Printf("[Category.Count] error: %v\n", err)
 		return 0, err
@@ -40,7 +40,7 @@ func (cr CategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 	}
 
 	var categoryCount uint64
-	queryErr := prpd.QueryRowContext(ctx).Scan(&categoryCount)
+	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&categoryCount)
 	if queryErr != nil {
 		log.Printf("[Category.Count] error: %v\n", queryErr)
 		return 0, err
@@ -49,8 +49,8 @@ func (cr CategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 	return categoryCount, nil
 }
 
-func (cr CategoryRepositoryImpl) GetAll(ctx context.Context) (entity.Categories, error) {
-	stmt, _, err := SELECT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).ToSql()
+func (cr CategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.Categories, error) {
+	stmt, params, err := SELECT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
 		return nil, err
@@ -62,7 +62,7 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context) (entity.Categories,
 		return nil, err
 	}
 
-	rows, err := prpd.QueryContext(ctx)
+	rows, err := prpd.QueryContext(ctx, params...)
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
 		return nil, err

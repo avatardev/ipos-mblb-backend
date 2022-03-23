@@ -11,17 +11,26 @@ type CategoryServiceImpl struct {
 	Cr CategoryRepositoryImpl
 }
 
-func (c *CategoryServiceImpl) GetCategory(ctx context.Context) (dto.CategoriesResponse, error) {
-	categories, err := c.Cr.GetAll(ctx)
+func (c *CategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.CategoriesResponse, error) {
+	categoryCount, err := c.Cr.Count(ctx)
 	if err != nil {
 		return nil, errors.ErrUnknown
 	}
 
-	if categories == nil {
+	if categoryCount == 0 {
 		return nil, errors.ErrInvalidResources
 	}
 
-	return dto.NewCategoriesResponse(categories), nil
+	categories, err := c.Cr.GetAll(ctx, limit, offset)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if len(categories) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	return dto.NewCategoriesResponse(categories, limit, offset, categoryCount), nil
 }
 
 func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*dto.CategoryResponse, error) {
