@@ -26,6 +26,10 @@ func (p *ProductServiceImpl) GetProduct(ctx context.Context, limit uint64, offse
 		return nil, errors.ErrUnknown
 	}
 
+	if len(products) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
 	return dto.NewProductsResponse(products, limit, offset, productCount), nil
 }
 

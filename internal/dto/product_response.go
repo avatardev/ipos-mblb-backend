@@ -12,7 +12,7 @@ type ProductResponse struct {
 }
 
 type ProductsResponse struct {
-	Products []*ProductResponse `json:"products"`
+	Products []*ProductResponse `json:"product"`
 	Offset   uint64             `json:"offset"`
 	Limit    uint64             `json:"limit"`
 	Total    uint64             `json:"total"`
