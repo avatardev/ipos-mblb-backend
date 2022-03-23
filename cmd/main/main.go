@@ -6,6 +6,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/global/config"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/router"
+	"github.com/avatardev/ipos-mblb-backend/pkg/middleware"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/httputil"
 	"github.com/gorilla/mux"
 
@@ -23,6 +24,7 @@ func main() {
 	db := database.Init()
 	db.Ping()
 
+	m.Use(middleware.CorsMiddleware())
 	router.Init(m, db)
 
 	httputil.ListenAndServe(conf.ServerAddress, m)
