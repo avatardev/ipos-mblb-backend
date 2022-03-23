@@ -10,10 +10,10 @@ import (
 func CorsMiddleware() mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-			if r.Method != http.MethodOptions {
-				next.ServeHTTP(rw, r)
-				return
-			}
+			// if r.Method != http.MethodOptions {
+			// 	next.ServeHTTP(rw, r)
+			// 	return
+			// }
 
 			log.Printf("[CorsMiddleware] received request %s -> %s\n", r.Host, r.URL)
 
@@ -21,7 +21,7 @@ func CorsMiddleware() mux.MiddlewareFunc {
 			rw.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH")
 			rw.Header().Set("Access-Control-Allow-Headers", "*")
 
-			rw.Write([]byte("OKOK"))
+			next.ServeHTTP(rw, r)
 		})
 	}
 }
