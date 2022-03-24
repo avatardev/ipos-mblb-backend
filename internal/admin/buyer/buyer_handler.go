@@ -9,10 +9,15 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 )
 
 type BuyerHandler struct {
 	Service BuyerService
+}
+
+func NewBuyerHandler(service BuyerService) *BuyerHandler {
+	return &BuyerHandler{Service: service}
 }
 
 func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
@@ -81,6 +86,37 @@ func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 	}
 }
 
+func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		plateNumber, exists := mux.Vars(r)["buyerId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		buyer := &dto.BuyerRequest{}
+		buyer.FromJSON(r.Body)
+
+		v := validator.New()
+		if err := v.StructCtx(r.Context(), buyer); err != nil {
+			for _, err := range err.(validator.ValidationErrors) {
+				log.Printf("[Validation Error] error: %v\n", err)
+			}
+
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := b.Service.UpdateBuyer(r.Context(), plateNumber, buyer)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
 func (b *BuyerHandler) PingBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := b.Service.Ping(r.Context())
@@ -95,8 +131,4 @@ func (b *BuyerHandler) PingError() http.HandlerFunc {
 			responseutil.WriteErrorResponse(w, err)
 		}
 	}
-}
-
-func NewBuyerHandler(service BuyerService) *BuyerHandler {
-	return &BuyerHandler{Service: service}
 }

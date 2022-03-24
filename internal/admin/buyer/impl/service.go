@@ -51,6 +51,30 @@ func (b *BuyerServiceImpl) StoreBuyer(ctx context.Context, req *dto.BuyerRequest
 	return dto.NewBuyerResponse(*data), nil
 }
 
+func (b *BuyerServiceImpl) UpdateBuyer(ctx context.Context, plate string, req *dto.BuyerRequest) (*dto.BuyerResponse, error) {
+	buyer := req.ToEntity()
+
+	exists, err := b.Br.GetById(ctx, plate)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if exists == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	data, err := b.Br.Update(ctx, plate, buyer)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewBuyerResponse(*data), nil
+}
+
 func (b *BuyerServiceImpl) Ping(ctx context.Context) pkgDto.PingResponse {
 	return pkgDto.PingResponse{
 		Message:         "pong",

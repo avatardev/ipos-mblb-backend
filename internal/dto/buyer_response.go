@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"log"
-
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/entity"
 )
 
@@ -52,6 +50,5 @@ func NewBuyersResponse(buyers entity.Buyers, count uint64, limit uint64, offset 
 		temp := NewBuyerResponse(*buyer)
 		res.Buyer = append(res.Buyer, temp)
 	}
-	log.Println(len(buyers))
 	return res
 }
