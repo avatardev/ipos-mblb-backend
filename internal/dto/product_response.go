@@ -7,6 +7,7 @@ type ProductResponse struct {
 	CategoryName string  `json:"category_name"`
 	Name         string  `json:"name"`
 	Price        float32 `json:"price_m3"`
+	Tax          uint64  `json:"tax"`
 	Description  string  `json:"description"`
 	Status       bool    `json:"status"`
 }
@@ -24,6 +25,7 @@ func NewProductResponse(product entity.Product) *ProductResponse {
 		CategoryName: product.CategoryName,
 		Name:         product.Name,
 		Price:        product.Price,
+		Tax:          product.Tax,
 		Description:  product.Description,
 		Status:       product.Status,
 	}

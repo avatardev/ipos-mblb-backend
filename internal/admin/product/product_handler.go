@@ -22,7 +22,6 @@ func NewProductHandler(service ProductService) *ProductHandler {
 
 func (p *ProductHandler) GetProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO Add offset and limit url query
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -43,7 +42,9 @@ func (p *ProductHandler) GetProduct() http.HandlerFunc {
 			}
 		}
 
-		res, err := p.Service.GetProduct(r.Context(), limitParsed, offestParsed)
+		keyword := query.Get("keyword")
+
+		res, err := p.Service.GetProduct(r.Context(), keyword, limitParsed, offestParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return

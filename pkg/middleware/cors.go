@@ -11,7 +11,7 @@ func CorsMiddleware() mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
-			log.Printf("[CorsMiddleware] received request %s -> %s\n", r.Host, r.URL)
+			log.Printf("[CorsMiddleware] received request %s -> %s\n", r.RemoteAddr, r.URL)
 
 			rw.Header().Set("Access-Control-Allow-Origin", "*")
 			rw.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH")

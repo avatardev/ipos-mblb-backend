@@ -8,6 +8,7 @@ type Product struct {
 	CategoryId   int64      `db:"id_kategori"`
 	Name         string     `db:"nama_produk"`
 	Price        float32    `db:"harga_std_m3"`
+	Tax          uint64     `db:"pajak"`
 	Description  string     `db:"keterangan"`
 	Status       bool       `db:"status"`
 	Deleted      *time.Time `db:"deleted_at"`

@@ -11,7 +11,7 @@ type ProductServiceImpl struct {
 	Pr ProductRepositoryImpl
 }
 
-func (p *ProductServiceImpl) GetProduct(ctx context.Context, limit uint64, offset uint64) (*dto.ProductsResponse, error) {
+func (p *ProductServiceImpl) GetProduct(ctx context.Context, query string, limit uint64, offset uint64) (*dto.ProductsResponse, error) {
 	productCount, err := p.Pr.Count(ctx)
 	if err != nil {
 		return nil, errors.ErrUnknown
@@ -21,7 +21,7 @@ func (p *ProductServiceImpl) GetProduct(ctx context.Context, limit uint64, offse
 		return nil, errors.ErrInvalidResources
 	}
 
-	products, err := p.Pr.GetAll(ctx, limit, offset)
+	products, err := p.Pr.GetAll(ctx, query, limit, offset)
 	if err != nil {
 		return nil, errors.ErrUnknown
 	}

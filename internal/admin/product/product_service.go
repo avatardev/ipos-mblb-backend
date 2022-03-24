@@ -8,7 +8,7 @@ import (
 )
 
 type ProductService interface {
-	GetProduct(ctx context.Context, limit uint64, offset uint64) (*dto.ProductsResponse, error)
+	GetProduct(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.ProductsResponse, error)
 	GetProductById(ctx context.Context, id int64) (*dto.ProductResponse, error)
 	StoreProduct(ctx context.Context, req *dto.ProductRequest) (*dto.ProductResponse, error)
 	UpdateProduct(ctx context.Context, id int64, req *dto.ProductRequest) (*dto.ProductResponse, error)

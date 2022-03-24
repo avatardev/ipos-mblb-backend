@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -21,7 +22,8 @@ func NewProductRepository(db *database.DatabaseClient) ProductRepositoryImpl {
 
 var (
 	COUNT_PRODUCT  = sq.Select("COUNT(*)").From("produks")
-	SELECT_PRODUCT = sq.Select("produks.id", "k.nama_kategori", "produks.nama_produk", "produks.harga_std_m3", "produks.keterangan", "produks.status").From("produks").LeftJoin("kategoris AS k ON produks.id_kategori = k.id")
+	SELECT_PRODUCT = sq.Select("produks.id", "k.nama_kategori", "produks.nama_produk", "produks.harga_std_m3", "k.pajak", "produks.keterangan", "produks.status").
+			From("produks").LeftJoin("kategoris AS k ON produks.id_kategori = k.id")
 	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_PRODUCT = sq.Update("produks")
 )
@@ -50,8 +52,8 @@ func (pr ProductRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 	return productCount, nil
 }
 
-func (pr ProductRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.Products, error) {
-	stmt, params, err := SELECT_PRODUCT.Where(sq.Eq{"produks.deleted_at": nil}).Limit(limit).Offset(offset).ToSql()
+func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Products, error) {
+	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"produks.deleted_at": nil}, sq.Like{"produks.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
 	if err != nil {
 		log.Printf("[Product.GetAll] error: %v\n", err)
 		return nil, err
@@ -74,7 +76,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset
 
 	for rows.Next() {
 		temp := &entity.Product{}
-		err := rows.Scan(&temp.Id, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Description, &temp.Status)
+		err := rows.Scan(&temp.Id, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Tax, &temp.Description, &temp.Status)
 		if err != nil {
 			log.Printf("[Product.GetAll] error: %v\n", err)
 			return nil, err
