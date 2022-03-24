@@ -14,8 +14,8 @@ type BuyerServiceImpl struct {
 	Br BuyerRepositoryImpl
 }
 
-func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, limit uint64, offset uint64) (*dto.BuyersResponse, error) {
-	count, err := b.Br.Count(ctx)
+func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.BuyersResponse, error) {
+	count, err := b.Br.Count(ctx, keyword)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, limit uint64, offset ui
 		return nil, errors.ErrInvalidResources
 	}
 
-	buyers, err := b.Br.GetAll(ctx, limit, offset)
+	buyers, err := b.Br.GetAll(ctx, keyword, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +34,21 @@ func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, limit uint64, offset ui
 	}
 
 	return dto.NewBuyersResponse(buyers, count, limit, offset), nil
+}
+
+func (b *BuyerServiceImpl) StoreBuyer(ctx context.Context, req *dto.BuyerRequest) (*dto.BuyerResponse, error) {
+	buyer := req.ToEntity()
+
+	data, err := b.Br.Store(ctx, buyer)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewBuyerResponse(*data), nil
 }
 
 func (b *BuyerServiceImpl) Ping(ctx context.Context) pkgDto.PingResponse {

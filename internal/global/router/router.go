@@ -7,7 +7,7 @@ import (
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product"
 	productPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product/impl"
-	category "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category"
+	pcategory "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category"
 	productCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 	"github.com/gorilla/mux"
@@ -21,10 +21,11 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminPing, buyerHandler.PingBuyer()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminPingError, buyerHandler.PingError()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminBuyer, buyerHandler.GetBuyer()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminBuyer, buyerHandler.StoreBuyer()).Methods(http.MethodPost, http.MethodOptions)
 
 	productCategoryRepository := productCategoryPkg.NewProductCategoryRepository(db)
-	productCategoryService := category.NewProductCategoryService(productCategoryRepository)
-	productCategoryHandler := category.NewProductCategoryHandler(productCategoryService)
+	productCategoryService := pcategory.NewProductCategoryService(productCategoryRepository)
+	productCategoryHandler := pcategory.NewProductCategoryHandler(productCategoryService)
 
 	r.HandleFunc(AdminCategory, productCategoryHandler.GetCategory()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminCategory, productCategoryHandler.StoreCategory()).Methods(http.MethodPost, http.MethodOptions)
