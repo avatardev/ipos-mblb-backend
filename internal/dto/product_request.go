@@ -12,7 +12,7 @@ type ProductRequest struct {
 	Name        string  `json:"name" validate:"required"`
 	Price       float32 `json:"price_m3" validate:"required"`
 	Description string  `json:"description" validate:"required"`
-	Status      bool    `json:"status" validate:"required"`
+	Status      *bool   `json:"status" validate:"required"`
 }
 
 func (p *ProductRequest) FromJSON(r io.Reader) error {
@@ -25,6 +25,6 @@ func (p *ProductRequest) ToEntity() entity.Product {
 		Name:        p.Name,
 		Price:       p.Price,
 		Description: p.Description,
-		Status:      p.Status,
+		Status:      *p.Status,
 	}
 }

@@ -17,7 +17,7 @@ type BuyerRequest struct {
 	PicName      string `json:"pic_name" validate:"required"`
 	PicPhone     string `json:"pic_phone" validate:"required"`
 	Description  string `json:"description" validate:"required"`
-	Status       bool   `json:"status" validate:"required"`
+	Status       *bool  `json:"status" validate:"required"`
 }
 
 func (b *BuyerRequest) FromJSON(r io.Reader) error {
@@ -35,6 +35,6 @@ func (b *BuyerRequest) ToEntity() entity.Buyer {
 		PICName:           b.PicName,
 		PICPhone:          b.PicPhone,
 		Description:       b.Description,
-		Status:            b.Status,
+		Status:            *b.Status,
 	}
 }

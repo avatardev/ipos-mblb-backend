@@ -10,7 +10,7 @@ import (
 type ProductCategoryRequest struct {
 	Name   string `json:"category_name" validate:"required"`
 	Pajak  int64  `json:"tax" validate:"required"`
-	Status bool   `json:"status" validate:"required"`
+	Status *bool   `json:"status" validate:"required"`
 }
 
 func (c *ProductCategoryRequest) FromJSON(r io.Reader) error {
@@ -21,6 +21,6 @@ func (c *ProductCategoryRequest) ToEntity() entity.ProductCategory {
 	return entity.ProductCategory{
 		Name:   c.Name,
 		Pajak:  c.Pajak,
-		Status: c.Status,
+		Status: *c.Status,
 	}
 }

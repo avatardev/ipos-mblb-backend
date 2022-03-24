@@ -15,11 +15,3 @@ type Buyer struct {
 }
 
 type Buyers []*Buyer
-
-type Category struct {
-	Id           uint64 `db:"id"`
-	Name         string `db:"nama_kategori"`
-	MultiProduct bool   `db:"multi_produk"`
-}
-
-type Categories []*Category

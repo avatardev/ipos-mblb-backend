@@ -85,7 +85,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limi
 		data = append(data, temp)
 	}
 
-	return data, err
+	return data, nil
 }
 
 func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.Product, error) {
@@ -104,7 +104,7 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 	rows := prpd.QueryRowContext(ctx, params...)
 
 	product := &entity.Product{}
-	queryErr := rows.Scan(&product.Id, &product.CategoryName, &product.Name, &product.Price, &product.Description, &product.Status)
+	queryErr := rows.Scan(&product.Id, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
 		return nil, queryErr
