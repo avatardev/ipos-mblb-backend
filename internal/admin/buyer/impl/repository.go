@@ -22,6 +22,7 @@ var (
 			From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
 	INSERT_BUYER = sq.Insert("buyer_truks").Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_BUYER = sq.Update("buyer_truks")
+	DELETE_BUYER = sq.Delete("buyer_truks")
 )
 
 func NewBuyerRepository(db *database.DatabaseClient) BuyerRepositoryImpl {
@@ -171,4 +172,25 @@ func (b *BuyerRepositoryImpl) Update(ctx context.Context, plate string, buyer en
 	}
 
 	return b.GetById(ctx, buyer.VehiclePlate)
+}
+
+func (b *BuyerRepositoryImpl) Delete(ctx context.Context, plate string) error {
+	stmt, params, err := DELETE_BUYER.Where(sq.Eq{"plat_truk": plate}).ToSql()
+	if err != nil {
+		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
+		return err
+	}
+
+	prpd, err := b.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
+		return err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
+		return err
+	}
+
+	return nil
 }

@@ -75,6 +75,23 @@ func (b *BuyerServiceImpl) UpdateBuyer(ctx context.Context, plate string, req *d
 	return dto.NewBuyerResponse(*data), nil
 }
 
+func (b *BuyerServiceImpl) DeleteBuyer(ctx context.Context, plate string) error {
+	exists, err := b.Br.GetById(ctx, plate)
+	if err != nil {
+		return errors.ErrUnknown
+	}
+
+	if exists == nil {
+		return errors.ErrNotFound
+	}
+
+	if err := b.Br.Delete(ctx, plate); err != nil {
+		return errors.ErrUnknown
+	}
+
+	return nil
+}
+
 func (b *BuyerServiceImpl) Ping(ctx context.Context) pkgDto.PingResponse {
 	return pkgDto.PingResponse{
 		Message:         "pong",

@@ -13,6 +13,7 @@ type BuyerService interface {
 	GetBuyer(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.BuyersResponse, error)
 	StoreBuyer(ctx context.Context, req *dto.BuyerRequest) (*dto.BuyerResponse, error)
 	UpdateBuyer(ctx context.Context, plate string, req *dto.BuyerRequest) (*dto.BuyerResponse, error)
+	DeleteBuyer(ctx context.Context, plate string) error
 	Ping(ctx context.Context) pkgDto.PingResponse
 	PingError(ctx context.Context) error
 }

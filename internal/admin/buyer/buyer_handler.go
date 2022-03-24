@@ -117,6 +117,23 @@ func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 	}
 }
 
+func (b *BuyerHandler) DeleteBuyer() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		plate, exists := mux.Vars(r)["buyerId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		if err := b.Service.DeleteBuyer(r.Context(), plate); err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, "buyer deleted")
+	}
+}
+
 func (b *BuyerHandler) PingBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := b.Service.Ping(r.Context())
