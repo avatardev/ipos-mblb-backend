@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer"
+	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/category"
 	categoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product"
@@ -13,11 +14,13 @@ import (
 )
 
 func Init(r *mux.Router, db *database.DatabaseClient) {
-	buyerService := buyer.NewBuyerService()
+	buyerRepository := buyerPkg.NewBuyerRepository(db)
+	buyerService := buyer.NewBuyerService(buyerRepository)
 	buyerHandler := buyer.NewBuyerHandler(buyerService)
 
 	r.HandleFunc(AdminPing, buyerHandler.PingBuyer()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminPingError, buyerHandler.PingError()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminBuyer, buyerHandler.GetBuyer()).Methods(http.MethodGet, http.MethodOptions)
 
 	categoryRepostory := categoryPkg.NewCategoryRepository(db)
 	categoryService := category.NewCategoryService(categoryRepostory)

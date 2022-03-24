@@ -7,4 +7,6 @@ const (
 	AdminCategoryId = "/admin/v1/categories/{categoryId}"
 	AdminProduct    = "/admin/v1/products"
 	AdminProductId  = "/admin/v1/products/{productId}"
+	AdminBuyer      = "/admin/v1/buyers"
+	AdminBuyerId    = "/admin/v1/buyers/{buyerId}"
 )
