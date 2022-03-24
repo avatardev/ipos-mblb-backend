@@ -28,8 +28,8 @@ var (
 	UPDATE_PRODUCT = sq.Update("produks")
 )
 
-func (pr ProductRepositoryImpl) Count(ctx context.Context) (uint64, error) {
-	stmt, params, err := COUNT_PRODUCT.Where(sq.Eq{"produks.deleted_at": nil}).ToSql()
+func (pr ProductRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
+	stmt, params, err := COUNT_PRODUCT.Where(sq.And{sq.Eq{"produks.deleted_at": nil}, sq.Like{"produks.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
 	if err != nil {
 		log.Printf("[Product.Count] error: %v\n", err)
 		return 0, err

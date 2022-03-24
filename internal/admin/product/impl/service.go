@@ -12,7 +12,7 @@ type ProductServiceImpl struct {
 }
 
 func (p *ProductServiceImpl) GetProduct(ctx context.Context, query string, limit uint64, offset uint64) (*dto.ProductsResponse, error) {
-	productCount, err := p.Pr.Count(ctx)
+	productCount, err := p.Pr.Count(ctx, query)
 	if err != nil {
 		return nil, errors.ErrUnknown
 	}
