@@ -4,6 +4,7 @@ import "github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
 
 type ProductResponse struct {
 	Id           int64   `json:"id"`
+	CategoryId   int64   `json:"category_id"`
 	CategoryName string  `json:"category_name"`
 	Name         string  `json:"name"`
 	Price        float32 `json:"price_m3"`
@@ -22,6 +23,7 @@ type ProductsResponse struct {
 func NewProductResponse(product entity.Product) *ProductResponse {
 	return &ProductResponse{
 		Id:           product.Id,
+		CategoryId:   product.CategoryId,
 		CategoryName: product.CategoryName,
 		Name:         product.Name,
 		Price:        product.Price,

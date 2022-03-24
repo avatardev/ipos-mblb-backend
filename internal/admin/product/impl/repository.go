@@ -22,7 +22,7 @@ func NewProductRepository(db *database.DatabaseClient) ProductRepositoryImpl {
 
 var (
 	COUNT_PRODUCT  = sq.Select("COUNT(*)").From("produks")
-	SELECT_PRODUCT = sq.Select("p.id", "k.nama_kategori", "p.nama_produk", "p.harga_std_m3", "k.pajak", "p.keterangan", "p.status").
+	SELECT_PRODUCT = sq.Select("p.id", "p.id_kategori", "k.nama_kategori", "p.nama_produk", "p.harga_std_m3", "k.pajak", "p.keterangan", "p.status").
 			From("produks p").LeftJoin("kategoris k ON p.id_kategori = k.id")
 	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_PRODUCT = sq.Update("produks")
@@ -76,7 +76,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limi
 
 	for rows.Next() {
 		temp := &entity.Product{}
-		err := rows.Scan(&temp.Id, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Tax, &temp.Description, &temp.Status)
+		err := rows.Scan(&temp.Id, &temp.CategoryId, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Tax, &temp.Description, &temp.Status)
 		if err != nil {
 			log.Printf("[Product.GetAll] error: %v\n", err)
 			return nil, err
@@ -104,7 +104,7 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 	rows := prpd.QueryRowContext(ctx, params...)
 
 	product := &entity.Product{}
-	queryErr := rows.Scan(&product.Id, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status)
+	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
 		return nil, queryErr
