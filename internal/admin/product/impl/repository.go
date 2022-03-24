@@ -53,7 +53,7 @@ func (pr ProductRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 }
 
 func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Products, error) {
-	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"produks.deleted_at": nil}, sq.Like{"produks.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
+	stmt, params, err := SELECT_PRODUCT.Where(sq.And{sq.Eq{"produks.deleted_at": nil}, sq.Like{"produks.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Product.GetAll] error: %v\n", err)
 		return nil, err
