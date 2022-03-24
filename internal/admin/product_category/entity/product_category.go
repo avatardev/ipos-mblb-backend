@@ -2,8 +2,8 @@ package entity
 
 import "time"
 
-type Category struct {
-	Id      int64     `db:"id"`
+type ProductCategory struct {
+	Id      int64      `db:"id"`
 	Name    string     `db:"nama_kategori"`
 	Pajak   int64      `db:"pajak"`
 	Status  bool       `db:"status"`
@@ -12,4 +12,4 @@ type Category struct {
 	Updated *time.Time `db:"updated_at"`
 }
 
-type Categories []*Category
+type ProductCategories []*ProductCategory

@@ -12,15 +12,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type CategoryHandler struct {
-	Service CategoryService
+type ProductCategoryHandler struct {
+	Service ProductCategoryService
 }
 
-func NewCategoryHandler(service CategoryService) *CategoryHandler {
-	return &CategoryHandler{Service: service}
+func NewProductCategoryHandler(service ProductCategoryService) *ProductCategoryHandler {
+	return &ProductCategoryHandler{Service: service}
 }
 
-func (c *CategoryHandler) GetCategory() http.HandlerFunc {
+func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
@@ -58,7 +58,7 @@ func (c *CategoryHandler) GetCategory() http.HandlerFunc {
 	}
 }
 
-func (c *CategoryHandler) GetCategoryById() http.HandlerFunc {
+func (c *ProductCategoryHandler) GetCategoryById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, exist := mux.Vars(r)["categoryId"]
 		if !exist {
@@ -87,9 +87,9 @@ func (c *CategoryHandler) GetCategoryById() http.HandlerFunc {
 	}
 }
 
-func (c *CategoryHandler) StoreCategory() http.HandlerFunc {
+func (c *ProductCategoryHandler) StoreCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		category := &dto.CategoryRequest{}
+		category := &dto.ProductCategoryRequest{}
 		if err := category.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, err)
@@ -119,7 +119,7 @@ func (c *CategoryHandler) StoreCategory() http.HandlerFunc {
 	}
 }
 
-func (c *CategoryHandler) UpdateCategory() http.HandlerFunc {
+func (c *ProductCategoryHandler) UpdateCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, exist := mux.Vars(r)["categoryId"]
 		if !exist {
@@ -133,7 +133,7 @@ func (c *CategoryHandler) UpdateCategory() http.HandlerFunc {
 			return
 		}
 
-		category := &dto.CategoryRequest{}
+		category := &dto.ProductCategoryRequest{}
 		if err := category.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, err)
@@ -159,7 +159,7 @@ func (c *CategoryHandler) UpdateCategory() http.HandlerFunc {
 	}
 }
 
-func (c *CategoryHandler) DeleteCategory() http.HandlerFunc {
+func (c *ProductCategoryHandler) DeleteCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, exists := mux.Vars(r)["categoryId"]
 		if !exists {

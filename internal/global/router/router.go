@@ -5,10 +5,10 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer"
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
-	"github.com/avatardev/ipos-mblb-backend/internal/admin/category"
-	categoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product"
 	productPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product/impl"
+	category "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category"
+	productCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 	"github.com/gorilla/mux"
 )
@@ -22,15 +22,15 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminPingError, buyerHandler.PingError()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminBuyer, buyerHandler.GetBuyer()).Methods(http.MethodGet, http.MethodOptions)
 
-	categoryRepostory := categoryPkg.NewCategoryRepository(db)
-	categoryService := category.NewCategoryService(categoryRepostory)
-	categoryHandler := category.NewCategoryHandler(categoryService)
+	productCategoryRepository := productCategoryPkg.NewProductCategoryRepository(db)
+	productCategoryService := category.NewProductCategoryService(productCategoryRepository)
+	productCategoryHandler := category.NewProductCategoryHandler(productCategoryService)
 
-	r.HandleFunc(AdminCategory, categoryHandler.GetCategory()).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc(AdminCategory, categoryHandler.StoreCategory()).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc(AdminCategoryId, categoryHandler.GetCategoryById()).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc(AdminCategoryId, categoryHandler.UpdateCategory()).Methods(http.MethodPut, http.MethodOptions)
-	r.HandleFunc(AdminCategoryId, categoryHandler.DeleteCategory()).Methods(http.MethodDelete, http.MethodOptions)
+	r.HandleFunc(AdminCategory, productCategoryHandler.GetCategory()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminCategory, productCategoryHandler.StoreCategory()).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc(AdminCategoryId, productCategoryHandler.GetCategoryById()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminCategoryId, productCategoryHandler.UpdateCategory()).Methods(http.MethodPut, http.MethodOptions)
+	r.HandleFunc(AdminCategoryId, productCategoryHandler.DeleteCategory()).Methods(http.MethodDelete, http.MethodOptions)
 
 	productRepository := productPkg.NewProductRepository(db)
 	productService := product.NewProductService(productRepository)

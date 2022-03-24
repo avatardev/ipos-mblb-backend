@@ -7,11 +7,11 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 )
 
-type CategoryServiceImpl struct {
-	Cr CategoryRepositoryImpl
+type ProductCategoryServiceImpl struct {
+	Cr ProductCategoryRepositoryImpl
 }
 
-func (c *CategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.CategoriesResponse, error) {
+func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error) {
 	categoryCount, err := c.Cr.Count(ctx)
 	if err != nil {
 		return nil, errors.ErrUnknown
@@ -30,10 +30,10 @@ func (c *CategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, off
 		return nil, errors.ErrInvalidResources
 	}
 
-	return dto.NewCategoriesResponse(categories, limit, offset, categoryCount), nil
+	return dto.NewProductCategoriesResponse(categories, limit, offset, categoryCount), nil
 }
 
-func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*dto.CategoryResponse, error) {
+func (c *ProductCategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*dto.ProductCategoryResponse, error) {
 	category, err := c.Cr.GetById(ctx, id)
 	if err != nil {
 		return nil, errors.ErrUnknown
@@ -43,10 +43,10 @@ func (c *CategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*d
 		return nil, errors.ErrNotFound
 	}
 
-	return dto.NewCategoryReponse(*category), nil
+	return dto.NewProductCategoryResponse(*category), nil
 }
 
-func (c *CategoryServiceImpl) StoreCategory(ctx context.Context, req *dto.CategoryRequest) (*dto.CategoryResponse, error) {
+func (c *ProductCategoryServiceImpl) StoreCategory(ctx context.Context, req *dto.ProductCategoryRequest) (*dto.ProductCategoryResponse, error) {
 	category := req.ToEntity()
 	data, err := c.Cr.Store(ctx, category)
 	if err != nil {
@@ -57,10 +57,10 @@ func (c *CategoryServiceImpl) StoreCategory(ctx context.Context, req *dto.Catego
 		return nil, errors.ErrUnknown
 	}
 
-	return dto.NewCategoryReponse(*data), nil
+	return dto.NewProductCategoryResponse(*data), nil
 }
 
-func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, id int64, req *dto.CategoryRequest) (*dto.CategoryResponse, error) {
+func (c *ProductCategoryServiceImpl) UpdateCategory(ctx context.Context, id int64, req *dto.ProductCategoryRequest) (*dto.ProductCategoryResponse, error) {
 	category := req.ToEntity()
 	category.Id = id
 
@@ -82,10 +82,10 @@ func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, id int64, req 
 		return nil, errors.ErrUnknown
 	}
 
-	return dto.NewCategoryReponse(*data), nil
+	return dto.NewProductCategoryResponse(*data), nil
 }
 
-func (c *CategoryServiceImpl) DeleteCategory(ctx context.Context, id int64) error {
+func (c *ProductCategoryServiceImpl) DeleteCategory(ctx context.Context, id int64) error {
 	exists, err := c.Cr.GetById(ctx, id)
 	if err != nil {
 		return errors.ErrUnknown

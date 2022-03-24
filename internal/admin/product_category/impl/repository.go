@@ -7,16 +7,16 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/avatardev/ipos-mblb-backend/internal/admin/category/entity"
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/product_category/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 )
 
-type CategoryRepositoryImpl struct {
+type ProductCategoryRepositoryImpl struct {
 	DB *sql.DB
 }
 
-func NewCategoryRepository(db *database.DatabaseClient) CategoryRepositoryImpl {
-	return CategoryRepositoryImpl{DB: db.DB}
+func NewProductCategoryRepository(db *database.DatabaseClient) ProductCategoryRepositoryImpl {
+	return ProductCategoryRepositoryImpl{DB: db.DB}
 }
 
 var (
@@ -26,7 +26,7 @@ var (
 	UPDATE_CATEGORY = sq.Update("kategoris")
 )
 
-func (cr CategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
+func (cr ProductCategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 	stmt, params, err := COUNT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).ToSql()
 	if err != nil {
 		log.Printf("[Category.Count] error: %v\n", err)
@@ -49,7 +49,7 @@ func (cr CategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
 	return categoryCount, nil
 }
 
-func (cr CategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.Categories, error) {
+func (cr ProductCategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.ProductCategories, error) {
 	stmt, params, err := SELECT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
@@ -68,10 +68,10 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offse
 		return nil, err
 	}
 
-	categories := entity.Categories{}
+	categories := entity.ProductCategories{}
 
 	for rows.Next() {
-		var category entity.Category
+		var category entity.ProductCategory
 		err := rows.Scan(&category.Id, &category.Name, &category.Pajak, &category.Status, &category.Deleted, &category.Created, &category.Updated)
 		if err != nil {
 			log.Printf("[Category.GetAll] error: %v\n", err)
@@ -82,7 +82,7 @@ func (cr CategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offse
 	return categories, nil
 }
 
-func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.Category, error) {
+func (cr ProductCategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.ProductCategory, error) {
 	stmt, params, err := SELECT_CATEGORY.Where(sq.And{sq.Eq{"id": id}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, err)
@@ -95,7 +95,7 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*entity
 		return nil, err
 	}
 
-	category := &entity.Category{}
+	category := &entity.ProductCategory{}
 
 	rows := prpd.QueryRowContext(ctx, params...)
 	queryErr := rows.Scan(&category.Id, &category.Name, &category.Pajak, &category.Status, &category.Deleted, &category.Created, &category.Updated)
@@ -110,7 +110,7 @@ func (cr CategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*entity
 	return category, nil
 }
 
-func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Category) (*entity.Category, error) {
+func (cr ProductCategoryRepositoryImpl) Store(ctx context.Context, category entity.ProductCategory) (*entity.ProductCategory, error) {
 	currTime := time.Now()
 	stmt, params, err := INSERT_CATEGORY.Values(category.Name, category.Pajak, category.Status, currTime, currTime).ToSql()
 	if err != nil {
@@ -139,7 +139,7 @@ func (cr CategoryRepositoryImpl) Store(ctx context.Context, category entity.Cate
 	return cr.GetById(ctx, lid)
 }
 
-func (cr CategoryRepositoryImpl) Update(ctx context.Context, category entity.Category) (*entity.Category, error) {
+func (cr ProductCategoryRepositoryImpl) Update(ctx context.Context, category entity.ProductCategory) (*entity.ProductCategory, error) {
 	updateMap := map[string]interface{}{
 		"nama_kategori": category.Name,
 		"pajak":         category.Pajak,
@@ -167,7 +167,7 @@ func (cr CategoryRepositoryImpl) Update(ctx context.Context, category entity.Cat
 	return cr.GetById(ctx, category.Id)
 }
 
-func (cr CategoryRepositoryImpl) Delete(ctx context.Context, id int64) error {
+func (cr ProductCategoryRepositoryImpl) Delete(ctx context.Context, id int64) error {
 	currTime := time.Now()
 
 	updateMap := map[string]interface{}{
