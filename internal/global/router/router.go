@@ -13,6 +13,8 @@ import (
 	pCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller"
 	sellerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/seller/impl"
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/user"
+	userPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/user/impl"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 	"github.com/gorilla/mux"
@@ -71,4 +73,20 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminProductId, productHandler.GetProductById()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminProductId, productHandler.UpdateProduct()).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc(AdminProductId, productHandler.DeleteProduct()).Methods(http.MethodDelete, http.MethodOptions)
+
+	userRepository := userPkg.NewUserRepository(db)
+	userService := user.NewUserService(userRepository)
+	userHandler := user.NewUserHandler(userService)
+
+	r.HandleFunc(AdminUserAdmin, userHandler.GetUserAdmin()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminUserAdmin, userHandler.StoreUserAdmin()).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc(AdminUserAdminId, userHandler.GetUserAdminById()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminUserAdminId, userHandler.UpdateUserAdmin()).Methods(http.MethodPut, http.MethodOptions)
+	r.HandleFunc(AdminUserAdminId, userHandler.DeleteUserAdmin()).Methods(http.MethodDelete, http.MethodOptions)
+
+	r.HandleFunc(AdminUserChecker, userHandler.GetUserChecker()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminUserChecker, userHandler.StoreUserChecker()).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc(AdminUserCheckerId, userHandler.GetUserCheckerById()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminUserCheckerId, userHandler.UpdateUserChecker()).Methods(http.MethodPut, http.MethodOptions)
+	r.HandleFunc(AdminUserCheckerId, userHandler.DeleteUserChecker()).Methods(http.MethodDelete, http.MethodOptions)
 }

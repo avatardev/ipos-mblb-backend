@@ -8,7 +8,7 @@ import (
 )
 
 type ProductCategoryService interface {
-	GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error)
+	GetCategory(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error)
 	GetCategoryById(ctx context.Context, id int64) (*dto.ProductCategoryResponse, error)
 	StoreCategory(ctx context.Context, req *dto.ProductCategoryRequest) (*dto.ProductCategoryResponse, error)
 	UpdateCategory(ctx context.Context, id int64, req *dto.ProductCategoryRequest) (*dto.ProductCategoryResponse, error)

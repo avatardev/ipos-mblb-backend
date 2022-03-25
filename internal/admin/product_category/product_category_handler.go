@@ -44,7 +44,8 @@ func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 			}
 		}
 
-		res, err := c.Service.GetCategory(r.Context(), limitParsed, offsetParsed)
+		keyword := query.Get("keyword")
+		res, err := c.Service.GetCategory(r.Context(), keyword, limitParsed, offsetParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return

@@ -11,8 +11,8 @@ type ProductCategoryServiceImpl struct {
 	Cr ProductCategoryRepositoryImpl
 }
 
-func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error) {
-	categoryCount, err := c.Cr.Count(ctx)
+func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error) {
+	categoryCount, err := c.Cr.Count(ctx, keyword)
 	if err != nil {
 		return nil, err
 	}

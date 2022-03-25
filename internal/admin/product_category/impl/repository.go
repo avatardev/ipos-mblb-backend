@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -26,8 +27,8 @@ var (
 	UPDATE_CATEGORY = sq.Update("kategoris")
 )
 
-func (cr ProductCategoryRepositoryImpl) Count(ctx context.Context) (uint64, error) {
-	stmt, params, err := COUNT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).ToSql()
+func (cr ProductCategoryRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
+	stmt, params, err := COUNT_CATEGORY.Where(sq.And{sq.Eq{"deleted_at": nil}, sq.Like{"nama_kategori": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
 	if err != nil {
 		log.Printf("[Category.Count] error: %v\n", err)
 		return 0, err
@@ -114,25 +115,25 @@ func (cr ProductCategoryRepositoryImpl) Store(ctx context.Context, category enti
 	currTime := time.Now()
 	stmt, params, err := INSERT_CATEGORY.Values(category.Name, category.Pajak, category.Status, currTime, currTime).ToSql()
 	if err != nil {
-		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Status, category.Status, err)
+		log.Printf("[Category.Store] error: %v\n", err)
 		return nil, err
 	}
 
 	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
-		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		log.Printf("[Category.Store] error: %v\n", err)
 		return nil, err
 	}
 
 	res, err := prpd.ExecContext(ctx, params...)
 	if err != nil {
-		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		log.Printf("[Category.Store] error: %v\n", err)
 		return nil, err
 	}
 
 	lid, err := res.LastInsertId()
 	if err != nil {
-		log.Printf("[Category.Store] name: %v, pajak: %v, status: %v, error: %v\n", category.Name, category.Pajak, category.Status, err)
+		log.Printf("[Category.Store] error: %v\n", err)
 		return nil, err
 	}
 
@@ -149,18 +150,18 @@ func (cr ProductCategoryRepositoryImpl) Update(ctx context.Context, category ent
 
 	stmt, params, err := UPDATE_CATEGORY.SetMap(updateMap).Where(sq.Eq{"id": category.Id}).ToSql()
 	if err != nil {
-		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		log.Printf("[Category.Update] error: %v\n", err)
 		return nil, err
 	}
 
 	prpd, err := cr.DB.PrepareContext(ctx, stmt)
 	if err != nil {
-		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		log.Printf("[Category.Update] error: %v\n", err)
 		return nil, err
 	}
 
 	if _, err := prpd.ExecContext(ctx, params...); err != nil {
-		log.Printf("[Category.Update] name: %v, pajak: %v, status: %v\n", category.Name, category.Pajak, category.Status)
+		log.Printf("[Category.Update] error: %v\n", err)
 		return nil, err
 	}
 

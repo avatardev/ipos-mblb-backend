@@ -13,8 +13,8 @@ const (
 	AdminBuyerCategoryId   = "/admin/v1/buyers/categories/{categoryId}"
 	AdminSeller            = "/admin/v1/sellers"
 	AdminSellerId          = "/admin/v1/sellers/{sellerId}"
-	AdminUserAdmin         = "/admin/v1/users/admin"
-	AdminUserAdminId       = "/admin/v1/users/admin/{userId}"
-	AdminUserChecker       = "/admin/v1/users/checker"
-	AdminUserCheckerId     = "/admin/v1/users/checker/{userId}"
+	AdminUserAdmin         = "/admin/v1/user/admins"
+	AdminUserAdminId       = "/admin/v1/user/admins/{userId}"
+	AdminUserChecker       = "/admin/v1/user/checkers"
+	AdminUserCheckerId     = "/admin/v1/user/checkers/{userId}"
 )
