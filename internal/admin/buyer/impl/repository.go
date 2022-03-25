@@ -18,7 +18,7 @@ type BuyerRepositoryImpl struct {
 
 var (
 	COUNT_BUYER  = sq.Select("COUNT(*)").From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
-	SELECT_BUYER = sq.Select("b.plat_truk", "k.nama_kategori", "b.perusahaan", "b.telp", "b.alamat", "b.email", "b.name_pic", "b.hp_pic", "b.keterangan", "b.status").
+	SELECT_BUYER = sq.Select("b.plat_truk", "k.nama_kategori", "b.kategori", "b.perusahaan", "b.telp", "b.alamat", "b.email", "b.name_pic", "b.hp_pic", "b.keterangan", "b.status").
 			From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
 	INSERT_BUYER = sq.Insert("buyer_truks").Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_BUYER = sq.Update("buyer_truks")
@@ -76,7 +76,7 @@ func (b *BuyerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit 
 
 	for rows.Next() {
 		temp := &entity.Buyer{}
-		err := rows.Scan(&temp.VehiclePlate, &temp.VehicleCategoryName, &temp.Company, &temp.Phone, &temp.Address, &temp.Email, &temp.PICName, &temp.PICPhone, &temp.Description, &temp.Status)
+		err := rows.Scan(&temp.VehiclePlate, &temp.VehicleCategoryName, &temp.VehicleCategoryId, &temp.Company, &temp.Phone, &temp.Address, &temp.Email, &temp.PICName, &temp.PICPhone, &temp.Description, &temp.Status)
 		if err != nil {
 			log.Printf("[Buyer.GetAll] error: %v\n", err)
 			return nil, err
@@ -104,7 +104,7 @@ func (b *BuyerRepositoryImpl) GetById(ctx context.Context, plate string) (*entit
 	rows := prpd.QueryRowContext(ctx, params...)
 
 	buyer := &entity.Buyer{}
-	queryErr := rows.Scan(&buyer.VehiclePlate, &buyer.VehicleCategoryName, &buyer.Company, &buyer.Phone, &buyer.Address, &buyer.Email, &buyer.PICName, &buyer.PICPhone, &buyer.Description, &buyer.Status)
+	queryErr := rows.Scan(&buyer.VehiclePlate, &buyer.VehicleCategoryName, &buyer.VehicleCategoryId, &buyer.Company, &buyer.Phone, &buyer.Address, &buyer.Email, &buyer.PICName, &buyer.PICPhone, &buyer.Description, &buyer.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Buyer.GetById] plate: %v, error: %v\n", plate, queryErr)
 		return nil, err

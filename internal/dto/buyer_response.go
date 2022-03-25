@@ -6,6 +6,7 @@ import (
 
 type BuyerResponse struct {
 	VehiclePlate string `json:"vehicle_plate"`
+	CategoryId   uint64 `json:"category_id"`
 	Category     string `json:"category"`
 	Company      string `json:"company"`
 	Phone        string `json:"phone"`
@@ -27,6 +28,7 @@ type BuyersResponse struct {
 func NewBuyerResponse(buyer entity.Buyer) *BuyerResponse {
 	return &BuyerResponse{
 		VehiclePlate: buyer.VehiclePlate,
+		CategoryId:   buyer.VehicleCategoryId,
 		Category:     buyer.VehicleCategoryName,
 		Company:      buyer.Company,
 		Phone:        buyer.Phone,
