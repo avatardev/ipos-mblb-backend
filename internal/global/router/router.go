@@ -48,6 +48,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 
 	r.HandleFunc(AdminSeller, sellerHandler.GetSeller()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminSellerId, sellerHandler.GetSellerById()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminSeller, sellerHandler.StoreSeller()).Methods(http.MethodPost, http.MethodOptions)
 
 	productCategoryRepository := pCategoryPkg.NewProductCategoryRepository(db)
 	productCategoryService := pCategory.NewProductCategoryService(productCategoryRepository)

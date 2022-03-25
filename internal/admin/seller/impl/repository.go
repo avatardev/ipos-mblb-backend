@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
@@ -22,6 +23,8 @@ func NewSellerRepository(db *database.DatabaseClient) SellerRepositoryImpl {
 var (
 	COUNT_SELLER  = sq.Select(("COUNT(*)")).From("sellers s")
 	SELECT_SELLER = sq.Select("s.id", "s.perusahaan", "s.telp", "s.alamat", "s.kecamatan", "s.email", "s.name_pic", "s.hp_pic", "s.npwp", "s.ktp", "s.no_iup", "s.masa_berlaku", "s.keterangan", "s.status").From("sellers s")
+	INSERT_SELLER = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
+	UPDATE_SELLER = sq.Insert("sellers")
 )
 
 func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
@@ -107,4 +110,33 @@ func (sr SellerRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.S
 	}
 
 	return seller, nil
+}
+
+func (sr SellerRepositoryImpl) Store(ctx context.Context, seller entity.Seller) (*entity.Seller, error) {
+	currTime := time.Now()
+	stmt, params, err := INSERT_SELLER.Values(seller.Company, seller.Phone, seller.Address, seller.District, seller.Email, seller.PICName, seller.PICPhone, seller.NPWP, seller.KTP, seller.NoIUP, seller.ValidPeriod, seller.Description, seller.Status, currTime, currTime).ToSql()
+	if err != nil {
+		log.Printf("[Seller.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	prpd, err := sr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Seller.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	res, err := prpd.ExecContext(ctx, params...)
+	if err != nil {
+		log.Printf("[Seller.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	lid, err := res.LastInsertId()
+	if err != nil {
+		log.Printf("[Seller.Store] error: %v\n", err)
+		return nil, err
+	}
+
+	return sr.GetById(ctx, lid)
 }

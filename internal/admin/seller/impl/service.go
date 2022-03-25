@@ -45,3 +45,21 @@ func (s SellerServiceImpl) GetSellerById(ctx context.Context, id int64) (*dto.Se
 
 	return dto.NewSellerResponse(seller), nil
 }
+
+func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerRequest) (*dto.SellerResponse, error) {
+	seller, err := req.ToEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := s.Sr.Store(ctx, *seller)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewSellerResponse(data), nil
+}
