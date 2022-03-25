@@ -24,7 +24,7 @@ var (
 	COUNT_SELLER  = sq.Select(("COUNT(*)")).From("sellers s")
 	SELECT_SELLER = sq.Select("s.id", "s.perusahaan", "s.telp", "s.alamat", "s.kecamatan", "s.email", "s.name_pic", "s.hp_pic", "s.npwp", "s.ktp", "s.no_iup", "s.masa_berlaku", "s.keterangan", "s.status").From("sellers s")
 	INSERT_SELLER = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
-	UPDATE_SELLER = sq.Insert("sellers")
+	UPDATE_SELLER = sq.Update("sellers")
 )
 
 func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
@@ -139,4 +139,41 @@ func (sr SellerRepositoryImpl) Store(ctx context.Context, seller entity.Seller) 
 	}
 
 	return sr.GetById(ctx, lid)
+}
+
+func (sr SellerRepositoryImpl) Update(ctx context.Context, seller entity.Seller) (*entity.Seller, error) {
+	updateMap := map[string]interface{}{
+		"perusahaan": seller.Company,
+		"telp":       seller.Phone,
+		"alamat":     seller.Address,
+		"kecamatan":  seller.District,
+		"email":      seller.Email,
+		"name_pic":   seller.PICName,
+		"hp_pic":     seller.PICPhone,
+		"npwp":       seller.NPWP,
+		"ktp":        seller.KTP,
+		"no_iup":     seller.NoIUP,
+		"keterangan": seller.Description,
+		"status":     seller.Status,
+		"updated_at": time.Now(),
+	}
+
+	stmt, params, err := UPDATE_SELLER.SetMap(updateMap).Where(sq.Eq{"id": seller.Id}).ToSql()
+	if err != nil {
+		log.Printf("[Seller.Update] id: %v, error: %v\n", seller.Id, err)
+		return nil, err
+	}
+
+	prpd, err := sr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Seller.Update] id: %v, error: %v\n", seller.Id, err)
+		return nil, err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Seller.Update] id: %v, error: %v\n", seller.Id, err)
+		return nil, err
+	}
+
+	return sr.GetById(ctx, seller.Id)
 }

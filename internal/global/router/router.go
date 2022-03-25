@@ -49,6 +49,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminSeller, sellerHandler.GetSeller()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminSellerId, sellerHandler.GetSellerById()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminSeller, sellerHandler.StoreSeller()).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc(AdminSellerId, sellerHandler.UpdateSeller()).Methods(http.MethodPut, http.MethodOptions)
 
 	productCategoryRepository := pCategoryPkg.NewProductCategoryRepository(db)
 	productCategoryService := pCategory.NewProductCategoryService(productCategoryRepository)
@@ -69,5 +70,4 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminProductId, productHandler.GetProductById()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminProductId, productHandler.UpdateProduct()).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc(AdminProductId, productHandler.DeleteProduct()).Methods(http.MethodDelete, http.MethodOptions)
-
 }

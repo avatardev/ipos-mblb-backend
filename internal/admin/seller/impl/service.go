@@ -63,3 +63,31 @@ func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerReque
 
 	return dto.NewSellerResponse(data), nil
 }
+
+func (s SellerServiceImpl) UpdateSeller(ctx context.Context, id int64, req *dto.SellerRequest) (*dto.SellerResponse, error) {
+	seller, err := req.ToEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	seller.Id = id
+	exists, err := s.Sr.GetById(ctx, seller.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if exists == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	data, err := s.Sr.Update(ctx, *seller)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, errors.ErrUnknown
+	}
+
+	return dto.NewSellerResponse(data), nil
+}

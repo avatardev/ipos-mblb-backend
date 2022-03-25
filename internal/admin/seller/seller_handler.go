@@ -115,3 +115,43 @@ func (s *SellerHandler) StoreSeller() http.HandlerFunc {
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
 	}
 }
+
+func (s *SellerHandler) UpdateSeller() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, exist := mux.Vars(r)["sellerId"]
+		if !exist {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		seller := &dto.SellerRequest{}
+		if err := seller.FromJSON(r.Body); err != nil {
+			log.Printf("[FromJSON] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		v := validator.New()
+		if err := v.StructCtx(r.Context(), seller); err != nil {
+			for _, e := range err.(validator.ValidationErrors) {
+				log.Printf("[Validation Error] error: %v\n", e.Field())
+			}
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := s.Service.UpdateSeller(r.Context(), parsedId, seller)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
