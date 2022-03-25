@@ -1,26 +1,24 @@
 package dto
 
 import (
-	"time"
-
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
 )
 
 type SellerResponse struct {
-	Id          int64     `json:"id"`
-	Company     string    `json:"company"`
-	Phone       string    `json:"phone"`
-	Address     string    `json:"address"`
-	District    string    `json:"district"`
-	Email       string    `json:"emali"`
-	PICName     string    `json:"pic_name"`
-	PICPhone    string    `json:"pic_phone"`
-	NPWP        string    `json:"npwp"`
-	KTP         string    `json:"ktp"`
-	NoIUP       string    `json:"no_iup"`
-	ValidPeriod time.Time `json:"valid_period"`
-	Description string    `json:"description"`
-	Status      bool      `json:"status"`
+	Id          int64  `json:"id"`
+	Company     string `json:"company"`
+	Phone       string `json:"phone"`
+	Address     string `json:"address"`
+	District    string `json:"district"`
+	Email       string `json:"emali"`
+	PICName     string `json:"pic_name"`
+	PICPhone    string `json:"pic_phone"`
+	NPWP        string `json:"npwp"`
+	KTP         string `json:"ktp"`
+	NoIUP       string `json:"no_iup"`
+	ValidPeriod string `json:"valid_period"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
 }
 
 type SellersResponse struct {
@@ -43,7 +41,7 @@ func NewSellerResponse(seller *entity.Seller) *SellerResponse {
 		NPWP:        seller.NPWP,
 		KTP:         seller.KTP,
 		NoIUP:       seller.NoIUP,
-		ValidPeriod: seller.ValidPeriod,
+		ValidPeriod: seller.ValidPeriod.Format("2006-01-02"),
 		Description: seller.Description,
 		Status:      seller.Status,
 	}
