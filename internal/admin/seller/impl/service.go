@@ -32,3 +32,16 @@ func (s SellerServiceImpl) GetSeller(ctx context.Context, keyword string, limit 
 
 	return dto.NewSellersResponse(sellers, limit, offset, sellerCount), nil
 }
+
+func (s SellerServiceImpl) GetSellerById(ctx context.Context, id int64) (*dto.SellerResponse, error) {
+	seller, err := s.Sr.GetById(ctx, id)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if seller == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	return dto.NewSellerResponse(seller), nil
+}

@@ -9,6 +9,7 @@ import (
 
 type SellerService interface {
 	GetSeller(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.SellersResponse, error)
+	GetSellerById(ctx context.Context, id int64) (*dto.SellerResponse, error)
 }
 
 func NewSellerService(Sr impl.SellerRepositoryImpl) SellerService {

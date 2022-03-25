@@ -7,6 +7,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
+	"github.com/gorilla/mux"
 )
 
 type SellerHandler struct {
@@ -50,6 +51,30 @@ func (s *SellerHandler) GetSeller() http.HandlerFunc {
 
 		if res == nil {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (s *SellerHandler) GetSellerById() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, exists := mux.Vars(r)["sellerId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		res, err := s.Service.GetSellerById(r.Context(), parsedId)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
 			return
 		}
 
