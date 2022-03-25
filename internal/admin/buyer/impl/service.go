@@ -36,6 +36,19 @@ func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, keyword string, limit u
 	return dto.NewBuyersResponse(buyers, count, limit, offset), nil
 }
 
+func (b *BuyerServiceImpl) GetBuyerById(ctx context.Context, plate string) (*dto.BuyerResponse, error) {
+	buyer, err := b.Br.GetById(ctx, plate)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if buyer == nil {
+		return nil, errors.ErrNotFound
+	}
+
+	return dto.NewBuyerResponse(*buyer), nil
+}
+
 func (b *BuyerServiceImpl) StoreBuyer(ctx context.Context, req *dto.BuyerRequest) (*dto.BuyerResponse, error) {
 	buyer := req.ToEntity()
 

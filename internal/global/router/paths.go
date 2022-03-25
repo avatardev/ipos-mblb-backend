@@ -11,4 +11,10 @@ const (
 	AdminBuyerId           = "/admin/v1/buyers/{buyerId}"
 	AdminBuyerCategory     = "/admin/v1/buyers/categories"
 	AdminBuyerCategoryId   = "/admin/v1/buyers/categories/{categoryId}"
+	AdminSeller            = "/admin/v1/sellers"
+	AdminSellerId          = "/admin/v1/sellers/{sellerId}"
+	AdminUserAdmin         = "/admin/v1/users/admin"
+	AdminUserAdminId       = "/admin/v1/users/admin/{userId}"
+	AdminUserChecker       = "/admin/v1/users/checker"
+	AdminUserCheckerId     = "/admin/v1/users/checker/{userId}"
 )

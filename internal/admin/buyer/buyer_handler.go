@@ -59,6 +59,29 @@ func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 	}
 }
 
+func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		plate, exists := mux.Vars(r)["buyerId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := b.Service.GetBuyerById(r.Context(), plate)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		if res == nil {
+			responseutil.WriteErrorResponse(w, errors.ErrNotFound)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
 func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		buyer := &dto.BuyerRequest{}
