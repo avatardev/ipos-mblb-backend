@@ -91,3 +91,19 @@ func (s SellerServiceImpl) UpdateSeller(ctx context.Context, id int64, req *dto.
 
 	return dto.NewSellerResponse(data), nil
 }
+
+func (s SellerServiceImpl) DeleteSeller(ctx context.Context, id int64) error {
+	exists, err := s.Sr.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if exists == nil {
+		return errors.ErrNotFound
+	}
+
+	if err := s.Sr.Delete(ctx, id); err != nil {
+		return err
+	}
+	return nil
+}

@@ -12,6 +12,7 @@ type SellerService interface {
 	GetSellerById(ctx context.Context, id int64) (*dto.SellerResponse, error)
 	StoreSeller(ctx context.Context, req *dto.SellerRequest) (*dto.SellerResponse, error)
 	UpdateSeller(ctx context.Context, id int64, req *dto.SellerRequest) (*dto.SellerResponse, error)
+	DeleteSeller(ctx context.Context, id int64) error
 }
 
 func NewSellerService(Sr impl.SellerRepositoryImpl) SellerService {

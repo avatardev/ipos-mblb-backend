@@ -177,3 +177,31 @@ func (sr SellerRepositoryImpl) Update(ctx context.Context, seller entity.Seller)
 
 	return sr.GetById(ctx, seller.Id)
 }
+
+func (sr SellerRepositoryImpl) Delete(ctx context.Context, id int64) error {
+	currTime := time.Now()
+	updateMap := map[string]interface{}{
+		"status":     false,
+		"updated_at": currTime,
+		"deleted_at": currTime,
+	}
+
+	stmt, params, err := UPDATE_SELLER.SetMap(updateMap).Where(sq.Eq{"id": id}).ToSql()
+	if err != nil {
+		log.Printf("[Seller.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	prpd, err := sr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Seller.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Seller.Delete] id: %v, error: %v\n", id, err)
+		return err
+	}
+
+	return nil
+}

@@ -155,3 +155,26 @@ func (s *SellerHandler) UpdateSeller() http.HandlerFunc {
 		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
 	}
 }
+
+func (s *SellerHandler) DeleteSeller() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, exists := mux.Vars(r)["sellerId"]
+		if !exists {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parseId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
+			return
+		}
+
+		if err := s.Service.DeleteSeller(r.Context(), parseId); err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, "seller deleted")
+	}
+}

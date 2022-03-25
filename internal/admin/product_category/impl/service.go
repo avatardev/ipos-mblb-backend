@@ -14,7 +14,7 @@ type ProductCategoryServiceImpl struct {
 func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, limit uint64, offset uint64) (*dto.ProductCategoriesResponse, error) {
 	categoryCount, err := c.Cr.Count(ctx)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if categoryCount == 0 {
@@ -23,7 +23,7 @@ func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, limit uint
 
 	categories, err := c.Cr.GetAll(ctx, limit, offset)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if len(categories) == 0 {
@@ -36,7 +36,7 @@ func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, limit uint
 func (c *ProductCategoryServiceImpl) GetCategoryById(ctx context.Context, id int64) (*dto.ProductCategoryResponse, error) {
 	category, err := c.Cr.GetById(ctx, id)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if category == nil {
@@ -50,7 +50,7 @@ func (c *ProductCategoryServiceImpl) StoreCategory(ctx context.Context, req *dto
 	category := req.ToEntity()
 	data, err := c.Cr.Store(ctx, category)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if data == nil {
@@ -66,7 +66,7 @@ func (c *ProductCategoryServiceImpl) UpdateCategory(ctx context.Context, id int6
 
 	exists, err := c.Cr.GetById(ctx, id)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if exists == nil {
@@ -75,7 +75,7 @@ func (c *ProductCategoryServiceImpl) UpdateCategory(ctx context.Context, id int6
 
 	data, err := c.Cr.Update(ctx, category)
 	if err != nil {
-		return nil, errors.ErrUnknown
+		return nil, err
 	}
 
 	if data == nil {
@@ -88,7 +88,7 @@ func (c *ProductCategoryServiceImpl) UpdateCategory(ctx context.Context, id int6
 func (c *ProductCategoryServiceImpl) DeleteCategory(ctx context.Context, id int64) error {
 	exists, err := c.Cr.GetById(ctx, id)
 	if err != nil {
-		return errors.ErrUnknown
+		return err
 	}
 
 	if exists == nil {
@@ -96,7 +96,7 @@ func (c *ProductCategoryServiceImpl) DeleteCategory(ctx context.Context, id int6
 	}
 
 	if err := c.Cr.Delete(ctx, id); err != nil {
-		return errors.ErrUnknown
+		return err
 	}
 
 	return nil
