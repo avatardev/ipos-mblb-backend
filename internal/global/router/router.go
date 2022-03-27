@@ -7,6 +7,8 @@ import (
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	bCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category"
 	bCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category/impl"
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/merchant"
+	merchantPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/merchant/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product"
 	productPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/product/impl"
 	pCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/product_category"
@@ -43,6 +45,14 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	r.HandleFunc(AdminBuyerId, buyerHandler.GetBuyerById()).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc(AdminBuyerId, buyerHandler.UpdateBuyer()).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc(AdminBuyerId, buyerHandler.DeleteBuyer()).Methods(http.MethodDelete, http.MethodOptions)
+
+	merchanRepository := merchantPkg.NewMerchantRepository(db)
+	merchantService := merchant.NewMerchantService(merchanRepository)
+	merchantHandler := merchant.NewMerchantHandler(merchantService)
+
+	r.HandleFunc(AdminMerchantItem, merchantHandler.GetMerchant()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminMerchantItemId, merchantHandler.GetMerchantById()).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc(AdminMerchantItemId, merchantHandler.UpdateMerchant()).Methods(http.MethodPut, http.MethodOptions)
 
 	sellerRepository := sellerPkg.NewSellerRepository(db)
 	sellerService := seller.NewSellerService(sellerRepository)

@@ -17,4 +17,6 @@ const (
 	AdminUserAdminId       = "/admin/v1/user/admins/{userId}"
 	AdminUserChecker       = "/admin/v1/user/checkers"
 	AdminUserCheckerId     = "/admin/v1/user/checkers/{userId}"
+	AdminMerchantItem      = "/admin/v1/sellers/{sellerId}/items"
+	AdminMerchantItemId    = "/admin/v1/sellers/{sellerId}/items/{itemId}"
 )

@@ -139,7 +139,6 @@ func (b *BuyerRepositoryImpl) Store(ctx context.Context, buyer entity.Buyer) (*e
 }
 
 func (b *BuyerRepositoryImpl) Update(ctx context.Context, plate string, buyer entity.Buyer) (*entity.Buyer, error) {
-	// .Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "updated_at")
 	updateMap := map[string]interface{}{
 		"plat_truk":  buyer.VehiclePlate,
 		"kategori":   buyer.VehicleCategoryId,

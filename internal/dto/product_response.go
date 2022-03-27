@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
+import (
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
+)
 
 type ProductResponse struct {
 	Id           int64   `json:"id"`
