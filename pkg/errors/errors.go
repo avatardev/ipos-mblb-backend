@@ -13,6 +13,8 @@ var (
 	ErrInvalidRequestBody = errors.New("84d48c05-b61f-42b5-98d9-e8d54a925df5")
 	ErrInvalidResources   = errors.New("b73e5586-b5fa-4c30-92d4-da7d4c9675d8")
 	ErrNotFound           = errors.New("8e8a54ae-c2f0-451d-80c9-24f71764f9e5")
+	ErrUserPriv           = errors.New("d9614ed1-8534-443c-ae7e-192dfe933f75")
+	ErrUserCredential     = errors.New("b5ebf348-2b34-4032-9363-74d7a4759466")
 )
 
 var errorMap = map[error]dto.ErrorResponseMetadata{
@@ -21,6 +23,8 @@ var errorMap = map[error]dto.ErrorResponseMetadata{
 	ErrInvalidRequestBody: NewErrorResponseMetadata(http.StatusBadRequest, ErrInvalidRequestBody.Error(), "invalid request body"),
 	ErrInvalidResources:   NewErrorResponseMetadata(http.StatusNotFound, ErrInvalidResources.Error(), "resources is empty"),
 	ErrNotFound:           NewErrorResponseMetadata(http.StatusNotFound, ErrNotFound.Error(), "resources not found"),
+	ErrUserPriv:           NewErrorResponseMetadata(http.StatusForbidden, ErrUserPriv.Error(), "user doesn't have enough privilege to access this resources"),
+	ErrUserCredential:     NewErrorResponseMetadata(http.StatusBadRequest, ErrUserCredential.Error(), "invalid user credentials"),
 }
 
 func NewErrorResponseMetadata(status int, code string, message string) dto.ErrorResponseMetadata {

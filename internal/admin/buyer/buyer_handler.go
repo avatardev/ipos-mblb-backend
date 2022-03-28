@@ -7,6 +7,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -22,6 +23,11 @@ func NewBuyerHandler(service BuyerService) *BuyerHandler {
 
 func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -61,6 +67,11 @@ func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		plate, exists := mux.Vars(r)["buyerId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -84,6 +95,11 @@ func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 
 func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		buyer := &dto.BuyerRequest{}
 		if err := buyer.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
@@ -111,6 +127,11 @@ func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		plateNumber, exists := mux.Vars(r)["buyerId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -142,6 +163,11 @@ func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) DeleteBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		plate, exists := mux.Vars(r)["buyerId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)

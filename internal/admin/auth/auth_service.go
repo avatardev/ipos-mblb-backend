@@ -10,6 +10,7 @@ import (
 type AuthService interface {
 	Login(ctx context.Context, req *dto.UserPostRequest) (*dto.AuthTokenResponse, error)
 	RefreshToken(ctx context.Context, req *dto.AuthRefreshToken) (*dto.AuthTokenResponse, error)
+	FindUserByAccessToken(ctx context.Context, accessToken string) (*dto.AuthUserLevel, error)
 }
 
 func NewAuthService(Ar impl.AuthRepositoryImpl) AuthService {

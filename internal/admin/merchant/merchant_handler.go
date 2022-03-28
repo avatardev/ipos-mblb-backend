@@ -7,6 +7,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -22,6 +23,11 @@ func NewMerchantHandler(service MerchantService) *MerchantHandler {
 
 func (m *MerchantHandler) GetMerchant() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -71,6 +77,11 @@ func (m *MerchantHandler) GetMerchant() http.HandlerFunc {
 
 func (m *MerchantHandler) GetMerchantById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		sellerId, exist := mux.Vars(r)["sellerId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -108,6 +119,11 @@ func (m *MerchantHandler) GetMerchantById() http.HandlerFunc {
 
 func (m *MerchantHandler) UpdateMerchant() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		sellerId, exist := mux.Vars(r)["sellerId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)

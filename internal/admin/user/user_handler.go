@@ -7,6 +7,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -27,6 +28,11 @@ func NewUserHandler(service UserService) *UserHandler {
 
 func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -66,6 +72,11 @@ func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 
 func (u *UserHandler) GetUserChecker() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -105,6 +116,11 @@ func (u *UserHandler) GetUserChecker() http.HandlerFunc {
 
 func (u *UserHandler) GetUserAdminById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["userId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -134,6 +150,11 @@ func (u *UserHandler) GetUserAdminById() http.HandlerFunc {
 
 func (u *UserHandler) GetUserCheckerById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["userId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -163,6 +184,11 @@ func (u *UserHandler) GetUserCheckerById() http.HandlerFunc {
 
 func (u *UserHandler) StoreUserAdmin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		user := &dto.UserPostRequest{}
 		if err := user.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
@@ -195,6 +221,11 @@ func (u *UserHandler) StoreUserAdmin() http.HandlerFunc {
 
 func (u *UserHandler) StoreUserChecker() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		user := &dto.UserPostRequest{}
 		if err := user.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
@@ -227,6 +258,11 @@ func (u *UserHandler) StoreUserChecker() http.HandlerFunc {
 
 func (u *UserHandler) UpdateUserAdmin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["userId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -267,6 +303,11 @@ func (u *UserHandler) UpdateUserAdmin() http.HandlerFunc {
 
 func (u *UserHandler) UpdateUserChecker() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["userId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -307,6 +348,11 @@ func (u *UserHandler) UpdateUserChecker() http.HandlerFunc {
 
 func (u *UserHandler) DeleteUserAdmin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exists := mux.Vars(r)["userId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -330,6 +376,11 @@ func (u *UserHandler) DeleteUserAdmin() http.HandlerFunc {
 
 func (u *UserHandler) DeleteUserChecker() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exists := mux.Vars(r)["userId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)

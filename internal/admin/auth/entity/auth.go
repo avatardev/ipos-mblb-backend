@@ -4,6 +4,8 @@ import (
 	"database/sql"
 )
 
+type AuthLevelCtxKey string
+
 type UserData struct {
 	Id       int64
 	Username string

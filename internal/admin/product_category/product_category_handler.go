@@ -7,6 +7,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -22,6 +23,11 @@ func NewProductCategoryHandler(service ProductCategoryService) *ProductCategoryH
 
 func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		query := r.URL.Query()
 
 		limit := query.Get("limit")
@@ -61,6 +67,11 @@ func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) GetCategoryById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["categoryId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -90,6 +101,11 @@ func (c *ProductCategoryHandler) GetCategoryById() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) StoreCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		category := &dto.ProductCategoryRequest{}
 		if err := category.FromJSON(r.Body); err != nil {
 			log.Printf("[FromJSON] error: %v\n", err)
@@ -122,6 +138,11 @@ func (c *ProductCategoryHandler) StoreCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) UpdateCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exist := mux.Vars(r)["categoryId"]
 		if !exist {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -162,6 +183,11 @@ func (c *ProductCategoryHandler) UpdateCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) DeleteCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		id, exists := mux.Vars(r)["categoryId"]
 		if !exists {
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
