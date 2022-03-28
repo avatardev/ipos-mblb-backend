@@ -15,6 +15,7 @@ var (
 	ErrNotFound           = errors.New("8e8a54ae-c2f0-451d-80c9-24f71764f9e5")
 	ErrUserPriv           = errors.New("d9614ed1-8534-443c-ae7e-192dfe933f75")
 	ErrUserCredential     = errors.New("b5ebf348-2b34-4032-9363-74d7a4759466")
+	ErrTokenExpired       = errors.New("ab7204d5-4809-47e6-bf15-af34bb1c5c0b")
 )
 
 var errorMap = map[error]dto.ErrorResponseMetadata{
@@ -25,6 +26,7 @@ var errorMap = map[error]dto.ErrorResponseMetadata{
 	ErrNotFound:           NewErrorResponseMetadata(http.StatusNotFound, ErrNotFound.Error(), "resources not found"),
 	ErrUserPriv:           NewErrorResponseMetadata(http.StatusForbidden, ErrUserPriv.Error(), "user doesn't have enough privilege to access this resources"),
 	ErrUserCredential:     NewErrorResponseMetadata(http.StatusBadRequest, ErrUserCredential.Error(), "invalid user credentials"),
+	ErrTokenExpired:       NewErrorResponseMetadata(http.StatusNotAcceptable, ErrTokenExpired.Error(), "access token is expired"),
 }
 
 func NewErrorResponseMetadata(status int, code string, message string) dto.ErrorResponseMetadata {

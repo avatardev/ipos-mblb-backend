@@ -110,7 +110,7 @@ func (a *AuthServiceImpl) FindUserByAccessToken(ctx context.Context, accessToken
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
 		log.Printf("[Auth.FindUserByAccessToken] error: %v\n", err)
-		return nil, err
+		return nil, errors.ErrTokenExpired
 	}
 
 	data := claims["data"].(map[string]interface{})
