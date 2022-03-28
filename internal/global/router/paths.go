@@ -19,4 +19,6 @@ const (
 	AdminUserCheckerId     = "/admin/v1/user/checkers/{userId}"
 	AdminMerchantItem      = "/admin/v1/sellers/{sellerId}/items"
 	AdminMerchantItemId    = "/admin/v1/sellers/{sellerId}/items/{itemId}"
+	AdminAuth              = "/admin/v1/auth"
+	AdminAuthRefresh       = "/admin/v1/auth/refreshToken"
 )

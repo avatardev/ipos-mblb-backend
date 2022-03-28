@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 
+	authSys "github.com/avatardev/ipos-mblb-backend/internal/admin/auth"
+	authSysPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/auth/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer"
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	bCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category"
@@ -23,6 +25,13 @@ import (
 )
 
 func Init(r *mux.Router, db *database.DatabaseClient) {
+	authRepository := authSysPkg.NewAuthRepository(db)
+	authService := authSys.NewAuthService(authRepository)
+	authHandler := authSys.NewAuthHandler(authService)
+
+	r.HandleFunc(AdminAuth, authHandler.Login()).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc(AdminAuthRefresh, authHandler.RefreshToken()).Methods(http.MethodPost, http.MethodOptions)
+
 	buyerCategoryRepository := bCategoryPkg.NewBuyerCategoryRepository(db)
 	buyerCategoryService := bCategory.NewBuyerCategoryService(buyerCategoryRepository)
 	buyerCategoryHandler := bCategory.NewBuyerCategoryHandler(buyerCategoryService)
