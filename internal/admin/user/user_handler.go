@@ -17,16 +17,11 @@ type UserHandler struct {
 	Service UserService
 }
 
-const (
-	USER_ADMIN   int64 = 1
-	USER_CHECKER int64 = 4
-)
-
 func NewUserHandler(service UserService) *UserHandler {
 	return &UserHandler{Service: service}
 }
 
-func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
+func (u *UserHandler) GetUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -38,7 +33,7 @@ func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 		limit := query.Get("limit")
 		limitParsed, err := strconv.ParseUint(limit, 10, 64)
 		if err != nil {
-			log.Printf("[GetUserAdmin] limit: %v, error: %v\n", limit, err)
+			log.Printf("[GetUser] role: %v, limit: %v, error: %v\n", role, limit, err)
 
 			if limit == "" {
 				limitParsed = 10
@@ -48,7 +43,7 @@ func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 		offset := query.Get("offset")
 		offsetParsed, err := strconv.ParseUint(offset, 10, 64)
 		if err != nil {
-			log.Printf("[GetUserAdmin] offset: %v, error: %v\n", offset, err)
+			log.Printf("[GetUser] role: %v, offset: %v, error: %v\n", role, offset, err)
 
 			if offset == "" {
 				offsetParsed = 0
@@ -56,7 +51,7 @@ func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 		}
 
 		keyword := query.Get("keyword")
-		res, err := u.Service.GetUser(r.Context(), USER_ADMIN, keyword, limitParsed, offsetParsed)
+		res, err := u.Service.GetUser(r.Context(), role, keyword, limitParsed, offsetParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -70,51 +65,7 @@ func (u *UserHandler) GetUserAdmin() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) GetUserChecker() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
-			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
-			return
-		}
-
-		query := r.URL.Query()
-
-		limit := query.Get("limit")
-		limitParsed, err := strconv.ParseUint(limit, 10, 64)
-		if err != nil {
-			log.Printf("[GetUserAdmin] limit: %v, error: %v\n", limit, err)
-
-			if limit == "" {
-				limitParsed = 10
-			}
-		}
-
-		offset := query.Get("offset")
-		offsetParsed, err := strconv.ParseUint(offset, 10, 64)
-		if err != nil {
-			log.Printf("[GetUserAdmin] offset: %v, error: %v\n", offset, err)
-
-			if offset == "" {
-				offsetParsed = 0
-			}
-		}
-
-		keyword := query.Get("keyword")
-		res, err := u.Service.GetUser(r.Context(), USER_CHECKER, keyword, limitParsed, offsetParsed)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		if res == nil {
-			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
-			return
-		}
-		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
-	}
-}
-
-func (u *UserHandler) GetUserAdminById() http.HandlerFunc {
+func (u *UserHandler) GetUserById(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -133,7 +84,7 @@ func (u *UserHandler) GetUserAdminById() http.HandlerFunc {
 			return
 		}
 
-		res, err := u.Service.GetUserById(r.Context(), USER_ADMIN, parsedId)
+		res, err := u.Service.GetUserById(r.Context(), role, parsedId)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -148,41 +99,7 @@ func (u *UserHandler) GetUserAdminById() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) GetUserCheckerById() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
-			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
-			return
-		}
-
-		id, exist := mux.Vars(r)["userId"]
-		if !exist {
-			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
-			return
-		}
-
-		parsedId, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		res, err := u.Service.GetUserById(r.Context(), USER_CHECKER, parsedId)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		if res == nil {
-			responseutil.WriteErrorResponse(w, errors.ErrNotFound)
-			return
-		}
-
-		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
-	}
-}
-
-func (u *UserHandler) StoreUserAdmin() http.HandlerFunc {
+func (u *UserHandler) StoreUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -205,7 +122,7 @@ func (u *UserHandler) StoreUserAdmin() http.HandlerFunc {
 			return
 		}
 
-		res, err := u.Service.StoreUser(r.Context(), USER_ADMIN, user)
+		res, err := u.Service.StoreUser(r.Context(), role, user)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -219,44 +136,7 @@ func (u *UserHandler) StoreUserAdmin() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) StoreUserChecker() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
-			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
-			return
-		}
-
-		user := &dto.UserPostRequest{}
-		if err := user.FromJSON(r.Body); err != nil {
-			log.Printf("[FromJSON] error: %v\n", err)
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		v := validator.New()
-		if err := v.StructCtx(r.Context(), user); err != nil {
-			for _, e := range err.(validator.ValidationErrors) {
-				log.Printf("[Validation Error] error: %v\n", e.Field())
-			}
-			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
-			return
-		}
-
-		res, err := u.Service.StoreUser(r.Context(), USER_CHECKER, user)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		if res == nil {
-			responseutil.WriteErrorResponse(w, errors.ErrUnknown)
-		}
-
-		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
-	}
-}
-
-func (u *UserHandler) UpdateUserAdmin() http.HandlerFunc {
+func (u *UserHandler) UpdateUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -291,7 +171,7 @@ func (u *UserHandler) UpdateUserAdmin() http.HandlerFunc {
 			return
 		}
 
-		res, err := u.Service.UpdateUser(r.Context(), USER_ADMIN, parsedId, user)
+		res, err := u.Service.UpdateUser(r.Context(), role, parsedId, user)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -301,52 +181,7 @@ func (u *UserHandler) UpdateUserAdmin() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) UpdateUserChecker() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
-			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
-			return
-		}
-
-		id, exist := mux.Vars(r)["userId"]
-		if !exist {
-			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
-			return
-		}
-
-		parsedId, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		user := &dto.UserPutRequest{}
-		if err := user.FromJSON(r.Body); err != nil {
-			log.Printf("[FromJSON] error: %v\n", err)
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		v := validator.New()
-		if err := v.StructCtx(r.Context(), user); err != nil {
-			for _, e := range err.(validator.ValidationErrors) {
-				log.Printf("[Validation Error] error: %v\n", e.Field())
-			}
-			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
-			return
-		}
-
-		res, err := u.Service.UpdateUser(r.Context(), USER_CHECKER, parsedId, user)
-		if err != nil {
-			responseutil.WriteErrorResponse(w, err)
-			return
-		}
-
-		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
-	}
-}
-
-func (u *UserHandler) DeleteUserAdmin() http.HandlerFunc {
+func (u *UserHandler) DeleteUserAdmin(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -365,7 +200,7 @@ func (u *UserHandler) DeleteUserAdmin() http.HandlerFunc {
 			return
 		}
 
-		if err := u.Service.DeleteUser(r.Context(), USER_ADMIN, parsedId); err != nil {
+		if err := u.Service.DeleteUser(r.Context(), role, parsedId); err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
 		}
@@ -374,7 +209,7 @@ func (u *UserHandler) DeleteUserAdmin() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) DeleteUserChecker() http.HandlerFunc {
+func (u *UserHandler) DeleteUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
@@ -393,7 +228,7 @@ func (u *UserHandler) DeleteUserChecker() http.HandlerFunc {
 			return
 		}
 
-		if err := u.Service.DeleteUser(r.Context(), USER_CHECKER, parsedId); err != nil {
+		if err := u.Service.DeleteUser(r.Context(), role, parsedId); err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
 		}

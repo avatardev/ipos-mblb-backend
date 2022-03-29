@@ -8,6 +8,15 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 )
 
+const (
+	USER_ADMIN   int64 = 1
+	USER_SELLER  int64 = 2
+	USER_CASHIER int64 = 3
+	USER_CHECKER int64 = 4
+)
+
+// CheckUserPrivilege is a function that recieve a context injected with necessary user data, and required priivlege level
+// and return a boolean value whether current user has sufficient privilege level
 func CheckUserPrivilege(ctx context.Context, privLevel ...int64) bool {
 	authLevel, ok := ctx.Value(entity.AuthLevelCtxKey("user-auth")).(*dto.AuthUserLevel)
 	if !ok {

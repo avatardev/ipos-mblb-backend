@@ -3,6 +3,7 @@ package router
 const (
 	AdminPing              = "/admin/v1/ping"
 	AdminPingError         = "/admin/v1/ping/error"
+	AdminGenerateDetailTrx = "/admin/v1/orders/report/generateDetail"
 	AdminProduct           = "/admin/v1/products"
 	AdminProductId         = "/admin/v1/products/{productId}"
 	AdminProductCategory   = "/admin/v1/products/categories"
@@ -15,6 +16,10 @@ const (
 	AdminSellerId          = "/admin/v1/sellers/{sellerId}"
 	AdminUserAdmin         = "/admin/v1/user/admins"
 	AdminUserAdminId       = "/admin/v1/user/admins/{userId}"
+	AdminUserSeller        = "/admin/v1/user/sellers"
+	AdminUserSellerId      = "/admin/v1/user/sellers/{userId}"
+	AdminUserBuyer         = "/admin/v1/user/buyers"
+	AdminUserBuyerId       = "/admin/v1/user/buyers/{userId}"
 	AdminUserChecker       = "/admin/v1/user/checkers"
 	AdminUserCheckerId     = "/admin/v1/user/checkers/{userId}"
 	AdminMerchantItem      = "/admin/v1/sellers/{sellerId}/items"

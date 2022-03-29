@@ -1,8 +1,11 @@
 package responseutil
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/avatardev/ipos-mblb-backend/pkg/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
@@ -16,6 +19,15 @@ func WriteSuccessResponse(rw http.ResponseWriter, status int, data interface{}) 
 func WriteErrorResponse(rw http.ResponseWriter, err error) {
 	errMetadata := errors.GetErrorResponseMetadata(err)
 	BaseResponseWriter(rw, errMetadata.Status, nil, &dto.ErrorData{Code: errMetadata.Code, Message: errMetadata.Message})
+}
+
+func WriteFileResponse(rw http.ResponseWriter, status int, filename string, data bytes.Buffer) {
+	rw.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.csv", filename))
+	rw.Header().Set("Content-Type", "text/csv")
+	rw.Header().Set("Content-Length", strconv.Itoa(data.Len()))
+	rw.WriteHeader(status)
+
+	rw.Write(data.Bytes())
 }
 
 func BaseResponseWriter(rw http.ResponseWriter, status int, data interface{}, er *dto.ErrorData) {

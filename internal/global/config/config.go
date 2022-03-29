@@ -42,8 +42,8 @@ func Init() {
 	config.JWT_ISSUER = os.Getenv("JWT_ISSUER")
 	config.JWT_SIGNING_METHOD = jwt.SigningMethodHS256
 	config.JWT_SIGNATURE_KEY = []byte(os.Getenv("JWT_SIGNATURE_KEY"))
-	config.JWT_AT_EXPIRATION = time.Duration(2) * time.Minute
-	config.JWT_RT_EXPIRATION = time.Duration(730) * time.Hour
+	config.JWT_AT_EXPIRATION = time.Duration(5) * time.Minute
+	config.JWT_RT_EXPIRATION = time.Duration(168) * time.Hour
 }
 
 func GetConfig() *Config {
