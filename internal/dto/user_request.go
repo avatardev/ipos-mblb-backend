@@ -25,6 +25,7 @@ func (ur *UserPostRequest) ToEntity() entity.User {
 
 type UserPutRequest struct {
 	Username string `json:"username" validate:"required"`
+	Password string `json:"password"`
 }
 
 func (ur *UserPutRequest) FromJSON(r io.Reader) error {
@@ -32,7 +33,13 @@ func (ur *UserPutRequest) FromJSON(r io.Reader) error {
 }
 
 func (ur *UserPutRequest) ToEntity() entity.User {
-	return entity.User{
+	res := entity.User{
 		Username: ur.Username,
 	}
+
+	if ur.Password != "" {
+		res.Password = ur.Password
+	}
+
+	return res
 }

@@ -85,6 +85,16 @@ func (u *UserServiceImpl) UpdateUser(ctx context.Context, role int64, id int64, 
 		return nil, errors.ErrNotFound
 	}
 
+	if user.Password != "" {
+		hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Printf("[Service.StoreUser] role: %v, error: %v\n", role, err)
+			return nil, err
+		} else {
+			user.Password = string(hashed)
+		}			
+	}
+
 	data, err := u.Ur.Update(ctx, role, user)
 	if err != nil {
 		return nil, err

@@ -147,6 +147,13 @@ func (ur UserRepositoryImpl) Update(ctx context.Context, role int64, user entity
 		"username": user.Username,
 	}
 
+	if user.Password != "" {
+		updateMap = map[string]interface{}{
+			"username": user.Username,
+			"password": user.Password,
+		}
+	}
+	
 	stmt, params, err := UPDATE_USER.SetMap(updateMap).Where(sq.Eq{"id": user.Id}).ToSql()
 	if err != nil {
 		log.Printf("[User.Update] id: %v, err: %v\n", user.Id, err)
