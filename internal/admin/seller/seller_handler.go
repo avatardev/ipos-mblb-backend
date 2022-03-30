@@ -21,6 +21,28 @@ func NewSellerHandler(service SellerService) *SellerHandler {
 	return &SellerHandler{Service: service}
 }
 
+func (s *SellerHandler) GetSellerName() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		res, err := s.Service.GetSellerName(r.Context())
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		if res == nil {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
 func (s *SellerHandler) GetSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {

@@ -21,10 +21,11 @@ func NewSellerRepository(db *database.DatabaseClient) SellerRepositoryImpl {
 }
 
 var (
-	COUNT_SELLER  = sq.Select(("COUNT(*)")).From("sellers s")
-	SELECT_SELLER = sq.Select("s.id", "s.perusahaan", "s.telp", "s.alamat", "s.kecamatan", "s.email", "s.name_pic", "s.hp_pic", "s.npwp", "s.ktp", "s.no_iup", "s.masa_berlaku", "s.keterangan", "s.status").From("sellers s")
-	INSERT_SELLER = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
-	UPDATE_SELLER = sq.Update("sellers")
+	COUNT_SELLER       = sq.Select(("COUNT(*)")).From("sellers s")
+	SELECT_SELLER      = sq.Select("s.id", "s.perusahaan", "s.telp", "s.alamat", "s.kecamatan", "s.email", "s.name_pic", "s.hp_pic", "s.npwp", "s.ktp", "s.no_iup", "s.masa_berlaku", "s.keterangan", "s.status").From("sellers s")
+	SELECT_SELLER_NAME = sq.Select("s.id", "s.perusahaan").From("sellers s")
+	INSERT_SELLER      = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
+	UPDATE_SELLER      = sq.Update("sellers")
 )
 
 func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
@@ -48,6 +49,39 @@ func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint6
 	}
 
 	return sellerCount, nil
+}
+
+func (sr SellerRepositoryImpl) GetSelerName(ctx context.Context) (entity.CompanySellers, error) {
+	stmt, params, err := SELECT_SELLER_NAME.Where(sq.Eq{"s.deleted_at": nil}).ToSql()
+	if err != nil {
+		log.Printf("[Seller.GetSelerName] error: %v\n", err)
+		return nil, err
+	}
+
+	prpd, err := sr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Seller.GetSelerName] error: %v\n", err)
+		return nil, err
+	}
+
+	rows, err := prpd.QueryContext(ctx, params...)
+	if err != nil {
+		log.Printf("[Seller.GetSelerName] error: %v\n", err)
+		return nil, err
+	}
+
+	cs := entity.CompanySellers{}
+
+	for rows.Next() {
+		seller := &entity.CompanySeller{}
+		if err := rows.Scan(&seller.Id, &seller.Company); err != nil {
+			log.Printf("[Seller.GetSelerName] error: %v\n", err)
+			return nil, err
+		}
+		cs = append(cs, seller)
+	}
+
+	return cs, nil
 }
 
 func (sr SellerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Sellers, error) {

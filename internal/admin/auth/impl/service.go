@@ -41,7 +41,7 @@ func (a *AuthServiceImpl) Login(ctx context.Context, req *dto.UserPostRequest) (
 		return nil, err
 	}
 
-	return dto.NewAuthTokenResponse(accessToken, refreshToken), nil
+	return dto.NewAuthTokenResponse(accessToken, refreshToken, userData), nil
 }
 
 func (a *AuthServiceImpl) RefreshToken(ctx context.Context, req *dto.AuthRefreshToken) (*dto.AuthTokenResponse, error) {
@@ -87,7 +87,7 @@ func (a *AuthServiceImpl) RefreshToken(ctx context.Context, req *dto.AuthRefresh
 		return nil, err
 	}
 
-	return dto.NewAuthTokenResponse(at, rt), nil
+	return dto.NewAuthTokenResponse(at, rt, user), nil
 }
 
 func (a *AuthServiceImpl) FindUserByAccessToken(ctx context.Context, accessToken string) (*dto.AuthUserLevel, error) {

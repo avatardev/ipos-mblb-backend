@@ -9,6 +9,7 @@ import (
 
 type SellerService interface {
 	GetSeller(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.SellersResponse, error)
+	GetSellerName(ctx context.Context) (*dto.SellersCompanyResponse, error)
 	GetSellerById(ctx context.Context, id int64) (*dto.SellerResponse, error)
 	StoreSeller(ctx context.Context, req *dto.SellerRequest) (*dto.SellerResponse, error)
 	UpdateSeller(ctx context.Context, id int64, req *dto.SellerRequest) (*dto.SellerResponse, error)

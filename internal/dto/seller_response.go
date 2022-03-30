@@ -28,6 +28,14 @@ type SellersResponse struct {
 	Total  uint64            `json:"total"`
 }
 
+type SellerCompanyResponse struct {
+	Id      int64  `json:"seller_id"`
+	Company string `json:"company_name"`
+}
+type SellersCompanyResponse struct {
+	Company []*SellerCompanyResponse `json:"company"`
+}
+
 func NewSellerResponse(seller *entity.Seller) *SellerResponse {
 	return &SellerResponse{
 		Id:          seller.Id,
@@ -57,6 +65,24 @@ func NewSellersResponse(sellers entity.Sellers, limit uint64, offset uint64, tot
 	for _, seller := range sellers {
 		temp := NewSellerResponse(seller)
 		res.Seller = append(res.Seller, temp)
+	}
+
+	return res
+}
+
+func NewSellerCompanyResponse(sc *entity.CompanySeller) *SellerCompanyResponse {
+	return &SellerCompanyResponse{
+		Id:      sc.Id,
+		Company: sc.Company,
+	}
+}
+
+func NewSellersCompanyResponse(sc entity.CompanySellers) *SellersCompanyResponse {
+	res := &SellersCompanyResponse{}
+
+	for _, seller := range sc {
+		temp := NewSellerCompanyResponse(seller)
+		res.Company = append(res.Company, temp)
 	}
 
 	return res

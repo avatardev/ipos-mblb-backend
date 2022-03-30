@@ -14,7 +14,7 @@ type AuthRepositoryImpl struct {
 	DB *sql.DB
 }
 
-var SELECT_USER = sq.Select("u.id", "u.username", "u.password", "u.id_role").From("users u")
+var SELECT_USER = sq.Select("u.id", "u.username", "u.password", "u.id_role", "d.nama_role").From("users u").LeftJoin("role_users d ON d.id = u.id_role")
 
 func NewAuthRepository(db *database.DatabaseClient) AuthRepositoryImpl {
 	return AuthRepositoryImpl{DB: db.DB}

@@ -10,6 +10,8 @@ import (
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	bCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category"
 	bCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category/impl"
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/location"
+	locationPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/location/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/merchant"
 	merchantPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/merchant/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/order"
@@ -46,6 +48,16 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 
 	protectedRouter.HandleFunc(AdminGenerateDetailTrx, orderHandler.GenerateDetailTrx()).Methods(http.MethodGet, http.MethodOptions)
 
+	locationRepository := locationPkg.NewLocationRepostiory(db)
+	locationService := location.NewLocationService(locationRepository)
+	locationHandler := location.NewLocationHandler(locationService)
+
+	protectedRouter.HandleFunc(AdminLocation, locationHandler.GetLocation()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminLocation, locationHandler.StoreLocation()).Methods(http.MethodPost, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminLocationId, locationHandler.GetLocationById()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminLocationId, locationHandler.UpdateLocation()).Methods(http.MethodPut, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminLocationId, locationHandler.DeleteLocation()).Methods(http.MethodDelete, http.MethodOptions)
+
 	buyerCategoryRepository := bCategoryPkg.NewBuyerCategoryRepository(db)
 	buyerCategoryService := bCategory.NewBuyerCategoryService(buyerCategoryRepository)
 	buyerCategoryHandler := bCategory.NewBuyerCategoryHandler(buyerCategoryService)
@@ -81,6 +93,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	sellerService := seller.NewSellerService(sellerRepository)
 	sellerHandler := seller.NewSellerHandler(sellerService)
 
+	protectedRouter.HandleFunc(AdminSellerName, sellerHandler.GetSellerName()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminSeller, sellerHandler.GetSeller()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminSellerId, sellerHandler.GetSellerById()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminSeller, sellerHandler.StoreSeller()).Methods(http.MethodPost, http.MethodOptions)

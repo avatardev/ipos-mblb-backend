@@ -20,3 +20,9 @@ type Seller struct {
 }
 
 type Sellers []*Seller
+type CompanySeller struct {
+	Id      int64
+	Company string
+}
+
+type CompanySellers []*CompanySeller

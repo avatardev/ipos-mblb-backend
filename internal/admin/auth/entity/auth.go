@@ -11,8 +11,9 @@ type UserData struct {
 	Username string
 	Password string
 	Role     int64
+	RoleName string
 }
 
 func (u *UserData) FromSql(row *sql.Row) error {
-	return row.Scan(&u.Id, &u.Username, &u.Password, &u.Role)
+	return row.Scan(&u.Id, &u.Username, &u.Password, &u.Role, &u.RoleName)
 }
