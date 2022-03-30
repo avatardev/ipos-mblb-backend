@@ -35,6 +35,51 @@ func (u *UserServiceImpl) GetUser(ctx context.Context, role int64, keyword strin
 	return dto.NewUsersResponse(users, limit, offset, userCount), nil
 }
 
+func (u *UserServiceImpl) GetUserSeller(ctx context.Context, role int64, seller int64, limit uint64, offset uint64) (*dto.UsersResponse, error) {
+	userCount, err := u.Ur.CountSeller(ctx, seller, role)
+	if err != nil {
+		return nil, err
+	}
+
+	if userCount == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+	log.Println("FF")
+
+	users, err := u.Ur.GetAllSeller(ctx, role, seller, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	return dto.NewUsersResponse(users, limit, offset, userCount), nil
+}
+
+func (u *UserServiceImpl) GetUserBuyer(ctx context.Context, role int64, v_plate string, limit uint64, offset uint64) (*dto.UsersResponse, error) {
+	userCount, err := u.Ur.CountBuyer(ctx, v_plate, role)
+	if err != nil {
+		return nil, err
+	}
+
+	if userCount == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	users, err := u.Ur.GetAllBuyer(ctx, role, v_plate, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	return dto.NewUsersResponse(users, limit, offset, userCount), nil
+}
+
 func (u *UserServiceImpl) GetUserById(ctx context.Context, role int64, id int64) (*dto.UserResponse, error) {
 	user, err := u.Ur.GetById(ctx, role, id)
 	if err != nil {
@@ -92,7 +137,7 @@ func (u *UserServiceImpl) UpdateUser(ctx context.Context, role int64, id int64, 
 			return nil, err
 		} else {
 			user.Password = string(hashed)
-		}			
+		}
 	}
 
 	data, err := u.Ur.Update(ctx, role, user)

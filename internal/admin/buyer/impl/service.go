@@ -36,6 +36,19 @@ func (b *BuyerServiceImpl) GetBuyer(ctx context.Context, keyword string, limit u
 	return dto.NewBuyersResponse(buyers, count, limit, offset), nil
 }
 
+func (b *BuyerServiceImpl) GetBuyerName(ctx context.Context) (*dto.BuyersCompanyResponse, error) {
+	buyers, err := b.Br.GetBuyerName(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buyers) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	return dto.NewBuyersCompanyResponse(buyers), nil
+}
+
 func (b *BuyerServiceImpl) GetBuyerById(ctx context.Context, plate string) (*dto.BuyerResponse, error) {
 	buyer, err := b.Br.GetById(ctx, plate)
 	if err != nil {

@@ -17,9 +17,10 @@ type BuyerRepositoryImpl struct {
 }
 
 var (
-	COUNT_BUYER  = sq.Select("COUNT(*)").From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
-	SELECT_BUYER = sq.Select("b.plat_truk", "k.nama_kategori", "b.kategori", "b.perusahaan", "b.telp", "b.alamat", "b.email", "b.name_pic", "b.hp_pic", "b.keterangan", "b.status").
-			From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
+	COUNT_BUYER        = sq.Select("COUNT(*)").From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
+	SELECT_BUYER_PLATE = sq.Select("b.plat_truk", "b.perusahaan").From("buyer_truks b")
+	SELECT_BUYER       = sq.Select("b.plat_truk", "k.nama_kategori", "b.kategori", "b.perusahaan", "b.telp", "b.alamat", "b.email", "b.name_pic", "b.hp_pic", "b.keterangan", "b.status").
+				From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
 	INSERT_BUYER = sq.Insert("buyer_truks").Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_BUYER = sq.Update("buyer_truks")
 	DELETE_BUYER = sq.Delete("buyer_truks")
@@ -51,6 +52,39 @@ func (b *BuyerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64
 	}
 
 	return buyerCount, nil
+}
+
+func (b *BuyerRepositoryImpl) GetBuyerName(ctx context.Context) (entity.BuyersCompany, error) {
+	stmt, params, err := SELECT_BUYER_PLATE.ToSql()
+	if err != nil {
+		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
+		return nil, err
+	}
+
+	prpd, err := b.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
+		return nil, err
+	}
+
+	rows, err := prpd.QueryContext(ctx, params...)
+	if err != nil {
+		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
+		return nil, err
+	}
+
+	bc := entity.BuyersCompany{}
+
+	for rows.Next() {
+		buyer := &entity.BuyerCompany{}
+		if err := rows.Scan(&buyer.VPlate, &buyer.Company); err != nil {
+			log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
+			return nil, err
+		}
+		bc = append(bc, buyer)
+	}
+
+	return bc, nil
 }
 
 func (b *BuyerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Buyers, error) {

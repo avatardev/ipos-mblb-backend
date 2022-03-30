@@ -8,8 +8,10 @@ import (
 )
 
 type UserPostRequest struct {
-	Username string `json:"username" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Username string  `json:"username" validate:"required"`
+	Password string  `json:"password" validate:"required"`
+	VPlate   *string `json:"vehicle_plate"`
+	SellerId *int64  `json:"seller_id"`
 }
 
 func (ur *UserPostRequest) FromJSON(r io.Reader) error {
@@ -17,10 +19,18 @@ func (ur *UserPostRequest) FromJSON(r io.Reader) error {
 }
 
 func (ur *UserPostRequest) ToEntity() entity.User {
-	return entity.User{
+	res := entity.User{
 		Username: ur.Username,
 		Password: ur.Password,
 	}
+
+	if ur.SellerId != nil {
+		res.SellerId = ur.SellerId
+	} else if ur.VPlate != nil {
+		res.VPlate = ur.VPlate
+	}
+
+	return res
 }
 
 type UserPutRequest struct {

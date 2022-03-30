@@ -25,6 +25,15 @@ type BuyersResponse struct {
 	Total  uint64           `json:"total"`
 }
 
+type BuyerCompanyResponse struct {
+	VPlate  string `json:"vehicle_plate"`
+	Company string `json:"company_name"`
+}
+
+type BuyersCompanyResponse struct {
+	Company []*BuyerCompanyResponse `json:"company"`
+}
+
 func NewBuyerResponse(buyer entity.Buyer) *BuyerResponse {
 	return &BuyerResponse{
 		VehiclePlate: buyer.VehiclePlate,
@@ -52,5 +61,23 @@ func NewBuyersResponse(buyers entity.Buyers, count uint64, limit uint64, offset 
 		temp := NewBuyerResponse(*buyer)
 		res.Buyer = append(res.Buyer, temp)
 	}
+	return res
+}
+
+func NewBuyerCompanyResponse(bc *entity.BuyerCompany) *BuyerCompanyResponse {
+	return &BuyerCompanyResponse{
+		VPlate:  bc.VPlate,
+		Company: bc.Company,
+	}
+}
+
+func NewBuyersCompanyResponse(bc entity.BuyersCompany) *BuyersCompanyResponse {
+	res := &BuyersCompanyResponse{}
+
+	for _, buyer := range bc {
+		temp := NewBuyerCompanyResponse(buyer)
+		res.Company = append(res.Company, temp)
+	}
+
 	return res
 }

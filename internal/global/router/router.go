@@ -75,6 +75,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	protectedRouter.HandleFunc(AdminPing, buyerHandler.PingBuyer()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminPingError, buyerHandler.PingError()).Methods(http.MethodGet, http.MethodOptions)
 
+	protectedRouter.HandleFunc(AdminBuyerName, buyerHandler.GetBuyerName()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminBuyer, buyerHandler.GetBuyer()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminBuyer, buyerHandler.StoreBuyer()).Methods(http.MethodPost, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminBuyerId, buyerHandler.GetBuyerById()).Methods(http.MethodGet, http.MethodOptions)
@@ -130,13 +131,13 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	protectedRouter.HandleFunc(AdminUserAdminId, userHandler.UpdateUser(privutil.USER_ADMIN)).Methods(http.MethodPut, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserAdminId, userHandler.DeleteUser(privutil.USER_ADMIN)).Methods(http.MethodDelete, http.MethodOptions)
 
-	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.GetUser(privutil.USER_CASHIER)).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.GetUserBuyer(privutil.USER_CASHIER)).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.StoreUser(privutil.USER_CASHIER)).Methods(http.MethodPost, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.GetUserById(privutil.USER_CASHIER)).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.UpdateUser(privutil.USER_CASHIER)).Methods(http.MethodPut, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.DeleteUser(privutil.USER_CASHIER)).Methods(http.MethodDelete, http.MethodOptions)
 
-	protectedRouter.HandleFunc(AdminUserSeller, userHandler.GetUser(privutil.USER_SELLER)).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserSeller, userHandler.GetUserSeller(privutil.USER_SELLER)).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserSeller, userHandler.StoreUser(privutil.USER_SELLER)).Methods(http.MethodPost, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserSellerId, userHandler.GetUserById(privutil.USER_SELLER)).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserSellerId, userHandler.UpdateUser(privutil.USER_SELLER)).Methods(http.MethodPut, http.MethodOptions)

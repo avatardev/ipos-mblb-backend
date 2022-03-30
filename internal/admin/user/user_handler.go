@@ -65,6 +65,109 @@ func (u *UserHandler) GetUser(role int64) http.HandlerFunc {
 	}
 }
 
+func (u *UserHandler) GetUserSeller(role int64) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		query := r.URL.Query()
+
+		limit := query.Get("limit")
+		limitParsed, err := strconv.ParseUint(limit, 10, 64)
+		if err != nil {
+			log.Printf("[GetUserSeller] role: %v, limit: %v, error: %v\n", role, limit, err)
+
+			if limit == "" {
+				limitParsed = 10
+			}
+		}
+
+		offset := query.Get("offset")
+		offsetParsed, err := strconv.ParseUint(offset, 10, 64)
+		if err != nil {
+			log.Printf("[GetUserSeller] role: %v, offset: %v, error: %v\n", role, offset, err)
+
+			if offset == "" {
+				offsetParsed = 0
+			}
+		}
+
+		seller := query.Get("seller_id")
+		sellerParsed, err := strconv.ParseInt(seller, 10, 64)
+		if err != nil {
+			log.Printf("[GetUserSeller] role: %v, offset: %v, error: %v\n", role, offset, err)
+
+			if seller == "" {
+				responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+				return
+			}
+		}
+
+		res, err := u.Service.GetUserSeller(r.Context(), role, sellerParsed, limitParsed, offsetParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		if res == nil {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
+			return
+		}
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (u *UserHandler) GetUserBuyer(role int64) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		query := r.URL.Query()
+
+		limit := query.Get("limit")
+		limitParsed, err := strconv.ParseUint(limit, 10, 64)
+		if err != nil {
+			log.Printf("[GetUser] role: %v, limit: %v, error: %v\n", role, limit, err)
+
+			if limit == "" {
+				limitParsed = 10
+			}
+		}
+
+		offset := query.Get("offset")
+		offsetParsed, err := strconv.ParseUint(offset, 10, 64)
+		if err != nil {
+			log.Printf("[GetUser] role: %v, offset: %v, error: %v\n", role, offset, err)
+
+			if offset == "" {
+				offsetParsed = 0
+			}
+		}
+
+		v_plate := query.Get("v_plate")
+		if v_plate == "" {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := u.Service.GetUserBuyer(r.Context(), role, v_plate, limitParsed, offsetParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		if res == nil {
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidResources)
+			return
+		}
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
 func (u *UserHandler) GetUserById(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), 1) {

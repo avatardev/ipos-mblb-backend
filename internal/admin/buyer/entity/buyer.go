@@ -15,3 +15,10 @@ type Buyer struct {
 }
 
 type Buyers []*Buyer
+
+type BuyerCompany struct {
+	VPlate  string
+	Company string
+}
+
+type BuyersCompany []*BuyerCompany
