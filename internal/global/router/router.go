@@ -47,6 +47,10 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	orderHandler := order.NewOrderHandler(orderService)
 
 	protectedRouter.HandleFunc(AdminGenerateDetailTrx, orderHandler.GenerateDetailTrx()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminGenerateBriefTrx, orderHandler.GenerateBriefTrx()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminBriefTrx, orderHandler.BriefTrx()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminDetailTrx, orderHandler.DetailTrx()).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminAddNote, orderHandler.InsertNote()).Methods(http.MethodPost, http.MethodOptions)
 
 	locationRepository := locationPkg.NewLocationRepostiory(db)
 	locationService := location.NewLocationService(locationRepository)

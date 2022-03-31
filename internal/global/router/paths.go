@@ -5,6 +5,10 @@ const (
 	AdminPingError = "/admin/v1/ping/error"
 
 	AdminGenerateDetailTrx = "/admin/v1/orders/report/generateDetail"
+	AdminGenerateBriefTrx  = "/admin/v1/orders/report/generateBrief"
+	AdminBriefTrx          = "/admin/v1/orders/report/brief"
+	AdminDetailTrx         = "/admin/v1/orders/report/detail"
+	AdminAddNote           = "/admin/v1/orders/report/note/{orderId}"
 
 	AdminProduct           = "/admin/v1/products"
 	AdminProductId         = "/admin/v1/products/{productId}"
