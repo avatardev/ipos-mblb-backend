@@ -26,9 +26,6 @@ type TrxDetail struct {
 type TrxDetails []*TrxDetail
 type TrxDetailsJSON struct {
 	TrxDetail []*TrxDetail `json:"trx_detail"`
-	Limit     uint64       `json:"limit"`
-	Offset    uint64       `json:"offset"`
-	Total     uint64       `json:"total"`
 }
 
 type TrxBrief struct {
@@ -44,9 +41,6 @@ type TrxBriefs []*TrxBrief
 
 type TrxBriefsJSON struct {
 	TrxBrief []*TrxBrief `json:"trx_brief"`
-	Limit    uint64      `json:"limit"`
-	Offset   uint64      `json:"offset"`
-	Total    uint64      `json:"total"`
 }
 
 func NewTrxDetail(trx *entity.TrxDetail) *TrxDetail {
@@ -76,12 +70,8 @@ func NewTrxDetail(trx *entity.TrxDetail) *TrxDetail {
 	}
 }
 
-func NewTrxDetailsJSON(data entity.TrxDetails, limit uint64, offset uint64, count uint64) *TrxDetailsJSON {
-	res := &TrxDetailsJSON{
-		Limit:  limit,
-		Offset: offset,
-		Total:  count,
-	}
+func NewTrxDetailsJSON(data entity.TrxDetails) *TrxDetailsJSON {
+	res := &TrxDetailsJSON{}
 
 	res.TrxDetail = NewTrxDetails(data)
 	return res
@@ -129,12 +119,8 @@ func (t *TrxDetails) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
 	return res
 }
 
-func NewTrxBriefsJSON(data entity.TrxDetails, limit uint64, offset uint64, count uint64) *TrxBriefsJSON {
-	res := &TrxBriefsJSON{
-		Limit:  limit,
-		Offset: offset,
-		Total:  count,
-	}
+func NewTrxBriefsJSON(data entity.TrxDetails) *TrxBriefsJSON {
+	res := &TrxBriefsJSON{}
 
 	res.TrxBrief = NewTrxBriefs(data)
 	return res

@@ -16,7 +16,7 @@ type OrderServiceImpl struct {
 }
 
 func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, 0, 0)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -53,13 +53,8 @@ func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time
 	return csvData, nil
 }
 
-func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, offset uint64, limit uint64) (*dto.TrxDetailsJSON, error) {
-	count, err := o.Or.Count(ctx, dateStart, dateEnd)
-	if err != nil {
-		return nil, err
-	}
-
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, limit, offset)
+func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxDetailsJSON, error) {
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +77,11 @@ func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, d
 		trx.Product = pName
 	}
 
-	return dto.NewTrxDetailsJSON(trxData, limit, offset, count), nil
+	return dto.NewTrxDetailsJSON(trxData), nil
 }
 
 func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, 0, 0)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -123,13 +118,8 @@ func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.
 	return csvData, nil
 }
 
-func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, offset uint64, limit uint64) (*dto.TrxBriefsJSON, error) {
-	count, err := o.Or.Count(ctx, dateStart, dateEnd)
-	if err != nil {
-		return nil, err
-	}
-
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, limit, offset)
+func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxBriefsJSON, error) {
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +142,7 @@ func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, da
 		trx.Product = pName
 	}
 
-	return dto.NewTrxBriefsJSON(trxData, limit, offset, count), nil
+	return dto.NewTrxBriefsJSON(trxData), nil
 }
 
 func (o *OrderServiceImpl) InsertNote(ctx context.Context, orderId int64, note string) (*dto.TrxDetail, error) {

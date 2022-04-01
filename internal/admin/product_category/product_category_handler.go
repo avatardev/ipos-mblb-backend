@@ -36,7 +36,7 @@ func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 			log.Printf("[GetCategory] limit: %v, error: %v\n", limit, err)
 
 			if limit == "" {
-				limitParsed = 10
+				limitParsed = 0
 			}
 		}
 

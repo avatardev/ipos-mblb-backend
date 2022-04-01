@@ -118,25 +118,7 @@ func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 			return
 		}
 
-		limit := query.Get("limit")
-		limitParsed, err := strconv.ParseUint(limit, 10, 64)
-		if err != nil {
-			log.Printf("[DetailTrx] error: %v\n", err)
-			if limit == "" {
-				limitParsed = 10
-			}
-		}
-
-		offset := query.Get("offset")
-		offestParsed, err := strconv.ParseUint(offset, 10, 64)
-		if err != nil {
-			log.Printf("[DetailTrx] error: %v\n", err)
-			if offset == "" {
-				offestParsed = 0
-			}
-		}
-
-		res, err := o.Service.DetailTrx(r.Context(), startParsed, endParsed, limitParsed, offestParsed)
+		res, err := o.Service.DetailTrx(r.Context(), startParsed, endParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -171,25 +153,7 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 			return
 		}
 
-		limit := query.Get("limit")
-		limitParsed, err := strconv.ParseUint(limit, 10, 64)
-		if err != nil {
-			log.Printf("[BriefTrx] error: %v\n", err)
-			if limit == "" {
-				limitParsed = 10
-			}
-		}
-
-		offset := query.Get("offset")
-		offestParsed, err := strconv.ParseUint(offset, 10, 64)
-		if err != nil {
-			log.Printf("[BriefTrx] error: %v\n", err)
-			if offset == "" {
-				offestParsed = 0
-			}
-		}
-
-		res, err := o.Service.BriefTrx(r.Context(), startParsed, endParsed, limitParsed, offestParsed)
+		res, err := o.Service.BriefTrx(r.Context(), startParsed, endParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return

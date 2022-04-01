@@ -21,6 +21,10 @@ func (c *BuyerCategoryServiceImpl) GetCategory(ctx context.Context, keyword stri
 		return nil, errors.ErrInvalidResources
 	}
 
+	if limit == 0 {
+		limit = categoryCount
+	}
+
 	categories, err := c.Cr.GetAll(ctx, keyword, limit, offset)
 	if err != nil {
 		return nil, errors.ErrUnknown

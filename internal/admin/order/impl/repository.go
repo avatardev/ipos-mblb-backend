@@ -30,7 +30,7 @@ func NewOrderRepository(db *database.DatabaseClient) OrderRepositoryImpl {
 }
 
 func (o *OrderRepositoryImpl) Count(ctx context.Context, start time.Time, end time.Time) (uint64, error) {
-	stmt, params, err := COUNT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).ToSql()
+	stmt, params, err := COUNT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).OrderBy("o.order_date").ToSql()
 	if err != nil {
 		log.Printf("[Trx.Count] error: %v\n", err)
 		return 0, err
@@ -81,14 +81,8 @@ func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*enti
 	return item, nil
 }
 
-func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time, limit uint64, offset uint64) (entity.TrxDetails, error) {
-	query := SELECT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
-
-	if limit != 0 {
-		query = query.Limit(limit).Offset(offset)
-	}
-
-	stmt, params, err := query.ToSql()
+func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time) (entity.TrxDetails, error) {
+	stmt, params, err := SELECT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).OrderBy("o.order_date").ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAll] error: %v\n", err)
 		return nil, err
