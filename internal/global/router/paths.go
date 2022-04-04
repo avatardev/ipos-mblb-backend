@@ -6,9 +6,13 @@ const (
 
 	AdminGenerateDetailTrx = "/admin/v1/orders/report/generateDetail"
 	AdminGenerateBriefTrx  = "/admin/v1/orders/report/generateBrief"
+	AdminGenerateMonitor   = "/admin/v1/orders/report/generateComparison"
+	AdminGenerateDaily     = "/admin/v1/orders/report/generateDaily/{sellerId}"
 	AdminBriefTrx          = "/admin/v1/orders/report/brief"
 	AdminDetailTrx         = "/admin/v1/orders/report/detail"
 	AdminAddNote           = "/admin/v1/orders/report/note/{orderId}"
+	AdminMonitor           = "/admin/v1/orders/report/comparison"
+	AdminDaily             = "/admin/v1/orders/report/daily/{sellerId}"
 
 	AdminProduct           = "/admin/v1/products"
 	AdminProductId         = "/admin/v1/products/{productId}"

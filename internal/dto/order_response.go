@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -41,6 +42,37 @@ type TrxBriefs []*TrxBrief
 
 type TrxBriefsJSON struct {
 	TrxBrief []*TrxBrief `json:"trx_brief"`
+}
+
+type TrxDaily struct {
+	OrderId   int64  `json:"order_id"`
+	OrderDate string `json:"order_date"`
+	Volume    int64  `json:"volume"`
+}
+
+type TrxDailes []*TrxDaily
+
+type TrxDailiesJSON struct {
+	TrxDaily []*TrxDaily `json:"trx_daily"`
+}
+
+type TrxMonitor struct {
+	OrderId      int64   `json:"order_id"`
+	OrderDate    string  `json:"order_date"`
+	VehiclePlate string  `json:"buyer"`
+	Company      string  `json:"seller"`
+	Product      string  `json:"product_name"`
+	Qty          int64   `json:"qty"`
+	VolumePrice  float64 `json:"volume_price"`
+	SellPrice    float64 `json:"sell_price"`
+	Tax          int64   `json:"tax"`
+	TaxUpdate    int64   `json:"bpkad_tax"`
+}
+
+type TrxMonitors []*TrxMonitor
+
+type TrxMonitorJSON struct {
+	TrxMonitor []*TrxMonitor `json:"trx_monitor"`
 }
 
 func NewTrxDetail(trx *entity.TrxDetail) *TrxDetail {
@@ -114,6 +146,7 @@ func (t *TrxDetails) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
 	}
 
 	for idx, data := range *t {
+
 		res = append(res, data.ToSlice(idx))
 	}
 	return res
@@ -169,6 +202,126 @@ func (td *TrxBriefs) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
 	}
 
 	for idx, data := range *td {
+		res = append(res, data.ToSlice(idx))
+	}
+	return res
+}
+
+func NewTrxDailiesJSON(data entity.TrxDailies) *TrxDailiesJSON {
+	res := &TrxDailiesJSON{}
+
+	res.TrxDaily = NewTrxDailies(data)
+	return res
+}
+
+func NewTrxDailies(data entity.TrxDailies) TrxDailes {
+	res := TrxDailes{}
+
+	for _, trx := range data {
+		vol := trx.Volume
+		if trx.VolumeUpdate != 0 {
+			vol = trx.VolumeUpdate
+		}
+		res = append(res, &TrxDaily{
+			OrderId:   trx.OrderId,
+			OrderDate: trx.Date.Format("02/01/2006"),
+			Volume:    vol,
+		})
+	}
+
+	return res
+}
+
+func (t *TrxDaily) ToSlice(idx int) []string {
+	return []string{
+		t.OrderDate,
+		strconv.FormatInt(t.Volume, 10),
+	}
+}
+
+func (t *TrxDailes) ToCSV(company string, npwp int64, month string, year int) [][]string {
+	res := [][]string{
+		{"LAPORAN HARIAN", ""},
+		{fmt.Sprintf("Nama WP: %v", company), ""},
+		{fmt.Sprintf("NPWPD: %v", npwp), ""},
+		{fmt.Sprintf("MASA: %v %v", month, year), ""},
+		{"", ""},
+		{"", ""},
+		{"Tanggal", "Volume Material"},
+	}
+
+	log.Println(len(*t))
+	for idx, data := range *t {
+		log.Println(data.OrderDate)
+		res = append(res, data.ToSlice(idx))
+	}
+	return res
+}
+
+func NewTrxMonitorJSON(data entity.TrxMonitors) *TrxMonitorJSON {
+	res := &TrxMonitorJSON{}
+
+	res.TrxMonitor = NewTrxMonitors(data)
+	return res
+}
+
+func NewTrxMonitors(data entity.TrxMonitors) TrxMonitors {
+
+	res := TrxMonitors{}
+
+	for _, trx := range data {
+		product := trx.MBLBType
+		if trx.MBLBTypeUpdate != nil {
+			product = *trx.MBLBTypeUpdate
+		}
+
+		qty := trx.Volume
+		if trx.VolumeUpdate != 0 {
+			qty = trx.VolumeUpdate
+		}
+
+		res = append(res, &TrxMonitor{
+			OrderId:      trx.OrderId,
+			OrderDate:    trx.OrderDate.Format("02/01/2006"),
+			VehiclePlate: trx.VehiclePlate,
+			Company:      trx.Company,
+			Product:      product,
+			Qty:          qty,
+			VolumePrice:  trx.VolumePrice,
+			SellPrice:    trx.SoldPrice,
+			Tax:          trx.Tax,
+			TaxUpdate:    trx.TaxUpdate,
+		})
+	}
+
+	return res
+}
+
+func (t *TrxMonitor) ToSlice(idx int) []string {
+	return []string{
+		strconv.Itoa(idx + 1),
+		t.OrderDate,
+		t.Company,
+		t.VehiclePlate,
+		t.Product,
+		strconv.FormatInt(t.Qty, 10),
+		fmt.Sprintf("%.2f", t.VolumePrice),
+		fmt.Sprintf("%.2f", t.SellPrice),
+		strconv.FormatInt(t.Tax, 10),
+		strconv.FormatInt(t.TaxUpdate, 10),
+	}
+}
+
+func (t *TrxMonitors) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
+	res := [][]string{
+		{"Rekapitulasi Penjualan MBLB", "", "", "", "", "", "", "", "", ""},
+		{fmt.Sprintf("Periode: %v - %v", dateStart.Format("02/01/2006"), dateEnd.Format("02/01/2006")), "", "", "", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", "", "", ""},
+		{"", "", "", "", "", "", "", "", "", ""},
+		{"No", "Order Date", "Seller", "Buyer", "MBLB Material", "M3 Volume", "M3 Price", "Sell Price", "Tax", "Monitoring BPKAD"},
+	}
+
+	for idx, data := range *t {
 		res = append(res, data.ToSlice(idx))
 	}
 	return res

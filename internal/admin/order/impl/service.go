@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"fmt"
 	"log"
 	"time"
 
@@ -165,4 +166,97 @@ func (o *OrderServiceImpl) InsertNote(ctx context.Context, orderId int64, note s
 	}
 
 	return dto.NewTrxDetail(data), nil
+}
+
+func (o *OrderServiceImpl) DailyTrx(ctx context.Context, sellerId int64) (*dto.TrxDailiesJSON, error) {
+	d := time.Now()
+
+	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, errors.ErrNotFound
+	}
+
+	return dto.NewTrxDailiesJSON(data), nil
+}
+
+func (o *OrderServiceImpl) GenerateDailyTrx(ctx context.Context, sellerId int64) (*bytes.Buffer, error) {
+	d := time.Now()
+	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, errors.ErrNotFound
+	}
+
+	res := dto.NewTrxDailies(data)
+	csvData := new(bytes.Buffer)
+	w := csv.NewWriter(csvData)
+
+	company, npwp, err := o.Or.GetCompanyName(ctx, sellerId)
+	if err != nil {
+		return nil, err
+	}
+
+	w.WriteAll(res.ToCSV(*company, *npwp, time.Now().Month().String(), time.Now().Year()))
+	if err := w.Error(); err != nil {
+		log.Printf("[GenerateDailyTrx] error: %v", err)
+		return nil, err
+	}
+
+	return csvData, nil
+}
+
+func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxMonitorJSON, error) {
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(trxData) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	return dto.NewTrxMonitorJSON(trxData), nil
+}
+
+func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(trxData) == 0 {
+		return nil, errors.ErrInvalidResources
+	}
+
+	res := dto.NewTrxMonitors(trxData)
+	csvData := new(bytes.Buffer)
+	w := csv.NewWriter(csvData)
+
+	w.WriteAll(res.ToCSV(dateStart, dateEnd))
+	if err := w.Error(); err != nil {
+		log.Printf("[GenerateMonitorTrx] error: %v", err)
+		return nil, err
+	}
+
+	return csvData, nil
+}
+
+func FirstDayOfMonth(date time.Time) time.Time {
+	y, m, d := date.AddDate(0, 0, -date.Day()+1).Date()
+	t, err := time.Parse("2-1-2006", fmt.Sprintf("%v-%v-%v", d, int(m), y))
+	log.Println(err)
+	return t
+}
+
+func LastDayOfMonth(date time.Time) time.Time {
+	y, m, d := date.AddDate(0, 1, -date.Day()).Date()
+	t, _ := time.Parse("2-1-2006", fmt.Sprintf("%v-%v-%v", d, int(m), y))
+	return t
 }

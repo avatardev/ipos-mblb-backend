@@ -93,6 +93,72 @@ func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 	}
 }
 
+func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CASHIER) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		query := r.URL.Query()
+
+		startDate := query.Get("startDate")
+		startParsed, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			log.Printf("[GenerateMonitorTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		endDate := query.Get("endDate")
+		endParsed, err := time.Parse("2006-01-02", endDate)
+		if err != nil {
+			log.Printf("[GenerateMonitorTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := o.Service.GenerateMonitorTrx(r.Context(), startParsed, endParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+		filename := fmt.Sprintf("ExportPembandingPeriode%v-%v", startDate, endDate)
+		responseutil.WriteFileResponse(w, http.StatusCreated, filename, *res)
+	}
+}
+
+func (o *OrderHandler) GenerateDailyTrx() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CASHIER) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		sellerId, ok := mux.Vars(r)["sellerId"]
+		if !ok {
+			log.Print("[GenerateDailyTrx] error: seller id not found\n")
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(sellerId, 10, 64)
+		if err != nil {
+			log.Printf("[GenerateDailyTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		res, err := o.Service.GenerateDailyTrx(r.Context(), parsedId)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+		filename := fmt.Sprintf("ExportLaporanHarian%v", time.Now().Format("02-01-2006"))
+		responseutil.WriteFileResponse(w, http.StatusCreated, filename, *res)
+	}
+}
+
 func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CASHIER) {
@@ -154,6 +220,72 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 		}
 
 		res, err := o.Service.BriefTrx(r.Context(), startParsed, endParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CASHIER) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		query := r.URL.Query()
+		log.Println(query)
+
+		startDate := query.Get("startDate")
+		startParsed, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			log.Printf("[MonitorTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		endDate := query.Get("endDate")
+		endParsed, err := time.Parse("2006-01-02", endDate)
+		if err != nil {
+			log.Printf("[MonitorTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := o.Service.MonitorTrx(r.Context(), startParsed, endParsed)
+		if err != nil {
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
+	}
+}
+
+func (o *OrderHandler) DailyTrx() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CASHIER) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		sellerId, ok := mux.Vars(r)["sellerId"]
+		if !ok {
+			log.Print("[DailyTrx] error: seller id not found\n")
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		parsedId, err := strconv.ParseInt(sellerId, 10, 64)
+		if err != nil {
+			log.Printf("[DailyTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, err)
+			return
+		}
+
+		res, err := o.Service.DailyTrx(r.Context(), parsedId)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
