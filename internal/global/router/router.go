@@ -37,7 +37,11 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	authService := authSys.NewAuthService(authRepository)
 	authHandler := authSys.NewAuthHandler(authService)
 
+	// a special router which are used just for authentications
 	authRouter := r.NewRoute().Subrouter()
+	
+	// the default router where each requests go through privilege checking 
+	// by authorization middleware
 	protectedRouter := r.NewRoute().Subrouter()
 	protectedRouter.Use(middleware.AuthMiddleware(authService))
 
