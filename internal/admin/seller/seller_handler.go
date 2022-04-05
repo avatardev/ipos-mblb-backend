@@ -23,7 +23,7 @@ func NewSellerHandler(service SellerService) *SellerHandler {
 
 func (s *SellerHandler) GetSellerName() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -45,7 +45,7 @@ func (s *SellerHandler) GetSellerName() http.HandlerFunc {
 
 func (s *SellerHandler) GetSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -90,7 +90,7 @@ func (s *SellerHandler) GetSeller() http.HandlerFunc {
 
 func (s *SellerHandler) GetSellerById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -119,7 +119,7 @@ func (s *SellerHandler) GetSellerById() http.HandlerFunc {
 
 func (s *SellerHandler) StoreSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -156,7 +156,7 @@ func (s *SellerHandler) StoreSeller() http.HandlerFunc {
 
 func (s *SellerHandler) UpdateSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -201,7 +201,7 @@ func (s *SellerHandler) UpdateSeller() http.HandlerFunc {
 
 func (s *SellerHandler) DeleteSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

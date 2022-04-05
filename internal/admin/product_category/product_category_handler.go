@@ -23,7 +23,7 @@ func NewProductCategoryHandler(service ProductCategoryService) *ProductCategoryH
 
 func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -67,7 +67,7 @@ func (c *ProductCategoryHandler) GetCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) GetCategoryById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -101,7 +101,7 @@ func (c *ProductCategoryHandler) GetCategoryById() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) StoreCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -138,7 +138,7 @@ func (c *ProductCategoryHandler) StoreCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) UpdateCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -183,7 +183,7 @@ func (c *ProductCategoryHandler) UpdateCategory() http.HandlerFunc {
 
 func (c *ProductCategoryHandler) DeleteCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

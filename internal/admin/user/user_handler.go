@@ -23,7 +23,7 @@ func NewUserHandler(service UserService) *UserHandler {
 
 func (u *UserHandler) GetUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -67,7 +67,7 @@ func (u *UserHandler) GetUser(role int64) http.HandlerFunc {
 
 func (u *UserHandler) GetUserSeller(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -121,7 +121,7 @@ func (u *UserHandler) GetUserSeller(role int64) http.HandlerFunc {
 
 func (u *UserHandler) GetUserBuyer(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -170,7 +170,7 @@ func (u *UserHandler) GetUserBuyer(role int64) http.HandlerFunc {
 
 func (u *UserHandler) GetUserById(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -204,7 +204,7 @@ func (u *UserHandler) GetUserById(role int64) http.HandlerFunc {
 
 func (u *UserHandler) StoreUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -241,7 +241,7 @@ func (u *UserHandler) StoreUser(role int64) http.HandlerFunc {
 
 func (u *UserHandler) UpdateUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -286,7 +286,7 @@ func (u *UserHandler) UpdateUser(role int64) http.HandlerFunc {
 
 func (u *UserHandler) DeleteUser(role int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

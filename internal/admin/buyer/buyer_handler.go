@@ -23,7 +23,7 @@ func NewBuyerHandler(service BuyerService) *BuyerHandler {
 
 func (b *BuyerHandler) GetBuyerName() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -45,7 +45,7 @@ func (b *BuyerHandler) GetBuyerName() http.HandlerFunc {
 
 func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -89,7 +89,7 @@ func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -117,7 +117,7 @@ func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 
 func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -149,7 +149,7 @@ func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -185,7 +185,7 @@ func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) DeleteBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1, 4) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

@@ -4,6 +4,8 @@ const (
 	AdminPing      = "/admin/v1/ping"
 	AdminPingError = "/admin/v1/ping/error"
 
+	AdminDashboardStatistics = "/admin/v1/dashboard/statistics"
+
 	AdminGenerateDetailTrx = "/admin/v1/orders/report/generateDetail"
 	AdminGenerateBriefTrx  = "/admin/v1/orders/report/generateBrief"
 	AdminGenerateMonitor   = "/admin/v1/orders/report/generateComparison"

@@ -236,7 +236,7 @@ func (ur UserRepositoryImpl) Store(ctx context.Context, role int64, user entity.
 
 	if role == privutil.USER_SELLER {
 		query = INSERT_USER_SELLER.Values(user.Username, user.Password, role, user.SellerId, currTime, currTime, 0)
-	} else if role == privutil.USER_CASHIER {
+	} else if role == privutil.USER_BUYER {
 		query = INSERT_USER_BUYER.Values(user.Username, user.Password, role, user.VPlate, currTime, currTime, 0)
 	}
 

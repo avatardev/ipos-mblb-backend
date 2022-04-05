@@ -23,7 +23,7 @@ func NewProductHandler(service ProductService) *ProductHandler {
 
 func (p *ProductHandler) GetProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -67,7 +67,7 @@ func (p *ProductHandler) GetProduct() http.HandlerFunc {
 
 func (p *ProductHandler) GetProductById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -100,7 +100,7 @@ func (p *ProductHandler) GetProductById() http.HandlerFunc {
 
 func (p *ProductHandler) StoreProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -133,7 +133,7 @@ func (p *ProductHandler) StoreProduct() http.HandlerFunc {
 
 func (p *ProductHandler) UpdateProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -178,7 +178,7 @@ func (p *ProductHandler) UpdateProduct() http.HandlerFunc {
 
 func (p *ProductHandler) DeleteProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), 1) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

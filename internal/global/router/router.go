@@ -10,6 +10,8 @@ import (
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	bCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category"
 	bCategoryPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category/impl"
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/dashboard"
+	dashboardPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/dashboard/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/location"
 	locationPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/location/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/merchant"
@@ -41,6 +43,12 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 
 	authRouter.HandleFunc(AdminAuth, authHandler.Login()).Methods(http.MethodPost, http.MethodOptions)
 	authRouter.HandleFunc(AdminAuthRefresh, authHandler.RefreshToken()).Methods(http.MethodPost, http.MethodOptions)
+
+	dashboardRepository := dashboardPkg.NewDashboardRepository(db)
+	dashboardService := dashboard.NewDashboardService(dashboardRepository)
+	dashboardHandler := dashboard.NewDashboardHandler(dashboardService)
+
+	protectedRouter.HandleFunc(AdminDashboardStatistics, dashboardHandler.GetStatistics()).Methods(http.MethodGet, http.MethodOptions)
 
 	orderRepository := orderPkg.NewOrderRepository(db)
 	orderService := order.NewOrderService(orderRepository)
@@ -139,11 +147,11 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	protectedRouter.HandleFunc(AdminUserAdminId, userHandler.UpdateUser(privutil.USER_ADMIN)).Methods(http.MethodPut, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserAdminId, userHandler.DeleteUser(privutil.USER_ADMIN)).Methods(http.MethodDelete, http.MethodOptions)
 
-	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.GetUserBuyer(privutil.USER_CASHIER)).Methods(http.MethodGet, http.MethodOptions)
-	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.StoreUser(privutil.USER_CASHIER)).Methods(http.MethodPost, http.MethodOptions)
-	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.GetUserById(privutil.USER_CASHIER)).Methods(http.MethodGet, http.MethodOptions)
-	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.UpdateUser(privutil.USER_CASHIER)).Methods(http.MethodPut, http.MethodOptions)
-	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.DeleteUser(privutil.USER_CASHIER)).Methods(http.MethodDelete, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.GetUserBuyer(privutil.USER_BUYER)).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyer, userHandler.StoreUser(privutil.USER_BUYER)).Methods(http.MethodPost, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.GetUserById(privutil.USER_BUYER)).Methods(http.MethodGet, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.UpdateUser(privutil.USER_BUYER)).Methods(http.MethodPut, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminUserBuyerId, userHandler.DeleteUser(privutil.USER_BUYER)).Methods(http.MethodDelete, http.MethodOptions)
 
 	protectedRouter.HandleFunc(AdminUserSeller, userHandler.GetUserSeller(privutil.USER_SELLER)).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminUserSeller, userHandler.StoreUser(privutil.USER_SELLER)).Methods(http.MethodPost, http.MethodOptions)
