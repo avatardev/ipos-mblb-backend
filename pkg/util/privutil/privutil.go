@@ -11,7 +11,7 @@ import (
 const (
 	USER_ADMIN   int64 = 1
 	USER_SELLER  int64 = 2
-	USER_CASHIER int64 = 3
+	USER_BUYER   int64 = 3
 	USER_CHECKER int64 = 4
 )
 
