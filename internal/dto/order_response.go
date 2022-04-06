@@ -2,7 +2,6 @@ package dto
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -45,9 +44,8 @@ type TrxBriefsJSON struct {
 }
 
 type TrxDaily struct {
-	OrderId   int64  `json:"order_id"`
-	OrderDate string `json:"order_date"`
-	Volume    int64  `json:"volume"`
+	OrderDate string          `json:"order_date"`
+	Details   map[int64]int64 `json:"details"`
 }
 
 type TrxDailes []*TrxDaily
@@ -216,26 +214,53 @@ func NewTrxDailiesJSON(data entity.TrxDailies) *TrxDailiesJSON {
 
 func NewTrxDailies(data entity.TrxDailies) TrxDailes {
 	res := TrxDailes{}
+	year, month, _ := data[0].Date.Date()
+	daysInMonth := time.Date(year, month, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1).Day()
 
-	for _, trx := range data {
-		vol := trx.Volume
-		if trx.VolumeUpdate != 0 {
-			vol = trx.VolumeUpdate
-		}
+	for i := 1; i <= daysInMonth; i++ {
 		res = append(res, &TrxDaily{
-			OrderId:   trx.OrderId,
-			OrderDate: trx.Date.Format("02/01/2006"),
-			Volume:    vol,
+			OrderDate: time.Date(year, month, i, 0, 0, 0, 0, time.UTC).Format("02"),
+			Details:   map[int64]int64{},
 		})
+	}
+
+	// loop over trx
+	for _, trx := range data {
+		date := trx.Date.Format("02")
+
+		for _, val := range res {
+			if val.OrderDate == date {
+				val.Details[trx.Volume] = trx.Quantity
+				break
+			}
+		}
 	}
 
 	return res
 }
 
 func (t *TrxDaily) ToSlice(idx int) []string {
+	var t1, t2, t3, t4, t5 string
+
+	if _, ok := t.Details[6]; ok {
+		t1 = strconv.FormatInt(t.Details[6], 10)
+	}
+	if _, ok := t.Details[7]; ok {
+		t2 = strconv.FormatInt(t.Details[7], 10)
+	}
+	if _, ok := t.Details[8]; ok {
+		t3 = strconv.FormatInt(t.Details[8], 10)
+	}
+	if _, ok := t.Details[10]; ok {
+		t4 = strconv.FormatInt(t.Details[10], 10)
+	}
+	if _, ok := t.Details[20]; ok {
+		t5 = strconv.FormatInt(t.Details[20], 10)
+	}
+
 	return []string{
 		t.OrderDate,
-		strconv.FormatInt(t.Volume, 10),
+		t1, t2, t3, t4, t5,
 	}
 }
 
@@ -247,12 +272,10 @@ func (t *TrxDailes) ToCSV(company string, npwp int64, month string, year int) []
 		{fmt.Sprintf("MASA: %v %v", month, year), ""},
 		{"", ""},
 		{"", ""},
-		{"Tanggal", "Volume Material"},
+		{"Tanggal", "6", "7", "8", "10", "20"},
 	}
 
-	log.Println(len(*t))
 	for idx, data := range *t {
-		log.Println(data.OrderDate)
 		res = append(res, data.ToSlice(idx))
 	}
 	return res

@@ -28,8 +28,11 @@ var (
 		LeftJoin("produk_sellers ps_b ON ps_b.id = d.id_ps_update").LeftJoin("produks p_b ON p_b.id = ps_b.id_produk")
 	SELECT_SELLER_DATA  = sq.Select("s.perusahaan", "s.npwp").From("sellers s")
 	SELECT_PRODUCT_NAME = sq.Select("p.nama_produk").From("produk_sellers ps").LeftJoin("produks p ON p.id = ps.id_produk")
-	SELECT_DAILY_TRX    = sq.Select("o.id", "o.order_date", "d.qty", "d.qty_update").From("orders o").LeftJoin("order_details d ON d.id_order = o.id")
-	INSERT_NOTE         = sq.Update("order_details")
+	// SELECT_DAILY_TRX = sq.Select("date(o.order_date) order_date", "(case when d.qty_update != 0 then d.qty_update else d.qty end) volume", "count(*)").
+	// 			From("orders o").LeftJoin("order_details d ON d.id_order=o.id").GroupBy("volume", "order_date")
+	SELECT_DAILY_TRX = sq.Select("date(o.order_date) order_date", "d.qty volume", "count(*)").
+				From("orders o").LeftJoin("order_details d ON d.id_order=o.id").GroupBy("volume", "order_date")
+	INSERT_NOTE = sq.Update("order_details")
 )
 
 func NewOrderRepository(db *database.DatabaseClient) OrderRepositoryImpl {
@@ -131,7 +134,6 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 		return nil, err
 	}
 
-	log.Println(params)
 	prpd, err := o.DB.PrepareContext(ctx, stmt)
 	if err != nil {
 		log.Printf("[Trx.GetAllDaily] error: %v\n", err)

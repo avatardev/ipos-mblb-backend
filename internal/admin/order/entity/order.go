@@ -62,14 +62,13 @@ func (m *TrxMonitor) FromOrderSql(row *sql.Rows) error {
 }
 
 type TrxDaily struct {
-	Date         time.Time
-	OrderId      int64
-	Volume       int64
-	VolumeUpdate int64
+	Date     time.Time
+	Volume   int64
+	Quantity int64
 }
 
 type TrxDailies []*TrxDaily
 
 func (m *TrxDaily) FromSql(row *sql.Rows) error {
-	return row.Scan(&m.OrderId, &m.Date, &m.Volume, &m.VolumeUpdate)
+	return row.Scan(&m.Date, &m.Volume, &m.Quantity)
 }
