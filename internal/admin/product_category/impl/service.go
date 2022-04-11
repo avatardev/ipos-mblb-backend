@@ -25,7 +25,7 @@ func (c *ProductCategoryServiceImpl) GetCategory(ctx context.Context, keyword st
 		limit = categoryCount
 	}
 
-	categories, err := c.Cr.GetAll(ctx, limit, offset)
+	categories, err := c.Cr.GetAll(ctx, keyword, limit, offset)
 	if err != nil {
 		return nil, err
 	}

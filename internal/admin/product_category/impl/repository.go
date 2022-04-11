@@ -50,8 +50,8 @@ func (cr ProductCategoryRepositoryImpl) Count(ctx context.Context, keyword strin
 	return categoryCount, nil
 }
 
-func (cr ProductCategoryRepositoryImpl) GetAll(ctx context.Context, limit uint64, offset uint64) (entity.ProductCategories, error) {
-	stmt, params, err := SELECT_CATEGORY.Where(sq.Eq{"deleted_at": nil}).Limit(limit).Offset(offset).ToSql()
+func (cr ProductCategoryRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.ProductCategories, error) {
+	stmt, params, err := SELECT_CATEGORY.Where(sq.And{sq.Eq{"deleted_at": nil}, sq.Like{"nama_kategori": fmt.Sprintf("%%%s%%", keyword)}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
 		return nil, err
