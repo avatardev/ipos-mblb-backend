@@ -134,8 +134,8 @@ func (ur UserRepositoryImpl) GetAll(ctx context.Context, role int64, keyword str
 	return users, nil
 }
 
-func (ur UserRepositoryImpl) GetAllSeller(ctx context.Context, role int64, seller int64, limit uint64, offset uint64) (entity.Users, error) {
-	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Eq{"u.id_seller": seller}}).Limit(limit).Offset(offset).ToSql()
+func (ur UserRepositoryImpl) GetAllSeller(ctx context.Context, role int64, seller int64, keyword string, limit uint64, offset uint64) (entity.Users, error) {
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"u.id_seller": seller}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[User.GetAllSeller] role: %v, err: %v\n", role, err)
 		return nil, err

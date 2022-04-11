@@ -97,7 +97,7 @@ func (u *UserHandler) GetUserSeller(role int64) http.HandlerFunc {
 		seller := query.Get("seller_id")
 		sellerParsed, err := strconv.ParseInt(seller, 10, 64)
 		if err != nil {
-			log.Printf("[GetUserSeller] role: %v, offset: %v, error: %v\n", role, offset, err)
+			log.Printf("[GetUserSeller] role: %v, seller_id: %v, error: %v\n", role, offset, err)
 
 			if seller == "" {
 				responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -105,7 +105,8 @@ func (u *UserHandler) GetUserSeller(role int64) http.HandlerFunc {
 			}
 		}
 
-		res, err := u.Service.GetUserSeller(r.Context(), role, sellerParsed, limitParsed, offsetParsed)
+		keyword := query.Get("keyword")
+		res, err := u.Service.GetUserSeller(r.Context(), role, sellerParsed, keyword, limitParsed, offsetParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return

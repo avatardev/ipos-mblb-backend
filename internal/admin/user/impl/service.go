@@ -35,7 +35,7 @@ func (u *UserServiceImpl) GetUser(ctx context.Context, role int64, keyword strin
 	return dto.NewUsersResponse(users, limit, offset, userCount), nil
 }
 
-func (u *UserServiceImpl) GetUserSeller(ctx context.Context, role int64, seller int64, limit uint64, offset uint64) (*dto.UsersResponse, error) {
+func (u *UserServiceImpl) GetUserSeller(ctx context.Context, role int64, seller int64, keyword string, limit uint64, offset uint64) (*dto.UsersResponse, error) {
 	userCount, err := u.Ur.CountSeller(ctx, seller, role)
 	if err != nil {
 		return nil, err
@@ -44,9 +44,8 @@ func (u *UserServiceImpl) GetUserSeller(ctx context.Context, role int64, seller 
 	if userCount == 0 {
 		return nil, errors.ErrInvalidResources
 	}
-	log.Println("FF")
 
-	users, err := u.Ur.GetAllSeller(ctx, role, seller, limit, offset)
+	users, err := u.Ur.GetAllSeller(ctx, role, seller, keyword, limit, offset)
 	if err != nil {
 		return nil, err
 	}
