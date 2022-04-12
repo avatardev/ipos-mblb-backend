@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"log"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
@@ -26,7 +25,5 @@ func (l *LogServiceImpl) GetLogs(ctx context.Context) (*dto.LogResponseJSON, err
 }
 
 func (l *LogServiceImpl) Store(ctx context.Context, logInfo *dto.LogInfo) error {
-	// return l.Lr.Store(ctx, logInfo.UserId, logInfo.Message)
-	log.Println(logInfo.UserId, logInfo.Message)
-	return nil
+	return l.Lr.Store(ctx, logInfo.UserId, logInfo.Message)
 }
