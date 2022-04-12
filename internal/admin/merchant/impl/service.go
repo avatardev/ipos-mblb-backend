@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type MerchantServiceImpl struct {
@@ -68,5 +70,6 @@ func (m *MerchantServiceImpl) UpdateMerchant(ctx context.Context, sellerId int64
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed merchant item %s", exist.Name))
 	return dto.NewMerchantResponse(data), nil
 }

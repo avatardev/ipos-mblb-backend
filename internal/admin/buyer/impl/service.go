@@ -8,6 +8,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	pkgDto "github.com/avatardev/ipos-mblb-backend/pkg/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type BuyerServiceImpl struct {
@@ -74,6 +75,7 @@ func (b *BuyerServiceImpl) StoreBuyer(ctx context.Context, req *dto.BuyerRequest
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new buyer with vehicle plate %s", req.VehiclePlate))
 	return dto.NewBuyerResponse(*data), nil
 }
 
@@ -98,6 +100,7 @@ func (b *BuyerServiceImpl) UpdateBuyer(ctx context.Context, plate string, req *d
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed buyer data with vehicle plate %s", plate))
 	return dto.NewBuyerResponse(*data), nil
 }
 
@@ -115,6 +118,7 @@ func (b *BuyerServiceImpl) DeleteBuyer(ctx context.Context, plate string) error 
 		return errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted buyer data with vehicle plate %s", plate))
 	return nil
 }
 

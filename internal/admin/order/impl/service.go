@@ -10,6 +10,7 @@ import (
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type OrderServiceImpl struct {
@@ -51,6 +52,7 @@ func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time
 		return nil, err
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("generated transaction detail report period %s-%s", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")))
 	return csvData, nil
 }
 
@@ -116,6 +118,7 @@ func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.
 		return nil, err
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("generated transaction report period %s-%s", dateStart.Format("2006-01-02"), dateEnd.Format("2006-01-02")))
 	return csvData, nil
 }
 
@@ -165,6 +168,7 @@ func (o *OrderServiceImpl) InsertNote(ctx context.Context, orderId int64, note s
 		return nil, errors.ErrNotFound
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added transaction note to order id %d", orderId))
 	return dto.NewTrxDetail(data), nil
 }
 
@@ -209,6 +213,7 @@ func (o *OrderServiceImpl) GenerateDailyTrx(ctx context.Context, sellerId int64)
 		return nil, err
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("generated daily transaction report period %s for seller id %d", d.Format("2006-01-02"), sellerId))
 	return csvData, nil
 }
 
@@ -245,6 +250,7 @@ func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart tim
 		return nil, err
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("generated comparison transaction report period %s-%s", dateStart.Format("2006-01-02"), dateStart.Format("2006-01-02")))
 	return csvData, nil
 }
 

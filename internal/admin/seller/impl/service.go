@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type SellerServiceImpl struct {
@@ -74,6 +76,7 @@ func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerReque
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new seller %s", seller.Company))
 	return dto.NewSellerResponse(data), nil
 }
 
@@ -102,6 +105,7 @@ func (s SellerServiceImpl) UpdateSeller(ctx context.Context, id int64, req *dto.
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed seller data %s", seller.Company))
 	return dto.NewSellerResponse(data), nil
 }
 
@@ -118,5 +122,7 @@ func (s SellerServiceImpl) DeleteSeller(ctx context.Context, id int64) error {
 	if err := s.Sr.Delete(ctx, id); err != nil {
 		return err
 	}
+
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted seller data %s", exists.Company))
 	return nil
 }

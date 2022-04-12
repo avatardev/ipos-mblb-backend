@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type BuyerCategoryServiceImpl struct {
@@ -62,6 +64,7 @@ func (c *BuyerCategoryServiceImpl) StoreCategory(ctx context.Context, req *dto.B
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new vehicle category %s", req.Name))
 	return dto.NewBuyerCategoryResponse(data), nil
 }
 
@@ -87,6 +90,7 @@ func (c *BuyerCategoryServiceImpl) UpdateCategory(ctx context.Context, id int64,
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed vehicle category data %s", req.Name))
 	return dto.NewBuyerCategoryResponse(data), nil
 }
 
@@ -104,5 +108,6 @@ func (c *BuyerCategoryServiceImpl) DeleteCategory(ctx context.Context, id int64)
 		return errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted vehicle category data %s", exists.Name))
 	return nil
 }

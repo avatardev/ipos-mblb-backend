@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type LocationServiceImpl struct {
@@ -58,6 +60,7 @@ func (ls *LocationServiceImpl) StoreLocation(ctx context.Context, req *dto.Locat
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new location %s", req.Name))
 	return dto.NewLocationResponse(data), nil
 }
 
@@ -83,6 +86,7 @@ func (ls *LocationServiceImpl) UpdateLocation(ctx context.Context, id int64, req
 		return nil, errors.ErrNotFound
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed location data %s", exists.Name))
 	return dto.NewLocationResponse(data), nil
 }
 
@@ -100,5 +104,6 @@ func (ls *LocationServiceImpl) DeleteLocation(ctx context.Context, id int64) err
 		return err
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted location data %s", exists.Name))
 	return nil
 }

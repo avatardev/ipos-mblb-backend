@@ -10,6 +10,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/config"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,6 +42,7 @@ func (a *AuthServiceImpl) Login(ctx context.Context, req *dto.UserPostRequest) (
 		return nil, err
 	}
 
+	logutil.GenerateActivityLogNoAuth(ctx, user.Id, "login to system")
 	return dto.NewAuthTokenResponse(accessToken, refreshToken, userData), nil
 }
 

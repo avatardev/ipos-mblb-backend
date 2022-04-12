@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
 
 type ProductServiceImpl struct {
@@ -58,6 +60,7 @@ func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductR
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new product %s", req.Name))
 	return dto.NewProductResponse(*data), nil
 }
 
@@ -83,6 +86,7 @@ func (p *ProductServiceImpl) UpdateProduct(ctx context.Context, id int64, req *d
 		return nil, errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed product data %s", req.Name))
 	return dto.NewProductResponse(*data), nil
 }
 
@@ -100,5 +104,6 @@ func (p *ProductServiceImpl) DeleteProduct(ctx context.Context, id int64) error 
 		return errors.ErrUnknown
 	}
 
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted product data %s", exists.Name))
 	return nil
 }
