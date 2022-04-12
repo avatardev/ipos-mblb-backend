@@ -42,7 +42,7 @@ func (a *AuthServiceImpl) Login(ctx context.Context, req *dto.UserPostRequest) (
 		return nil, err
 	}
 
-	logutil.GenerateActivityLogNoAuth(ctx, user.Id, "login to system")
+	logutil.GenerateActivityLogNoAuth(ctx, userData.Id, "login to system")
 	return dto.NewAuthTokenResponse(accessToken, refreshToken, userData), nil
 }
 
