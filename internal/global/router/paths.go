@@ -47,4 +47,6 @@ const (
 
 	AdminLocation   = "/admin/v1/locations"
 	AdminLocationId = "/admin/v1/locations/{locationId}"
+
+	AdminLogInfo = "/admin/v1/logs"
 )

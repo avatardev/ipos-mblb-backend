@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 
+	activityLog "github.com/avatardev/ipos-mblb-backend/internal/admin/activity_log"
+	activityLogPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/activity_log/impl"
 	authSys "github.com/avatardev/ipos-mblb-backend/internal/admin/auth"
 	authSysPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/auth/impl"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/auth/middleware"
@@ -39,14 +41,20 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 
 	// a special router which are used just for authentications
 	authRouter := r.NewRoute().Subrouter()
-	
-	// the default router where each requests go through privilege checking 
+
+	// the default router where each requests go through privilege checking
 	// by authorization middleware
 	protectedRouter := r.NewRoute().Subrouter()
 	protectedRouter.Use(middleware.AuthMiddleware(authService))
 
 	authRouter.HandleFunc(AdminAuth, authHandler.Login()).Methods(http.MethodPost, http.MethodOptions)
 	authRouter.HandleFunc(AdminAuthRefresh, authHandler.RefreshToken()).Methods(http.MethodPost, http.MethodOptions)
+
+	logRepository := activityLogPkg.NewLogRepository(db)
+	logService := activityLog.NewLogService(logRepository)
+	logHandler := activityLog.NewLogHandler(logService)
+
+	protectedRouter.HandleFunc(AdminLogInfo, logHandler.GetLogs()).Methods(http.MethodGet, http.MethodOptions)
 
 	dashboardRepository := dashboardPkg.NewDashboardRepository(db)
 	dashboardService := dashboard.NewDashboardService(dashboardRepository)
