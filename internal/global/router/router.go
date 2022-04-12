@@ -7,7 +7,6 @@ import (
 	activityLogPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/activity_log/impl"
 	authSys "github.com/avatardev/ipos-mblb-backend/internal/admin/auth"
 	authSysPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/auth/impl"
-	"github.com/avatardev/ipos-mblb-backend/internal/admin/auth/middleware"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer"
 	buyerPkg "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/impl"
 	bCategory "github.com/avatardev/ipos-mblb-backend/internal/admin/buyer_category"
@@ -31,28 +30,34 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
+	"github.com/avatardev/ipos-mblb-backend/internal/global/middleware"
 	"github.com/gorilla/mux"
 )
 
 func Init(r *mux.Router, db *database.DatabaseClient) {
+	logRepository := activityLogPkg.NewLogRepository(db)
+	logService := activityLog.NewLogService(logRepository)
+	logHandler := activityLog.NewLogHandler(logService)
+
+	// regular non-auth route being used for trasferring date betweeen services over http
+	r.HandleFunc(AdminLogInfo, logHandler.StoreLog()).Methods(http.MethodPost, http.MethodOptions)
+
 	authRepository := authSysPkg.NewAuthRepository(db)
 	authService := authSys.NewAuthService(authRepository)
 	authHandler := authSys.NewAuthHandler(authService)
 
 	// a special router which are used just for authentications
 	authRouter := r.NewRoute().Subrouter()
+	authRouter.Use(middleware.ActivityLogMiddleware(logService))
 
 	// the default router where each requests go through privilege checking
 	// by authorization middleware
 	protectedRouter := r.NewRoute().Subrouter()
 	protectedRouter.Use(middleware.AuthMiddleware(authService))
+	protectedRouter.Use(middleware.ActivityLogMiddleware(logService))
 
 	authRouter.HandleFunc(AdminAuth, authHandler.Login()).Methods(http.MethodPost, http.MethodOptions)
 	authRouter.HandleFunc(AdminAuthRefresh, authHandler.RefreshToken()).Methods(http.MethodPost, http.MethodOptions)
-
-	logRepository := activityLogPkg.NewLogRepository(db)
-	logService := activityLog.NewLogService(logRepository)
-	logHandler := activityLog.NewLogHandler(logService)
 
 	protectedRouter.HandleFunc(AdminLogInfo, logHandler.GetLogs()).Methods(http.MethodGet, http.MethodOptions)
 

@@ -9,6 +9,7 @@ import (
 
 type LogService interface {
 	GetLogs(ctx context.Context) (*dto.LogResponseJSON, error)
+	Store(ctx context.Context, logInfo *dto.LogInfo) error
 }
 
 func NewLogService(lr impl.LogRepositoryImpl) LogService {

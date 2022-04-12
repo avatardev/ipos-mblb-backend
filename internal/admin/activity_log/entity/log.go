@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+type LogCtxKey string
 type LogInfo struct {
 	Id        int64
 	UserId    int64
