@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"time"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
@@ -11,8 +12,8 @@ type LogServiceImpl struct {
 	Lr LogRepositoryImpl
 }
 
-func (l *LogServiceImpl) GetLogs(ctx context.Context) (*dto.LogResponseJSON, error) {
-	logs, err := l.Lr.GetAll(ctx)
+func (l *LogServiceImpl) GetLogs(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.LogResponseJSON, error) {
+	logs, err := l.Lr.GetAll(ctx, dateStart, dateEnd)
 	if err != nil {
 		return nil, err
 	}

@@ -24,8 +24,8 @@ func NewLogRepository(db *database.DatabaseClient) LogRepositoryImpl {
 	return LogRepositoryImpl{DB: db.DB}
 }
 
-func (l *LogRepositoryImpl) GetAll(ctx context.Context) (entity.Logs, error) {
-	stmt, params, err := SELECT_LOGS.OrderBy("l.created_at").ToSql()
+func (l *LogRepositoryImpl) GetAll(ctx context.Context, dateStart time.Time, dateEnd time.Time) (entity.Logs, error) {
+	stmt, params, err := SELECT_LOGS.Where(sq.And{sq.GtOrEq{"l.created_at": dateStart}, sq.LtOrEq{"l.created_at": dateEnd}}).OrderBy("l.created_at").ToSql()
 	if err != nil {
 		log.Printf("[Logs.GetAll] error: %v", err)
 		return nil, err

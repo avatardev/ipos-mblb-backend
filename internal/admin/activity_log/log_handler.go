@@ -3,6 +3,7 @@ package activity_log
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
@@ -26,7 +27,25 @@ func (l *LogHandler) GetLogs() http.HandlerFunc {
 			return
 		}
 
-		res, err := l.Service.GetLogs(r.Context())
+		query := r.URL.Query()
+
+		startDate := query.Get("startDate")
+		startParsed, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			log.Printf("[GenerateDetailTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		endDate := query.Get("endDate")
+		endParsed, err := time.Parse("2006-01-02", endDate)
+		if err != nil {
+			log.Printf("[GenerateDetailTrx] error: %v\n", err)
+			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		res, err := l.Service.GetLogs(r.Context(), startParsed, endParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return

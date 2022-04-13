@@ -237,7 +237,6 @@ func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 		}
 
 		query := r.URL.Query()
-		log.Println(query)
 
 		startDate := query.Get("startDate")
 		startParsed, err := time.Parse("2006-01-02", startDate)
