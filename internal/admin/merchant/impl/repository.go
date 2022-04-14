@@ -27,7 +27,7 @@ func NewMerchantRepository(db *database.DatabaseClient) MerchantRepositoryImpl {
 }
 
 func (m *MerchantRepositoryImpl) Count(ctx context.Context, sellerId int64, keyword string) (uint64, error) {
-	stmt, params, err := COUNT_ITEM.Where(sq.And{sq.Eq{"m.deleted_at": nil}, sq.Eq{"m.id_seller": sellerId}, sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
+	stmt, params, err := COUNT_ITEM.Where(sq.And{sq.Eq{"m.deleted_at": nil}, sq.Eq{"m.id_seller": sellerId}, sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"p.status": true}}).ToSql()
 	if err != nil {
 		log.Printf("[MerchantItem.Count] error: %v\n", err)
 		return 0, err
@@ -51,7 +51,12 @@ func (m *MerchantRepositoryImpl) Count(ctx context.Context, sellerId int64, keyw
 }
 
 func (m *MerchantRepositoryImpl) GetAll(ctx context.Context, sellerId int64, keyword string, limit uint64, offset uint64) (entity.MerchantItems, error) {
-	stmt, params, err := SELECT_ITEM.Where(sq.And{sq.Eq{"m.deleted_at": nil}, sq.Eq{"m.id_seller": sellerId}, sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_ITEM.Where(sq.And{
+		sq.Eq{"m.deleted_at": nil},
+		sq.Eq{"m.id_seller": sellerId},
+		sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)},
+		sq.Eq{"p.status": true}}).Limit(limit).Offset(offset).ToSql()
+
 	if err != nil {
 		log.Printf("[MerchantItem.GetAll] error: %v\n", err)
 		return nil, err
