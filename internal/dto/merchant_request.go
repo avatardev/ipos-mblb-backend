@@ -10,7 +10,7 @@ import (
 type MerchantRequest struct {
 	ProductId   int64   `json:"product_id" validate:"required"`
 	Price       float32 `json:"price" validate:"required"`
-	Description string  `json:"description" validate:"required"`
+	Description string  `json:"description"`
 	Status      *bool   `json:"status" validate:"required"`
 }
 
