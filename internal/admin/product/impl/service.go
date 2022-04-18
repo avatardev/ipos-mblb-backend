@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
@@ -48,7 +49,7 @@ func (p *ProductServiceImpl) GetProductById(ctx context.Context, id int64) (*dto
 	return dto.NewProductResponse(*product), nil
 }
 
-func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductRequest) (*dto.ProductResponse, error) {
+func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductRequest) (res *dto.ProductResponse, err error) {
 	product := req.ToEntity()
 
 	data, err := p.Pr.Store(ctx, product)
@@ -59,6 +60,14 @@ func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductR
 	if data == nil {
 		return nil, errors.ErrUnknown
 	}
+
+	sellers, err := p.Pr.FindActiveSeller(ctx)
+	if err != nil {
+		res = nil
+		return
+	}
+
+	p.insertNewMerchantItem(ctx, sellers, *data)
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new product %s", req.Name))
 	return dto.NewProductResponse(*data), nil
@@ -106,4 +115,16 @@ func (p *ProductServiceImpl) DeleteProduct(ctx context.Context, id int64) error 
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted product data %s", exists.Name))
 	return nil
+}
+
+func (p *ProductServiceImpl) insertNewMerchantItem(ctx context.Context, sellers []int64, product entity.Product) (err error) {
+	for _, seller := range sellers {
+		err = p.Pr.StoreNewMerchantItem(ctx, seller, product)
+		if err != nil {
+			err = errors.ErrUnknown
+			return
+		}
+	}
+
+	return
 }

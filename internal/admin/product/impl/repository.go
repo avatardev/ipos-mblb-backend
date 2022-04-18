@@ -28,6 +28,11 @@ var (
 	UPDATE_PRODUCT = sq.Update("produks")
 )
 
+var (
+	SELECT_SELLER        = sq.Select("id").From("sellers")
+	INSERT_MERCHANT_ITEM = sq.Insert("produk_sellers").Columns("id_produk", "harga", "status", "id_seller", "updated_at", "created_at")
+)
+
 func (pr ProductRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
 	stmt, params, err := COUNT_PRODUCT.Where(sq.And{sq.Eq{"produks.deleted_at": nil}, sq.Like{"produks.nama_produk": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
 	if err != nil {
@@ -202,4 +207,50 @@ func (pr ProductRepositoryImpl) Delete(ctx context.Context, id int64) error {
 	}
 
 	return nil
+}
+
+// SELECT_SELLER        = sq.Select("id").From("sellers")
+// INSERT_MERCHANT_ITEM = sq.Insert("produk_sellers").Columns("id_produk", "harga", "status", "id_seller", "updated_at", "created_at")
+
+func (pr ProductRepositoryImpl) FindActiveSeller(ctx context.Context) (sellers []int64, err error) {
+	stmt, args, err := SELECT_SELLER.Where(sq.Eq{"deleted_at": nil}).ToSql()
+	if err != nil {
+		log.Printf("[Product.FindActiveSeller] error: %v\n", err)
+		return
+	}
+
+	rows, err := pr.DB.QueryContext(ctx, stmt, args...)
+	if err != nil {
+		log.Printf("[Product.FindActiveSeller] error: %v\n", err)
+		return
+	}
+
+	sellers = []int64{}
+	for rows.Next() {
+		var id int64
+		if err = rows.Scan(&id); err != nil {
+			sellers = nil
+			return
+		}
+		sellers = append(sellers, id)
+	}
+
+	return
+}
+
+func (pr ProductRepositoryImpl) StoreNewMerchantItem(ctx context.Context, id int64, product entity.Product) (err error) {
+	currTime := time.Now()
+	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 0, id, currTime, currTime).ToSql()
+	if err != nil {
+		log.Printf("[Product.StoreNewMerchantItem] error: %v\n", err)
+		return
+	}
+
+	_, err = pr.DB.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		log.Printf("[Product.StoreNewMerchantItem] error: %v\n", err)
+		return
+	}
+
+	return
 }

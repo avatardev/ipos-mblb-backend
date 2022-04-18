@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
@@ -61,7 +62,7 @@ func (s SellerServiceImpl) GetSellerById(ctx context.Context, id int64) (*dto.Se
 	return dto.NewSellerResponse(seller), nil
 }
 
-func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerRequest) (*dto.SellerResponse, error) {
+func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerRequest) (res *dto.SellerResponse, err error) {
 	seller, err := req.ToEntity()
 	if err != nil {
 		return nil, err
@@ -74,6 +75,11 @@ func (s SellerServiceImpl) StoreSeller(ctx context.Context, req *dto.SellerReque
 
 	if data == nil {
 		return nil, errors.ErrUnknown
+	}
+
+	if err = s.storeInitialMerchantItem(ctx, *data); err != nil {
+		res = nil
+		return
 	}
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("added new seller %s", seller.Company))
@@ -125,4 +131,21 @@ func (s SellerServiceImpl) DeleteSeller(ctx context.Context, id int64) error {
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted seller data %s", exists.Company))
 	return nil
+}
+
+func (s SellerServiceImpl) storeInitialMerchantItem(ctx context.Context, seller entity.Seller) (err error) {
+	masterProducts, err := s.Sr.GetMasterData(ctx)
+	if err != nil {
+		return
+	}
+
+	for _, product := range masterProducts {
+		err = s.Sr.StoreInitialMerchantItem(ctx, seller, product)
+		if err != nil {
+			err = errors.ErrUnknown
+			return
+		}
+	}
+
+	return
 }

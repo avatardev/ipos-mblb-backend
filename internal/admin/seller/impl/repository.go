@@ -8,6 +8,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	mdEntity "github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
 )
@@ -26,6 +27,11 @@ var (
 	SELECT_SELLER_NAME = sq.Select("s.id", "s.perusahaan").From("sellers s")
 	INSERT_SELLER      = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_SELLER      = sq.Update("sellers")
+)
+
+var (
+	INSERT_MERCHANT_ITEM = sq.Insert("produk_sellers").Columns("id_produk", "harga", "status", "id_seller", "updated_at", "created_at")
+	SELECT_MASTER_DATA   = sq.Select("p.id", "p.harga_std_m3").From("produks p")
 )
 
 func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
@@ -238,4 +244,53 @@ func (sr SellerRepositoryImpl) Delete(ctx context.Context, id int64) error {
 	}
 
 	return nil
+}
+
+func (sr SellerRepositoryImpl) GetMasterData(ctx context.Context) (products mdEntity.Products, err error) {
+	stmt, args, err := SELECT_MASTER_DATA.Where(sq.Eq{"deleted_at": nil}).ToSql()
+	if err != nil {
+		log.Printf("[GetMasterData] err: %v\n", err)
+		return
+	}
+
+	rows, err := sr.DB.QueryContext(ctx, stmt, args...)
+	if err != nil {
+		log.Printf("[GetMasterData] err: %v\n", err)
+		return
+	}
+
+	return mapMPToEntity(rows)
+}
+
+func (sr SellerRepositoryImpl) StoreInitialMerchantItem(ctx context.Context, seller entity.Seller, product *mdEntity.Product) (err error) {
+	currTime := time.Now()
+	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 0, seller.Id, currTime, currTime).ToSql()
+	if err != nil {
+		log.Printf("[StoreInitialMerchantItem] err: %v\n", err)
+		return
+	}
+
+	_, err = sr.DB.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		log.Printf("[StoreInitialMerchantItem] err: %v\n", err)
+		return
+	}
+
+	return
+}
+
+func mapMPToEntity(rows *sql.Rows) (p mdEntity.Products, err error) {
+	p = mdEntity.Products{}
+
+	for rows.Next() {
+		temp := &mdEntity.Product{}
+		if err = rows.Scan(&temp.Id, &temp.Price); err != nil {
+			p = nil
+			break
+		}
+
+		p = append(p, temp)
+	}
+
+	return
 }
