@@ -8,6 +8,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 )
 
 type SellerServiceImpl struct {
@@ -15,6 +16,21 @@ type SellerServiceImpl struct {
 }
 
 func (s SellerServiceImpl) GetSeller(ctx context.Context, keyword string, limit uint64, offset uint64) (*dto.SellersResponse, error) {
+	if meta := privutil.GetAuthMetadata(ctx); meta != nil {
+		if meta.SellerID != nil {
+			sellerID := *meta.SellerID
+			data, err := s.Sr.GetById(ctx, sellerID)
+			if err != nil {
+				return nil, err
+			}
+
+			item := entity.Sellers{}
+			item = append(item, data)
+
+			return dto.NewSellersResponse(item, 1, 0, 1), nil
+		}
+	}
+
 	sellerCount, err := s.Sr.Count(ctx, keyword)
 	if err != nil {
 		return nil, err

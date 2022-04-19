@@ -45,7 +45,7 @@ func (s *SellerHandler) GetSellerName() http.HandlerFunc {
 
 func (s *SellerHandler) GetSeller() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
