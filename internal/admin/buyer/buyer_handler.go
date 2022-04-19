@@ -45,7 +45,7 @@ func (b *BuyerHandler) GetBuyerName() http.HandlerFunc {
 
 func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -89,7 +89,7 @@ func (b *BuyerHandler) GetBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -117,7 +117,7 @@ func (b *BuyerHandler) GetBuyerById() http.HandlerFunc {
 
 func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -149,7 +149,7 @@ func (b *BuyerHandler) StoreBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -185,7 +185,7 @@ func (b *BuyerHandler) UpdateBuyer() http.HandlerFunc {
 
 func (b *BuyerHandler) DeleteBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER, privutil.USER_SELLER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
