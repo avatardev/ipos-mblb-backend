@@ -13,7 +13,7 @@ func ListenAndServe(addr string, m http.Handler) {
 
 	go func() {
 		log.Printf("[ListenAndServe] listening to %v", addr)
-		err := http.ListenAndServeTLS(addr, "api.crt", "api.pem", m)
+		err := http.ListenAndServe(addr, m)
 		if err != nil {
 			log.Fatalf("[ListenAndServe] error listening to http: %v", err)
 		}
