@@ -23,7 +23,7 @@ func (a *AuthServiceImpl) Login(ctx context.Context, req *dto.UserPostRequest) (
 	user := req.ToEntity()
 
 	userData, err := a.Ar.GetByUsername(ctx, user.Username)
-	if err != nil {
+	if err != nil || userData == nil {
 		return nil, errors.ErrUserCredential
 	}
 
