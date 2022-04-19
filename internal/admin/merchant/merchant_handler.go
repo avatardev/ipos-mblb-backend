@@ -23,7 +23,7 @@ func NewMerchantHandler(service MerchantService) *MerchantHandler {
 
 func (m *MerchantHandler) GetMerchant() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -59,6 +59,11 @@ func (m *MerchantHandler) GetMerchant() http.HandlerFunc {
 			log.Printf("[GetMerchant] error: %v\n", err)
 		}
 
+		if !privutil.CheckSellerID(r.Context(), sellerParsed) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		res, err := m.Service.GetMerchant(r.Context(), sellerParsed, keyword, limitParsed, offsetParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
@@ -77,7 +82,7 @@ func (m *MerchantHandler) GetMerchant() http.HandlerFunc {
 
 func (m *MerchantHandler) GetMerchantById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -102,6 +107,11 @@ func (m *MerchantHandler) GetMerchantById() http.HandlerFunc {
 			log.Printf("[GetMerchant] error: %v\n", err)
 		}
 
+		if !privutil.CheckSellerID(r.Context(), sellerParsed) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
 		res, err := m.Service.GetMerchantById(r.Context(), sellerParsed, itemParsed)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
@@ -119,7 +129,7 @@ func (m *MerchantHandler) GetMerchantById() http.HandlerFunc {
 
 func (m *MerchantHandler) UpdateMerchant() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -157,6 +167,11 @@ func (m *MerchantHandler) UpdateMerchant() http.HandlerFunc {
 				log.Printf("[Validation Error] error: %v\n", err)
 			}
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
+			return
+		}
+
+		if !privutil.CheckSellerID(r.Context(), sellerParsed) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
 

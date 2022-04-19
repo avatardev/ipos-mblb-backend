@@ -33,3 +33,23 @@ func CheckUserPrivilege(ctx context.Context, privLevel ...int64) bool {
 	log.Printf("[CheckUserPrivilege] invalid auth-level (needed %+v, got %v)\n", privLevel, authLevel.Role)
 	return false
 }
+
+func CheckSellerID(ctx context.Context, target int64) (same bool) {
+	authLevel, ok := ctx.Value(entity.AuthLevelCtxKey("user-auth")).(*dto.AuthUserLevel)
+	if !ok || authLevel.SellerID == nil {
+		// No need to verify admin's serller id
+		if ok && authLevel.Role == USER_ADMIN {
+			return true
+		}
+
+		log.Printf("[CheckSellerID] invalid sellerID (needed %+v, got None)\n", target)
+		return false
+	}
+
+	if *authLevel.SellerID != target {
+		log.Printf("[CheckUserPrivilege] invalid sellerID (needed %+v, got %v)\n", target, *authLevel.SellerID)
+		return false
+	}
+
+	return true
+}
