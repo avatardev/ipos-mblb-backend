@@ -18,7 +18,7 @@ func NewDashboardHandler(service DashboardService) DashboardHandler {
 
 func (d *DashboardHandler) GetStatistics() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

@@ -53,3 +53,13 @@ func CheckSellerID(ctx context.Context, target int64) (same bool) {
 
 	return true
 }
+
+func GetAuthMetadata(ctx context.Context) (info *dto.AuthUserLevel) {
+	info, ok := ctx.Value(entity.AuthLevelCtxKey("user-auth")).(*dto.AuthUserLevel)
+	if !ok {
+		log.Printf("[GetAuthMetadata] invalid user-data (got None)\n")
+		return nil
+	}
+
+	return
+}

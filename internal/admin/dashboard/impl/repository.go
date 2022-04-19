@@ -21,11 +21,12 @@ func NewDashboardRepository(db *database.DatabaseClient) DashboardRepositoryImpl
 var (
 	COUNT_BUYER  = sq.Select("count(*)").From("buyer_truks b")
 	COUNT_SELLER = sq.Select("count(*)").From("sellers s")
-	COUNT_TRX    = sq.Select("count(*)", "sum(case when d.pajak_update != 0 then d.pajak_update else d.total_pajak end)").From("order_details d")
+	COUNT_TRX    = sq.Select("count(*)", "sum(case when d.pajak_update != 0 then d.pajak_update else d.total_pajak end)").
+			From("orders o").LeftJoin("order_details d ON o.id = d.id_order")
 )
 
-func (r *DashboardRepositoryImpl) GetInfo(ctx context.Context) (*entity.DashboardInfo, error) {
-	info := &entity.DashboardInfo{}
+func (r *DashboardRepositoryImpl) GetInfo(ctx context.Context, sellerID int64) (info *entity.DashboardInfo, err error) {
+	info = &entity.DashboardInfo{}
 
 	buyer, err := r.countBuyer(ctx)
 	if err != nil {
@@ -34,22 +35,23 @@ func (r *DashboardRepositoryImpl) GetInfo(ctx context.Context) (*entity.Dashboar
 		info.BuyerCount = buyer
 	}
 
-	seller, err := r.countSeller(ctx)
-	if err != nil {
-		return nil, err
+	if sellerID != 0 {
+		info.SellerCount = 1
 	} else {
-		info.SellerCount = seller
+		seller, err := r.countSeller(ctx)
+		if err != nil {
+			return nil, err
+		} else {
+			info.SellerCount = seller
+		}
 	}
 
-	trxCount, taxSum, err := r.countTrx(ctx)
+	info.TrxCount, info.TotalTax, err = r.countTrx(ctx, sellerID)
 	if err != nil {
-		return nil, err
-	} else {
-		info.TotalTax = taxSum
-		info.TrxCount = trxCount
+		info = nil
 	}
 
-	return info, nil
+	return
 }
 
 func (r *DashboardRepositoryImpl) countBuyer(ctx context.Context) (int64, error) {
@@ -98,8 +100,14 @@ func (r *DashboardRepositoryImpl) countSeller(ctx context.Context) (int64, error
 	return sellers, nil
 }
 
-func (r *DashboardRepositoryImpl) countTrx(ctx context.Context) (int64, int64, error) {
-	stmt, params, err := COUNT_TRX.ToSql()
+func (r *DashboardRepositoryImpl) countTrx(ctx context.Context, sellerID int64) (int64, int64, error) {
+	baseQuery := COUNT_TRX
+
+	if sellerID != 0 {
+		baseQuery = baseQuery.Where(sq.Eq{"o.id_seller": sellerID})
+	}
+
+	stmt, params, err := baseQuery.ToSql()
 	if err != nil {
 		log.Printf("[Dashboard.CountTrx] err: %v\n", err)
 		return 0, 0, err
@@ -111,12 +119,16 @@ func (r *DashboardRepositoryImpl) countTrx(ctx context.Context) (int64, int64, e
 		return 0, 0, err
 	}
 
-	var trx, tax int64
+	var trx, tax *int64
 	row := prpd.QueryRowContext(ctx, params...)
 	if err := row.Scan(&trx, &tax); err != nil {
 		log.Printf("[Dashboard.CountTrx] err: %v\n", err)
 		return 0, 0, err
 	}
 
-	return trx, tax, nil
+	if trx == nil || tax == nil {
+		return 0, 0, nil
+	}
+	
+	return *trx, *tax, nil
 }
