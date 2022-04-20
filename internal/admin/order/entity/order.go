@@ -6,9 +6,9 @@ import (
 )
 
 type TrxDetail struct {
-	Company         string // Seller
-	VehiclePlate    string // Buyer
-	Payment         string
+	Company         string  // Seller
+	VehiclePlate    *string // Buyer
+	Payment         *string
 	Status          string
 	Product         string
 	Note            *string

@@ -11,8 +11,8 @@ import (
 type TrxDetail struct {
 	OrderDate    string  `json:"order_date"`
 	Company      string  `json:"seller"`
-	VehiclePlate string  `json:"buyer"`
-	Payment      string  `json:"payment_method"`
+	VehiclePlate *string `json:"buyer"`
+	Payment      *string `json:"payment_method"`
 	Status       string  `json:"status"`
 	Product      string  `json:"product_name"`
 	Note         *string `json:"note"`
@@ -29,12 +29,12 @@ type TrxDetailsJSON struct {
 }
 
 type TrxBrief struct {
-	OrderDate  string `json:"order_date"`
-	Company    string `json:"company"`
-	Buyer      string `json:"buyer"`
-	OrderId    int64  `json:"order_id"`
-	TotalTax   int64  `json:"total_tax"`
-	TotalPrice int64  `json:"total_price"`
+	OrderDate  string  `json:"order_date"`
+	Company    string  `json:"company"`
+	Buyer      *string `json:"buyer"`
+	OrderId    int64   `json:"order_id"`
+	TotalTax   int64   `json:"total_tax"`
+	TotalPrice int64   `json:"total_price"`
 }
 
 type TrxBriefs []*TrxBrief
@@ -57,7 +57,7 @@ type TrxDailiesJSON struct {
 type TrxMonitor struct {
 	OrderId      int64   `json:"order_id"`
 	OrderDate    string  `json:"order_date"`
-	VehiclePlate string  `json:"buyer"`
+	VehiclePlate *string  `json:"buyer"`
 	Company      string  `json:"seller"`
 	Product      string  `json:"product_name"`
 	Qty          int64   `json:"qty"`

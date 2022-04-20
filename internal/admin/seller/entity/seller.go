@@ -5,12 +5,12 @@ import "time"
 type Seller struct {
 	Id          int64
 	Company     string
-	Phone       string
+	Phone       *string
 	Address     string
 	District    string
 	Email       string
 	PICName     string
-	PICPhone    string
+	PICPhone    *string
 	NPWP        string
 	KTP         string
 	NoIUP       string

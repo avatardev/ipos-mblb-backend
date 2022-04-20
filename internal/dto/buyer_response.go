@@ -5,17 +5,17 @@ import (
 )
 
 type BuyerResponse struct {
-	VehiclePlate string `json:"vehicle_plate"`
-	CategoryId   uint64 `json:"category_id"`
-	Category     string `json:"category"`
-	Company      string `json:"company"`
-	Phone        string `json:"phone"`
-	Address      string `json:"address"`
-	Email        string `json:"email"`
-	PicName      string `json:"pic_name"`
-	PicPhone     string `json:"pic_phone"`
-	Description  string `json:"description"`
-	Status       bool   `json:"status"`
+	VehiclePlate string  `json:"vehicle_plate"`
+	CategoryId   uint64  `json:"category_id"`
+	Category     string  `json:"category"`
+	Company      string  `json:"company"`
+	Phone        *string `json:"phone"`
+	Address      string  `json:"address"`
+	Email        string  `json:"email"`
+	PicName      string  `json:"pic_name"`
+	PicPhone     *string `json:"pic_phone"`
+	Description  string  `json:"description"`
+	Status       bool    `json:"status"`
 }
 
 type BuyersResponse struct {

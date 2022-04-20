@@ -9,19 +9,19 @@ import (
 )
 
 type SellerRequest struct {
-	Company     string `json:"company" validate:"required"`
-	Phone       string `json:"phone" validate:"required"`
-	Address     string `json:"address" validate:"required"`
-	District    string `json:"district" validate:"required"`
-	Email       string `json:"emali" validate:"required"`
-	PICName     string `json:"pic_name" validate:"required"`
-	PICPhone    string `json:"pic_phone" validate:"required"`
-	NPWP        string `json:"npwp" validate:"required"`
-	KTP         string `json:"ktp" validate:"required"`
-	NoIUP       string `json:"no_iup" validate:"required"`
-	ValidPeriod string `json:"valid_period" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Status      *bool  `json:"status" validate:"required"`
+	Company     string  `json:"company" validate:"required"`
+	Phone       *string `json:"phone" validate:"required"`
+	Address     string  `json:"address" validate:"required"`
+	District    string  `json:"district" validate:"required"`
+	Email       string  `json:"emali" validate:"required"`
+	PICName     string  `json:"pic_name" validate:"required"`
+	PICPhone    *string `json:"pic_phone" validate:"required"`
+	NPWP        string  `json:"npwp" validate:"required"`
+	KTP         string  `json:"ktp" validate:"required"`
+	NoIUP       string  `json:"no_iup" validate:"required"`
+	ValidPeriod string  `json:"valid_period" validate:"required"`
+	Description string  `json:"description" validate:"required"`
+	Status      *bool   `json:"status" validate:"required"`
 }
 
 func (s *SellerRequest) FromJSON(r io.Reader) error {
