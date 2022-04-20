@@ -9,18 +9,18 @@ import (
 )
 
 type TrxDetail struct {
-	OrderDate    string  `json:"order_date"`
-	Company      string  `json:"seller"`
-	VehiclePlate *string `json:"buyer"`
-	Payment      *string `json:"payment_method"`
-	Status       string  `json:"status"`
-	Product      string  `json:"product_name"`
-	Note         *string `json:"note"`
-	OrderId      int64   `json:"order_id"`
-	Qty          int64   `json:"qty"`
-	Disc         int64   `json:"disc"`
-	Tax          int64   `json:"tax"`
-	Price        int64   `json:"price"`
+	OrderDate    string `json:"order_date"`
+	Company      string `json:"seller"`
+	VehiclePlate string `json:"buyer"`
+	Payment      string `json:"payment_method"`
+	Status       string `json:"status"`
+	Product      string `json:"product_name"`
+	Note         string `json:"note"`
+	OrderId      int64  `json:"order_id"`
+	Qty          int64  `json:"qty"`
+	Disc         int64  `json:"disc"`
+	Tax          int64  `json:"tax"`
+	Price        int64  `json:"price"`
 }
 
 type TrxDetails []*TrxDetail
@@ -29,12 +29,12 @@ type TrxDetailsJSON struct {
 }
 
 type TrxBrief struct {
-	OrderDate  string  `json:"order_date"`
-	Company    string  `json:"company"`
-	Buyer      *string `json:"buyer"`
-	OrderId    int64   `json:"order_id"`
-	TotalTax   int64   `json:"total_tax"`
-	TotalPrice int64   `json:"total_price"`
+	OrderDate  string `json:"order_date"`
+	Company    string `json:"company"`
+	Buyer      string `json:"buyer"`
+	OrderId    int64  `json:"order_id"`
+	TotalTax   int64  `json:"total_tax"`
+	TotalPrice int64  `json:"total_price"`
 }
 
 type TrxBriefs []*TrxBrief
@@ -57,7 +57,7 @@ type TrxDailiesJSON struct {
 type TrxMonitor struct {
 	OrderId      int64   `json:"order_id"`
 	OrderDate    string  `json:"order_date"`
-	VehiclePlate *string  `json:"buyer"`
+	VehiclePlate string  `json:"buyer"`
 	Company      string  `json:"seller"`
 	Product      string  `json:"product_name"`
 	Qty          int64   `json:"qty"`
@@ -73,7 +73,7 @@ type TrxMonitorJSON struct {
 	TrxMonitor []*TrxMonitor `json:"trx_monitor"`
 }
 
-func NewTrxDetail(trx *entity.TrxDetail) *TrxDetail {
+func NewTrxDetail(trx *entity.TrxDetail) (res *TrxDetail) {
 	qty := trx.Qty
 	if trx.QtyUpdate != 0 {
 		qty = trx.QtyUpdate
@@ -84,20 +84,37 @@ func NewTrxDetail(trx *entity.TrxDetail) *TrxDetail {
 		tax = trx.TaxUpdate
 	}
 
-	return &TrxDetail{
-		OrderId:      trx.Orderid,
-		OrderDate:    trx.OrderDate.Format("02/01/2006"),
-		Company:      trx.Company,
-		VehiclePlate: trx.VehiclePlate,
-		Payment:      trx.Payment,
-		Status:       trx.Status,
-		Product:      trx.Product,
-		Qty:          qty,
-		Disc:         trx.Disc,
-		Tax:          tax,
-		Price:        trx.Price,
-		Note:         trx.Note,
+	res = &TrxDetail{
+		OrderId:   trx.Orderid,
+		OrderDate: trx.OrderDate.Format("02/01/2006"),
+		Company:   trx.Company,
+		Status:    trx.Status,
+		Product:   trx.Product,
+		Qty:       qty,
+		Disc:      trx.Disc,
+		Tax:       tax,
+		Price:     trx.Price,
 	}
+
+	if trx.VehiclePlate == nil {
+		res.VehiclePlate = ""
+	} else {
+		res.VehiclePlate = *trx.VehiclePlate
+	}
+
+	if trx.Payment == nil {
+		res.Payment = ""
+	} else {
+		res.Payment = *trx.Payment
+	}
+
+	if trx.Note == nil {
+		res.Note = ""
+	} else {
+		res.Note = *trx.Note
+	}
+
+	return
 }
 
 func NewTrxDetailsJSON(data entity.TrxDetails) *TrxDetailsJSON {
@@ -166,10 +183,15 @@ func NewTrxBriefs(data entity.TrxDetails) TrxBriefs {
 			tax = trx.TaxUpdate
 		}
 
+		vPlate := ""
+		if trx.VehiclePlate != nil {
+			vPlate = *trx.VehiclePlate
+		}
+
 		res = append(res, &TrxBrief{
 			OrderDate:  trx.OrderDate.Format("02/01/2006"),
 			Company:    trx.Company,
-			Buyer:      trx.VehiclePlate,
+			Buyer:      vPlate,
 			OrderId:    trx.Orderid,
 			TotalTax:   tax,
 			TotalPrice: trx.Price,
