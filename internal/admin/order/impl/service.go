@@ -11,6 +11,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 )
 
 type OrderServiceImpl struct {
@@ -18,7 +19,12 @@ type OrderServiceImpl struct {
 }
 
 func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +63,12 @@ func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time
 }
 
 func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxDetailsJSON, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +95,12 @@ func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, d
 }
 
 func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +139,12 @@ func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.
 }
 
 func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxBriefsJSON, error) {
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +239,12 @@ func (o *OrderServiceImpl) GenerateDailyTrx(ctx context.Context, sellerId int64)
 }
 
 func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxMonitorJSON, error) {
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +257,12 @@ func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, 
 }
 
 func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd)
+	var sellerID int64 = 0
+	if user := privutil.GetAuthMetadata(ctx); user != nil {
+		sellerID = *user.SellerID
+	}
+
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID)
 	if err != nil {
 		return nil, err
 	}

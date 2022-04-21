@@ -91,8 +91,15 @@ func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*enti
 	return item, nil
 }
 
-func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time) (entity.TrxDetails, error) {
-	stmt, params, err := SELECT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).OrderBy("o.order_date").ToSql()
+func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time, id int64) (entity.TrxDetails, error) {
+	query := SELECT_ORDER_DETAIL
+	if id != 0 {
+		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+	} else {
+		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+	}
+
+	stmt, params, err := query.OrderBy("o.order_date").ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAll] error: %v\n", err)
 		return nil, err
@@ -162,8 +169,15 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 	return data, nil
 }
 
-func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Time, end time.Time) (entity.TrxMonitors, error) {
-	stmt, params, err := SELECT_ORDER_MONITORING.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).OrderBy("o.order_date").ToSql()
+func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Time, end time.Time, id int64) (entity.TrxMonitors, error) {
+	query := SELECT_ORDER_MONITORING
+	if id != 0 {
+		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+	} else {
+		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+	}
+
+	stmt, params, err := query.OrderBy("o.order_date").ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAllMonitor] error: %v\n", err)
 		return nil, err
