@@ -23,7 +23,7 @@ func NewBuyerCategoryHandler(service BuyerCategoryService) *BuyerCategoryHandler
 
 func (b *BuyerCategoryHandler) GetCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -67,7 +67,7 @@ func (b *BuyerCategoryHandler) GetCategory() http.HandlerFunc {
 
 func (b *BuyerCategoryHandler) GetCategoryById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -100,7 +100,7 @@ func (b *BuyerCategoryHandler) GetCategoryById() http.HandlerFunc {
 
 func (b *BuyerCategoryHandler) StoreCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -133,7 +133,7 @@ func (b *BuyerCategoryHandler) StoreCategory() http.HandlerFunc {
 
 func (b *BuyerCategoryHandler) UpdateCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -178,7 +178,7 @@ func (b *BuyerCategoryHandler) UpdateCategory() http.HandlerFunc {
 
 func (b *BuyerCategoryHandler) DeleteCategory() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}

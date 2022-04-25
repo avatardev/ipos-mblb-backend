@@ -25,7 +25,7 @@ func NewOrderHandler(service OrderService) *OrderHandler {
 
 func (o *OrderHandler) GenerateDetailTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -60,7 +60,7 @@ func (o *OrderHandler) GenerateDetailTrx() http.HandlerFunc {
 
 func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -95,7 +95,7 @@ func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 
 func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -130,7 +130,7 @@ func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
 
 func (o *OrderHandler) GenerateDailyTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -161,7 +161,7 @@ func (o *OrderHandler) GenerateDailyTrx() http.HandlerFunc {
 
 func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -196,7 +196,7 @@ func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 
 func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -231,7 +231,7 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 
 func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -265,7 +265,7 @@ func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 
 func (o *OrderHandler) DailyTrx() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
@@ -296,7 +296,7 @@ func (o *OrderHandler) DailyTrx() http.HandlerFunc {
 
 func (o *OrderHandler) InsertNote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_BUYER, privutil.USER_CHECKER) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN, privutil.USER_SELLER, privutil.USER_CHECKER) {
 			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
 			return
 		}
