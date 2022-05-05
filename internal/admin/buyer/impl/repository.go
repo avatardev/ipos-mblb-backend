@@ -10,6 +10,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/buyer/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 )
 
 type BuyerRepositoryImpl struct {
@@ -24,6 +25,7 @@ var (
 	INSERT_BUYER = sq.Insert("buyer_truks").Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_BUYER = sq.Update("buyer_truks")
 	DELETE_BUYER = sq.Delete("buyer_truks")
+	DELETE_USER  = sq.Delete("users")
 )
 
 func NewBuyerRepository(db *database.DatabaseClient) BuyerRepositoryImpl {
@@ -222,6 +224,27 @@ func (b *BuyerRepositoryImpl) Delete(ctx context.Context, plate string) error {
 
 	if _, err := prpd.ExecContext(ctx, params...); err != nil {
 		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
+		return err
+	}
+
+	return nil
+}
+
+func (b *BuyerRepositoryImpl) DeleteUser(ctx context.Context, v_plate string) error {
+	stmt, params, err := DELETE_USER.Where(sq.And{sq.Like{"plat_truk": fmt.Sprintf("%%%s%%", v_plate)}, sq.Eq{"id_role": privutil.USER_BUYER}}).ToSql()
+	if err != nil {
+		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
+		return err
+	}
+
+	prpd, err := b.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
+		return err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
 		return err
 	}
 

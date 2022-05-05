@@ -119,6 +119,11 @@ func (b *BuyerServiceImpl) DeleteBuyer(ctx context.Context, plate string) error 
 	}
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted buyer data with vehicle plate %s", plate))
+	if err := b.Br.DeleteUser(ctx, plate); err != nil {
+		return err
+	}
+
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted user(s) with vehicle plate %s", plate))
 	return nil
 }
 

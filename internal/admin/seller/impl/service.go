@@ -144,8 +144,13 @@ func (s SellerServiceImpl) DeleteSeller(ctx context.Context, id int64) error {
 	if err := s.Sr.Delete(ctx, id); err != nil {
 		return err
 	}
-
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted seller data %s", exists.Company))
+	if err := s.Sr.DeleteUser(ctx, id); err != nil {
+		return err
+	}
+
+	logutil.GenerateActivityLog(ctx, fmt.Sprintf("deleted user(s) with seller id %d", exists.Id))
+
 	return nil
 }
 

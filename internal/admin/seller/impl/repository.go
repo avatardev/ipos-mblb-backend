@@ -11,6 +11,7 @@ import (
 	mdEntity "github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/global/database"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 )
 
 type SellerRepositoryImpl struct {
@@ -27,6 +28,7 @@ var (
 	SELECT_SELLER_NAME = sq.Select("s.id", "s.perusahaan").From("sellers s")
 	INSERT_SELLER      = sq.Insert("sellers").Columns("perusahaan", "telp", "alamat", "kecamatan", "email", "name_pic", "hp_pic", "npwp", "ktp", "no_iup", "masa_berlaku", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_SELLER      = sq.Update("sellers")
+	DELETE_USER        = sq.Delete("users")
 )
 
 var (
@@ -260,6 +262,27 @@ func (sr SellerRepositoryImpl) GetMasterData(ctx context.Context) (products mdEn
 	}
 
 	return mapMPToEntity(rows)
+}
+
+func (sr SellerRepositoryImpl) DeleteUser(ctx context.Context, sellerID int64) error {
+	stmt, params, err := DELETE_USER.Where(sq.And{sq.Eq{"id_seller": sellerID}, sq.Eq{"id_role": privutil.USER_SELLER}}).ToSql()
+	if err != nil {
+		log.Printf("[Seller.DeleteUser] id: %v, err: %v\n", sellerID, err)
+		return err
+	}
+
+	prpd, err := sr.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[Seller.DeleteUser] id: %v, err: %v\n", sellerID, err)
+		return err
+	}
+
+	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+		log.Printf("[Seller.DeleteUser] id: %v, err: %v\n", sellerID, err)
+		return err
+	}
+
+	return nil
 }
 
 func (sr SellerRepositoryImpl) StoreInitialMerchantItem(ctx context.Context, seller entity.Seller, product *mdEntity.Product) (err error) {
