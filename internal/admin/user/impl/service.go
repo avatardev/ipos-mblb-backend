@@ -95,6 +95,15 @@ func (u *UserServiceImpl) GetUserById(ctx context.Context, role int64, id int64)
 func (u *UserServiceImpl) StoreUser(ctx context.Context, role int64, req *dto.UserPostRequest) (*dto.UserResponse, error) {
 	user := req.ToEntity()
 
+	existUser, err := u.Ur.CountUserByUsername(ctx, req.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if existUser {
+		return nil, errors.ErrUserExisted
+	}
+
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("[Service.StoreUser] role: %v, error: %v\n", role, err)
@@ -132,7 +141,7 @@ func (u *UserServiceImpl) UpdateUser(ctx context.Context, role int64, id int64, 
 	if user.Password != "" {
 		hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
-			log.Printf("[Service.StoreUser] role: %v, error: %v\n", role, err)
+			log.Printf("[Service.UpdateUser] role: %v, error: %v\n", role, err)
 			return nil, err
 		} else {
 			user.Password = string(hashed)

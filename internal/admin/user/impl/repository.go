@@ -100,6 +100,33 @@ func (ur UserRepositoryImpl) CountBuyer(ctx context.Context, v_plate string, rol
 	return userCount, nil
 }
 
+func (ur UserRepositoryImpl) CountUserByUsername(ctx context.Context, uname string) (exist bool, err error) {
+	stmt, params, err := COUNT_USER.Where(sq.Like{"username": fmt.Sprintf("%%%s%%", uname)}).ToSql()
+	if err != nil {
+		log.Printf("[User.CountUserByUsername] err: %v\n", err)
+		return
+	}
+
+	prpd, err := ur.DB.PrepareContext(ctx, stmt)
+	if err != nil {
+		log.Printf("[User.CountUserByUsername] err: %v\n", err)
+		return
+	}
+
+	var userCount uint64
+	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&userCount)
+	if queryErr != nil {
+		log.Printf("[User.CountUserByUsername] err: %v\n", queryErr)
+		return
+	}
+
+	if userCount == 1 {
+		exist = true
+	}
+
+	return
+}
+
 func (ur UserRepositoryImpl) GetAll(ctx context.Context, role int64, keyword string, limit uint64, offset uint64) (entity.Users, error) {
 	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
