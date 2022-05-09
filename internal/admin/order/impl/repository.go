@@ -27,7 +27,8 @@ var (
 		LeftJoin("produk_sellers ps_a ON ps_a.id = d.id_ps").LeftJoin("produks p_a ON p_a.id = ps_a.id_produk").
 		LeftJoin("produk_sellers ps_b ON ps_b.id = d.id_ps_update").LeftJoin("produks p_b ON p_b.id = ps_b.id_produk")
 	SELECT_SELLER_DATA  = sq.Select("s.perusahaan", "s.npwp").From("sellers s")
-	SELECT_PRODUCT_NAME = sq.Select("p.nama_produk").From("produk_sellers ps").LeftJoin("produks p ON p.id = ps.id_produk")
+	SELECT_PRODUCT_NAME = sq.Select(`(case when p.deleted_at IS NOT NULL then concat(p.nama_produk, " (deleted)") else p.nama_produk end)`).
+				From("produk_sellers ps").LeftJoin("produks p ON p.id = ps.id_produk")
 	// SELECT_DAILY_TRX = sq.Select("date(o.order_date) order_date", "(case when d.qty_update != 0 then d.qty_update else d.qty end) volume", "count(*)").
 	// 			From("orders o").LeftJoin("order_details d ON d.id_order=o.id").GroupBy("volume", "order_date")
 	SELECT_DAILY_TRX = sq.Select("date(o.order_date) order_date", "d.qty volume", "count(*)").
@@ -212,7 +213,7 @@ func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Ti
 }
 
 func (o *OrderRepositoryImpl) GetProductName(ctx context.Context, ps int64) (string, error) {
-	stmt, params, err := SELECT_PRODUCT_NAME.Where(sq.And{sq.Eq{"ps.id": ps}, sq.Eq{"ps.deleted_at": nil}, sq.Eq{"p.deleted_at": nil}}).ToSql()
+	stmt, params, err := SELECT_PRODUCT_NAME.Where(sq.And{sq.Eq{"ps.id": ps}, sq.Eq{"ps.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetProductName] ps: %v, error: %v\n", ps, err)
 		return "", err
