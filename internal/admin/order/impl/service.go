@@ -26,7 +26,7 @@ func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, d
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, da
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func (o *OrderServiceImpl) InsertNote(ctx context.Context, orderId int64, note s
 func (o *OrderServiceImpl) DailyTrx(ctx context.Context, sellerId int64) (*dto.TrxDailiesJSON, error) {
 	d := time.Now()
 
-	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d))
+	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d), true)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func (o *OrderServiceImpl) DailyTrx(ctx context.Context, sellerId int64) (*dto.T
 
 func (o *OrderServiceImpl) GenerateDailyTrx(ctx context.Context, sellerId int64) (*bytes.Buffer, error) {
 	d := time.Now()
-	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d))
+	data, err := o.Or.GetAllDaily(ctx, sellerId, FirstDayOfMonth(d), LastDayOfMonth(d), false)
 	if err != nil {
 		return nil, err
 	}
@@ -254,7 +254,7 @@ func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, 
 		}
 	}
 
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +274,7 @@ func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart tim
 		}
 	}
 
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID)
+	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}

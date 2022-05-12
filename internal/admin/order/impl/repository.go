@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -92,7 +93,14 @@ func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*enti
 	return item, nil
 }
 
-func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time, id int64) (entity.TrxDetails, error) {
+func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time, id int64, desc bool) (entity.TrxDetails, error) {
+	var ordType string
+	if desc {
+		ordType = "desc"
+	} else {
+		ordType = "asc"
+	}
+
 	query := SELECT_ORDER_DETAIL
 	if id != 0 {
 		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
@@ -100,7 +108,7 @@ func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end t
 		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
 	}
 
-	stmt, params, err := query.OrderBy("o.order_date").ToSql()
+	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAll] error: %v\n", err)
 		return nil, err
@@ -135,8 +143,16 @@ func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end t
 	return data, nil
 }
 
-func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, start time.Time, end time.Time) (entity.TrxDailies, error) {
-	stmt, params, err := SELECT_DAILY_TRX.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": sellerId}}).OrderBy("o.order_date").ToSql()
+func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, start time.Time, end time.Time, desc bool) (entity.TrxDailies, error) {
+	var ordType string
+	if desc {
+		ordType = "desc"
+	} else {
+		ordType = "asc"
+	}
+
+	stmt, params, err := SELECT_DAILY_TRX.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": sellerId}}).
+		OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAllDaily] error: %v\n", err)
 		return nil, err
@@ -170,7 +186,14 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 	return data, nil
 }
 
-func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Time, end time.Time, id int64) (entity.TrxMonitors, error) {
+func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Time, end time.Time, id int64, desc bool) (entity.TrxMonitors, error) {
+	var ordType string
+	if desc {
+		ordType = "desc"
+	} else {
+		ordType = "asc"
+	}
+
 	query := SELECT_ORDER_MONITORING
 	if id != 0 {
 		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
@@ -178,7 +201,7 @@ func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Ti
 		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
 	}
 
-	stmt, params, err := query.OrderBy("o.order_date").ToSql()
+	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAllMonitor] error: %v\n", err)
 		return nil, err
