@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/avatardev/ipos-mblb-backend/internal/admin/activity_log/entity"
+import (
+	"github.com/avatardev/ipos-mblb-backend/internal/admin/activity_log/entity"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/timeutil"
+)
 
 type LogResponse struct {
 	Id        int64  `json:"id"`
@@ -23,7 +26,7 @@ func NewLogResponse(log *entity.LogInfo) *LogResponse {
 	}
 
 	return &LogResponse{
-		Timestamp: log.Timestamp.UTC().Format("2006-01-02 15:04"),
+		Timestamp: timeutil.FormatLocalTime(log.Timestamp, "2006-01-02 15:04"),
 		Id:        log.Id,
 		UserId:    log.UserId,
 		Username:  username,

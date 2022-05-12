@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/order/entity"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/timeutil"
 )
 
 type TrxDetail struct {
@@ -86,7 +87,7 @@ func NewTrxDetail(trx *entity.TrxDetail) (res *TrxDetail) {
 
 	res = &TrxDetail{
 		OrderId:   trx.Orderid,
-		OrderDate: trx.OrderDate.Format("02/01/2006"),
+		OrderDate: timeutil.FormatLocalTime(trx.OrderDate, "2006-01-02 15:04"),
 		Company:   trx.Company,
 		Status:    trx.Status,
 		Product:   trx.Product,
@@ -189,7 +190,7 @@ func NewTrxBriefs(data entity.TrxDetails) TrxBriefs {
 		}
 
 		res = append(res, &TrxBrief{
-			OrderDate:  trx.OrderDate.Format("02/01/2006"),
+			OrderDate:  timeutil.FormatLocalTime(trx.OrderDate, "2006-01-02 15:04"),
 			Company:    trx.Company,
 			Buyer:      vPlate,
 			OrderId:    trx.Orderid,
@@ -327,7 +328,7 @@ func NewTrxMonitors(data entity.TrxMonitors) TrxMonitors {
 
 		res = append(res, &TrxMonitor{
 			OrderId:      trx.OrderId,
-			OrderDate:    trx.OrderDate.Format("02/01/2006"),
+			OrderDate:    timeutil.FormatLocalTime(trx.OrderDate, "2006-01-02 15:04"),
 			VehiclePlate: trx.VehiclePlate,
 			Company:      trx.Company,
 			Product:      product,

@@ -3,9 +3,9 @@ package dto
 import (
 	"encoding/json"
 	"io"
-	"time"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/seller/entity"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/timeutil"
 )
 
 type SellerRequest struct {
@@ -29,7 +29,7 @@ func (s *SellerRequest) FromJSON(r io.Reader) error {
 }
 
 func (s *SellerRequest) ToEntity() (*entity.Seller, error) {
-	validPeriod, err := time.Parse("2006-01-02", s.ValidPeriod)
+	validPeriod, err := timeutil.ParseLocalTime(s.ValidPeriod, "2006-01-02")
 	if err != nil {
 		return nil, err
 	}

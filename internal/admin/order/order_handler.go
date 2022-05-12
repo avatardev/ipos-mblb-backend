@@ -11,6 +11,7 @@ import (
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/timeutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
@@ -33,7 +34,7 @@ func (o *OrderHandler) GenerateDetailTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateDetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -41,7 +42,7 @@ func (o *OrderHandler) GenerateDetailTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateDetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -68,7 +69,7 @@ func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateBriefTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -76,7 +77,7 @@ func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateBriefTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -103,7 +104,7 @@ func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateMonitorTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -111,7 +112,7 @@ func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateMonitorTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -169,7 +170,7 @@ func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[DetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -177,7 +178,7 @@ func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[DetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -204,7 +205,7 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[BriefTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -212,7 +213,7 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[BriefTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -239,7 +240,7 @@ func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[MonitorTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -247,7 +248,7 @@ func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[MonitorTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)

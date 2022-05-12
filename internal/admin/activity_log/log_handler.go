@@ -1,14 +1,15 @@
 package activity_log
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/privutil"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/responseutil"
+	"github.com/avatardev/ipos-mblb-backend/pkg/util/timeutil"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -30,7 +31,7 @@ func (l *LogHandler) GetLogs() http.HandlerFunc {
 		query := r.URL.Query()
 
 		startDate := query.Get("startDate")
-		startParsed, err := time.Parse("2006-01-02", startDate)
+		startParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 00:00:00", startDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateDetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
@@ -38,7 +39,7 @@ func (l *LogHandler) GetLogs() http.HandlerFunc {
 		}
 
 		endDate := query.Get("endDate")
-		endParsed, err := time.Parse("2006-01-02", endDate)
+		endParsed, err := timeutil.ParseLocalTime(fmt.Sprintf("%s 23:59:59", endDate), "2006-01-02 15:04:05")
 		if err != nil {
 			log.Printf("[GenerateDetailTrx] error: %v\n", err)
 			responseutil.WriteErrorResponse(w, errors.ErrInvalidRequestBody)
