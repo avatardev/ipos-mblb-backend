@@ -195,7 +195,7 @@ func NewTrxBriefs(data entity.TrxDetails) TrxBriefs {
 			Buyer:      vPlate,
 			OrderId:    trx.Orderid,
 			TotalTax:   tax,
-			TotalPrice: trx.Price,
+			TotalPrice: trx.Price + tax,
 		})
 	}
 
