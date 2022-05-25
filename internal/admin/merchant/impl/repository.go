@@ -33,14 +33,8 @@ func (m *MerchantRepositoryImpl) Count(ctx context.Context, sellerId int64, keyw
 		return 0, err
 	}
 
-	prpd, err := m.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[MerchantItem.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var itemCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := m.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&itemCount)
 	if queryErr != nil {
 		log.Printf("[MerchantItem.Count] error: %v\n", err)
@@ -62,13 +56,7 @@ func (m *MerchantRepositoryImpl) GetAll(ctx context.Context, sellerId int64, key
 		return nil, err
 	}
 
-	prpd, err := m.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[MerchantItem.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := m.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[MerchantItem.GetAll] error: %v\n", err)
 		return nil, err
@@ -98,13 +86,7 @@ func (m *MerchantRepositoryImpl) GetById(ctx context.Context, sellerId int64, it
 		return nil, err
 	}
 
-	prpd, err := m.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[MerchantItem.GetById] item: %v, error: %v\n", itemId, err)
-		return nil, err
-	}
-
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := m.DB.QueryRowContext(ctx, stmt, params...)
 
 	item := &entity.MerchantItem{}
 	queryErr := rows.Scan(&item.Id, &item.ProductId, &item.Name, &item.Price, &item.Description, &item.Status)
@@ -128,21 +110,13 @@ func (m *MerchantRepositoryImpl) Update(ctx context.Context, sellerId int64, ite
 		"updated_at": time.Now(),
 	}
 
-	log.Println(item.Price)
-
 	stmt, params, err := UPDATE_ITEM.SetMap(updateMap).Where(sq.And{sq.Eq{"produk_sellers.id": item.Id}, sq.Eq{"produk_sellers.id_seller": sellerId}}).ToSql()
 	if err != nil {
 		log.Printf("[MerchantItem.Update] error: %v\n", err)
 		return nil, err
 	}
 
-	prpd, err := m.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[MerchantItem.Update] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := m.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Buyer.Update] errror: %v\n", err)
 		return nil, err
 	}

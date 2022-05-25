@@ -34,14 +34,8 @@ func (cr ProductCategoryRepositoryImpl) Count(ctx context.Context, keyword strin
 		return 0, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var categoryCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&categoryCount)
+	queryErr := cr.DB.QueryRowContext(ctx, stmt, params...).Scan(&categoryCount)
 	if queryErr != nil {
 		log.Printf("[Category.Count] error: %v\n", queryErr)
 		return 0, err
@@ -57,13 +51,7 @@ func (cr ProductCategoryRepositoryImpl) GetAll(ctx context.Context, keyword stri
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := cr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Category.GetAll] error: %v\n", err)
 		return nil, err
@@ -90,15 +78,9 @@ func (cr ProductCategoryRepositoryImpl) GetById(ctx context.Context, id int64) (
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.GetById] id: %v, error: %v\n", id, err)
-		return nil, err
-	}
-
 	category := &entity.ProductCategory{}
 
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := cr.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := rows.Scan(&category.Id, &category.Name, &category.Pajak, &category.Status, &category.Deleted, &category.Created, &category.Updated)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Category.GetById] id: %v, error: %v\n", id, queryErr)
@@ -119,13 +101,7 @@ func (cr ProductCategoryRepositoryImpl) Store(ctx context.Context, category enti
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.Store] error: %v\n", err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := cr.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Category.Store] error: %v\n", err)
 		return nil, err
@@ -154,13 +130,7 @@ func (cr ProductCategoryRepositoryImpl) Update(ctx context.Context, category ent
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.Update] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := cr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Category.Update] error: %v\n", err)
 		return nil, err
 	}
@@ -183,13 +153,7 @@ func (cr ProductCategoryRepositoryImpl) Delete(ctx context.Context, id int64) er
 		return err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := cr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Category.Delete] id: %v, error: %v\n", id, err)
 		return err
 	}

@@ -40,14 +40,8 @@ func (pr ProductRepositoryImpl) Count(ctx context.Context, keyword string) (uint
 		return 0, err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var productCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := pr.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&productCount)
 	if queryErr != nil {
 		log.Printf("[Product.Count] error: %v\n", err)
@@ -64,13 +58,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limi
 		return nil, err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := pr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Product.GetAll] error:%v\n", err)
 		return nil, err
@@ -100,13 +88,7 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 		return nil, err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.GetById] id: %v, error: %v\n", id, err)
-		return nil, err
-	}
-
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := pr.DB.QueryRowContext(ctx, stmt, params...)
 
 	product := &entity.Product{}
 	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status)
@@ -129,13 +111,7 @@ func (pr ProductRepositoryImpl) Store(ctx context.Context, product entity.Produc
 		return nil, err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := pr.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Product.Store] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
 		return nil, err
@@ -166,13 +142,7 @@ func (pr ProductRepositoryImpl) Update(ctx context.Context, product entity.Produ
 		return nil, err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.Update] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := pr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Product.Update] categoryId: %v, name: %v, desc: %v, status: %v, error: %v\n", product.CategoryId, product.Name, product.Description, product.Status, err)
 		return nil, err
 	}
@@ -195,13 +165,7 @@ func (pr ProductRepositoryImpl) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	prpd, err := pr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Product.Delete] id: %v, error: %v\n", id, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := pr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Product.Delete] id: %v, error: %v\n", id, err)
 		return err
 	}

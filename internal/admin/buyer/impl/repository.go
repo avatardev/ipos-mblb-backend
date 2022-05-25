@@ -39,14 +39,8 @@ func (b *BuyerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64
 		return 0, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var buyerCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := b.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&buyerCount)
 	if queryErr != nil {
 		log.Printf("[Buyer.Count] error: %v\n", queryErr)
@@ -63,13 +57,7 @@ func (b *BuyerRepositoryImpl) GetBuyerName(ctx context.Context) (entity.BuyersCo
 		return nil, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := b.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
 		return nil, err
@@ -96,13 +84,7 @@ func (b *BuyerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit 
 		return nil, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := b.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Buyer.GetAll] error: %v\n", err)
 		return nil, err
@@ -131,14 +113,7 @@ func (b *BuyerRepositoryImpl) GetById(ctx context.Context, plate string) (*entit
 		return nil, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.GetById] plate: %s, error: %v\n", plate, err)
-		return nil, err
-	}
-
-	rows := prpd.QueryRowContext(ctx, params...)
-
+	rows, err := b.DB.QueryContext(ctx, stmt, params...)
 	buyer := &entity.Buyer{}
 	queryErr := rows.Scan(&buyer.VehiclePlate, &buyer.VehicleCategoryName, &buyer.VehicleCategoryId, &buyer.Company, &buyer.Phone, &buyer.Address, &buyer.Email, &buyer.PICName, &buyer.PICPhone, &buyer.Description, &buyer.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
@@ -160,13 +135,7 @@ func (b *BuyerRepositoryImpl) Store(ctx context.Context, buyer entity.Buyer) (*e
 		return nil, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.Store] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := b.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Buyer.Store] error: %v\n", err)
 		return nil, err
 	}
@@ -195,13 +164,7 @@ func (b *BuyerRepositoryImpl) Update(ctx context.Context, plate string, buyer en
 		return nil, err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.Update] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := b.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Buyer.Update] errror: %v\n", err)
 		return nil, err
 	}
@@ -216,13 +179,7 @@ func (b *BuyerRepositoryImpl) Delete(ctx context.Context, plate string) error {
 		return err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := b.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
 		return err
 	}
@@ -237,13 +194,7 @@ func (b *BuyerRepositoryImpl) DeleteUser(ctx context.Context, v_plate string) er
 		return err
 	}
 
-	prpd, err := b.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := b.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
 		return err
 	}

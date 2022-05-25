@@ -43,14 +43,8 @@ func (sr SellerRepositoryImpl) Count(ctx context.Context, keyword string) (uint6
 		return 0, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var sellerCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&sellerCount)
+	queryErr := sr.DB.QueryRowContext(ctx, stmt, params...).Scan(&sellerCount)
 	if err != nil {
 		log.Printf("[Seller.Count] error: %v\n", queryErr)
 		return 0, queryErr
@@ -66,13 +60,7 @@ func (sr SellerRepositoryImpl) GetSelerName(ctx context.Context) (entity.Company
 		return nil, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.GetSelerName] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := sr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Seller.GetSelerName] error: %v\n", err)
 		return nil, err
@@ -99,13 +87,7 @@ func (sr SellerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit
 		return nil, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := sr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Seller.GetAll] error: %v\n", err)
 		return nil, err
@@ -133,15 +115,9 @@ func (sr SellerRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.S
 		return nil, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.GetById] id: %v, error: %v\n", id, err)
-		return nil, err
-	}
-
 	seller := &entity.Seller{}
 
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := sr.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := rows.Scan(&seller.Id, &seller.Company, &seller.Phone, &seller.Address, &seller.District, &seller.Email, &seller.PICName, &seller.PICPhone, &seller.NPWP, &seller.KTP, &seller.NoIUP, &seller.ValidPeriod, &seller.Description, &seller.Status)
 	if queryErr != nil && &queryErr != &sql.ErrNoRows {
 		log.Printf("[Seller.GetById] id: %v, error: %v\n", id, queryErr)
@@ -162,13 +138,7 @@ func (sr SellerRepositoryImpl) Store(ctx context.Context, seller entity.Seller) 
 		return nil, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.Store] error: %v\n", err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := sr.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Seller.Store] error: %v\n", err)
 		return nil, err
@@ -206,13 +176,7 @@ func (sr SellerRepositoryImpl) Update(ctx context.Context, seller entity.Seller)
 		return nil, err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.Update] id: %v, error: %v\n", seller.Id, err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := sr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Seller.Update] id: %v, error: %v\n", seller.Id, err)
 		return nil, err
 	}
@@ -234,13 +198,7 @@ func (sr SellerRepositoryImpl) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.Delete] id: %v, error: %v\n", id, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := sr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Seller.Delete] id: %v, error: %v\n", id, err)
 		return err
 	}
@@ -271,13 +229,7 @@ func (sr SellerRepositoryImpl) DeleteUser(ctx context.Context, sellerID int64) e
 		return err
 	}
 
-	prpd, err := sr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Seller.DeleteUser] id: %v, err: %v\n", sellerID, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := sr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Seller.DeleteUser] id: %v, err: %v\n", sellerID, err)
 		return err
 	}

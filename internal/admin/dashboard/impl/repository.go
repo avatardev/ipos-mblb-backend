@@ -61,14 +61,8 @@ func (r *DashboardRepositoryImpl) countBuyer(ctx context.Context) (int64, error)
 		return 0, err
 	}
 
-	prpd, err := r.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Dashboard.CountBuyer] err: %v\n", err)
-		return 0, err
-	}
-
 	var buyers int64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := r.DB.QueryRowContext(ctx, stmt, params...)
 	if err := row.Scan(&buyers); err != nil {
 		log.Printf("[Dashboard.CountBuyer] err: %v\n", err)
 		return 0, err
@@ -84,14 +78,8 @@ func (r *DashboardRepositoryImpl) countSeller(ctx context.Context) (int64, error
 		return 0, err
 	}
 
-	prpd, err := r.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Dashboard.CountSeller] err: %v\n", err)
-		return 0, err
-	}
-
 	var sellers int64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := r.DB.QueryRowContext(ctx, stmt, params...)
 	if err := row.Scan(&sellers); err != nil {
 		log.Printf("[Dashboard.CountSeller] err: %v\n", err)
 		return 0, err
@@ -113,14 +101,8 @@ func (r *DashboardRepositoryImpl) countTrx(ctx context.Context, sellerID int64) 
 		return 0, 0, err
 	}
 
-	prpd, err := r.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Dastboard.CountTrx] err: %v\n", err)
-		return 0, 0, err
-	}
-
 	var trx, tax *int64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := r.DB.QueryRowContext(ctx, stmt, params...)
 	if err := row.Scan(&trx, &tax); err != nil {
 		log.Printf("[Dashboard.CountTrx] err: %v\n", err)
 		return 0, 0, err
@@ -129,6 +111,6 @@ func (r *DashboardRepositoryImpl) countTrx(ctx context.Context, sellerID int64) 
 	if trx == nil || tax == nil {
 		return 0, 0, nil
 	}
-	
+
 	return *trx, *tax, nil
 }

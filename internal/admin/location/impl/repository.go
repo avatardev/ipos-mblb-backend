@@ -35,14 +35,8 @@ func (lr *LocationRepositoryImpl) Count(ctx context.Context, keyword string) (ui
 		return 0, err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var locationCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := lr.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&locationCount)
 	if queryErr != nil {
 		log.Printf("[Location.Count] error:%v\n", err)
@@ -59,13 +53,7 @@ func (lr *LocationRepositoryImpl) GetAll(ctx context.Context, keyword string, li
 		return nil, err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := lr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Location.GetAll] error: %v\n", err)
 		return nil, err
@@ -87,14 +75,8 @@ func (lr *LocationRepositoryImpl) GetById(ctx context.Context, id int64) (*entit
 		return nil, err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.GetById] error: %v\n", err)
-		return nil, err
-	}
-
 	loc := &entity.Location{}
-	row := prpd.QueryRowContext(ctx, params...)
+	row := lr.DB.QueryRowContext(ctx, stmt, params...)
 	if err := loc.FromSql(row); err != nil && err != sql.ErrNoRows {
 		log.Printf("[Location.GetById] error:%v\n", err)
 		return nil, err
@@ -114,13 +96,7 @@ func (lr *LocationRepositoryImpl) Store(ctx context.Context, location entity.Loc
 		return nil, err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.Store] error: %v\n", err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := lr.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Location.Store] error: %v\n", err)
 		return nil, err
@@ -146,13 +122,7 @@ func (lr *LocationRepositoryImpl) Update(ctx context.Context, location entity.Lo
 		return nil, err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.Update] err: %v", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := lr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Location.Update] err: %v", err)
 		return nil, err
 	}
@@ -167,13 +137,7 @@ func (lr *LocationRepositoryImpl) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	prpd, err := lr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Location.Delete] err: %v\n", err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := lr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Location.Delete] err: %v\n", err)
 		return err
 	}

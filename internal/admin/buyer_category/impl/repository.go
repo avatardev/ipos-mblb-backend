@@ -34,14 +34,8 @@ func (cr BuyerCategoryRepositoryImpl) Count(ctx context.Context, keyword string)
 		return 0, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var categoryCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := cr.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&categoryCount)
 	if queryErr != nil {
 		log.Printf("[BuyerCategory.Count] error: %v\n", err)
@@ -58,13 +52,7 @@ func (cr BuyerCategoryRepositoryImpl) GetAll(ctx context.Context, keyword string
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := cr.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[BuyerCategory.GetAll] error: %v\n", err)
 		return nil, err
@@ -94,13 +82,7 @@ func (cr BuyerCategoryRepositoryImpl) GetById(ctx context.Context, id int64) (*e
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.GetById] error: %v\n", err)
-		return nil, err
-	}
-
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := cr.DB.QueryRowContext(ctx, stmt, params...)
 
 	category := &entity.BuyerCategory{}
 	queryErr := rows.Scan(&category.Id, &category.Name, &category.IsMultiProduct)
@@ -123,13 +105,7 @@ func (cr BuyerCategoryRepositoryImpl) Store(ctx context.Context, category entity
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.Store] error: %v\n", err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := cr.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[BuyerCategory.Store] error: %v\n", err)
 		return nil, err
@@ -158,13 +134,7 @@ func (cr BuyerCategoryRepositoryImpl) Update(ctx context.Context, category entit
 		return nil, err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.Update] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := cr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[BuyerCategory.Update] error: %v\n", err)
 		return nil, err
 	}
@@ -184,13 +154,7 @@ func (cr BuyerCategoryRepositoryImpl) Delete(ctx context.Context, id int64) erro
 		return err
 	}
 
-	prpd, err := cr.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[BuyerCategory.Update] error: %v\n", err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := cr.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[BuyerCategory.Update] error: %v\n", err)
 		return err
 	}

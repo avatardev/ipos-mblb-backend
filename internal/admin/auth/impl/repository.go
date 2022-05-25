@@ -27,13 +27,7 @@ func (a *AuthRepositoryImpl) GetById(ctx context.Context, userId int64) (*entity
 		return nil, err
 	}
 
-	prpd, err := a.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Auth.GetById] userId: %v, error: %v\n", userId, err)
-		return nil, err
-	}
-
-	row := prpd.QueryRowContext(ctx, params...)
+	row := a.DB.QueryRowContext(ctx, stmt, params...)
 	user := &entity.UserData{}
 	queryErr := user.FromSql(row)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
@@ -54,13 +48,7 @@ func (a *AuthRepositoryImpl) GetByUsername(ctx context.Context, username string)
 		return nil, err
 	}
 
-	prpd, err := a.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Auth.GetByUsername] username: %v, error: %v\n", username, err)
-		return nil, err
-	}
-
-	row := prpd.QueryRowContext(ctx, params...)
+	row := a.DB.QueryRowContext(ctx, stmt, params...)
 	user := &entity.UserData{}
 	queryErr := user.FromSql(row)
 	if queryErr != nil && queryErr != sql.ErrNoRows {

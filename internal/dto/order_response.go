@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -232,6 +233,7 @@ func NewTrxDailiesJSON(data entity.TrxDailies) *TrxDailiesJSON {
 	res := &TrxDailiesJSON{}
 
 	res.TrxDaily = NewTrxDailies(data)
+	log.Println(res.TrxDaily[13].Details)
 	return res
 }
 
@@ -243,7 +245,7 @@ func NewTrxDailies(data entity.TrxDailies) TrxDailes {
 	for i := 1; i <= daysInMonth; i++ {
 		res = append(res, &TrxDaily{
 			OrderDate: time.Date(year, month, i, 0, 0, 0, 0, time.UTC).Format("02"),
-			Details:   map[int64]int64{},
+			Details:   make(map[int64]int64),
 		})
 	}
 

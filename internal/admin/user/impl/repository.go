@@ -38,14 +38,8 @@ func (ur UserRepositoryImpl) Count(ctx context.Context, keyword string, role int
 		return 0, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.Count] role: %v, err: %v\n", role, err)
-		return 0, err
-	}
-
 	var userCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&userCount)
+	queryErr := ur.DB.QueryRowContext(ctx, stmt, params...).Scan(&userCount)
 	if queryErr != nil {
 		log.Printf("[User.Count] role: %v, err: %v\n", role, queryErr)
 		return 0, queryErr
@@ -61,14 +55,8 @@ func (ur UserRepositoryImpl) CountSeller(ctx context.Context, seller int64, role
 		return 0, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.CountSeller] role: %v, err: %v\n", role, err)
-		return 0, err
-	}
-
 	var userCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&userCount)
+	queryErr := ur.DB.QueryRowContext(ctx, stmt, params...).Scan(&userCount)
 	if queryErr != nil {
 		log.Printf("[User.CountSeller] role: %v, err: %v\n", role, queryErr)
 		return 0, queryErr
@@ -84,14 +72,8 @@ func (ur UserRepositoryImpl) CountBuyer(ctx context.Context, v_plate string, rol
 		return 0, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.CountBuyer] role: %v, err: %v\n", role, err)
-		return 0, err
-	}
-
 	var userCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&userCount)
+	queryErr := ur.DB.QueryRowContext(ctx, stmt, params...).Scan(&userCount)
 	if queryErr != nil {
 		log.Printf("[User.CountBuyer] role: %v, err: %v\n", role, queryErr)
 		return 0, queryErr
@@ -107,14 +89,8 @@ func (ur UserRepositoryImpl) CountUserByUsername(ctx context.Context, uname stri
 		return
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.CountUserByUsername] err: %v\n", err)
-		return
-	}
-
 	var userCount uint64
-	queryErr := prpd.QueryRowContext(ctx, params...).Scan(&userCount)
+	queryErr := ur.DB.QueryRowContext(ctx, stmt, params...).Scan(&userCount)
 	if queryErr != nil {
 		log.Printf("[User.CountUserByUsername] err: %v\n", queryErr)
 		return
@@ -134,13 +110,7 @@ func (ur UserRepositoryImpl) GetAll(ctx context.Context, role int64, keyword str
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.GetAll] role: %v, err: %v\n", role, err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := ur.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[User.GetAll] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -168,13 +138,7 @@ func (ur UserRepositoryImpl) GetAllSeller(ctx context.Context, role int64, selle
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.GetAllSeller] role: %v, err: %v\n", role, err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := ur.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[User.GetAllSeller] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -202,13 +166,7 @@ func (ur UserRepositoryImpl) GetAllBuyer(ctx context.Context, role int64, v_plat
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.GetAllBuyer] role: %v, err: %v\n", role, err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := ur.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[User.GetAllBuyer] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -236,15 +194,9 @@ func (ur UserRepositoryImpl) GetById(ctx context.Context, role int64, id int64) 
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.GetById] id: %v, err: %v\n", id, err)
-		return nil, err
-	}
-
 	user := &entity.User{}
 
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows, err := ur.DB.QueryContext(ctx, stmt, params...)
 	queryErr := rows.Scan(&user.Id, &user.Username)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[User.GetById] id: %v, err: %v\n", id, queryErr)
@@ -273,13 +225,7 @@ func (ur UserRepositoryImpl) Store(ctx context.Context, role int64, user entity.
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.Store] role: %v, err: %v\n", role, err)
-		return nil, err
-	}
-
-	res, err := prpd.ExecContext(ctx, params...)
+	res, err := ur.DB.ExecContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[User.Store] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -312,13 +258,7 @@ func (ur UserRepositoryImpl) Update(ctx context.Context, role int64, user entity
 		return nil, err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.Update] id: %v, err: %v\n", user.Id, err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := ur.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[User.Update] id: %v, err: %v\n", user.Id, err)
 		return nil, err
 	}
@@ -333,13 +273,7 @@ func (ur UserRepositoryImpl) Delete(ctx context.Context, role int64, id int64) e
 		return err
 	}
 
-	prpd, err := ur.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[User.Update] id: %v, err: %v\n", id, err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := ur.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[User.Update] id: %v, err: %v\n", id, err)
 		return err
 	}

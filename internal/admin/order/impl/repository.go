@@ -48,14 +48,8 @@ func (o *OrderRepositoryImpl) Count(ctx context.Context, start time.Time, end ti
 		return 0, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.Count] error: %v\n", err)
-		return 0, err
-	}
-
 	var orderCount uint64
-	row := prpd.QueryRowContext(ctx, params...)
+	row := o.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&orderCount)
 	if queryErr != nil {
 		log.Printf("[Trx.Count] error: %v\n", err)
@@ -72,13 +66,7 @@ func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*enti
 		return nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetById] error: %v\n", err)
-		return nil, err
-	}
-
-	rows := prpd.QueryRowContext(ctx, params...)
+	rows := o.DB.QueryRowContext(ctx, stmt, params...)
 
 	item := &entity.TrxDetail{}
 	queryErr := item.FromSingleSql(rows)
@@ -114,13 +102,7 @@ func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end t
 		return nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetAll] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := o.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Trx.GetAll] error: %v\n", err)
 		return nil, err
@@ -158,13 +140,7 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 		return nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetAllDaily] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := o.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Trx.GetAllDaily] error: %v\n", err)
 		return nil, err
@@ -207,13 +183,7 @@ func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Ti
 		return nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetAllMonitor] error: %v\n", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := o.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Trx.GetAllMonitor] error: %v\n", err)
 		return nil, err
@@ -242,16 +212,8 @@ func (o *OrderRepositoryImpl) GetProductName(ctx context.Context, ps int64) (str
 		return "", err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetProductName] ps: %v, error: %v\n", ps, err)
-		return "", err
-	}
-
-	row := prpd.QueryRowContext(ctx, params...)
-
 	var pName string
-
+	row := o.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&pName)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Trx.GetProductName] ps: %v, error: %v\n", ps, queryErr)
@@ -271,17 +233,10 @@ func (o *OrderRepositoryImpl) GetCompanyName(ctx context.Context, s int64) (*str
 		return nil, nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.GetCompanyName] s: %v, error: %v\n", s, err)
-		return nil, nil, err
-	}
-
-	row := prpd.QueryRowContext(ctx, params...)
-
 	var company string
 	var npwp int64
 
+	row := o.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := row.Scan(&company, &npwp)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Trx.GetCompanyName] s: %v, error: %v\n", s, queryErr)
@@ -306,13 +261,7 @@ func (o *OrderRepositoryImpl) InsertNote(ctx context.Context, orderId int64, not
 		return nil, err
 	}
 
-	prpd, err := o.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Trx.InsertNote] error: %v\n", err)
-		return nil, err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := o.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Trx.InsertNote] error: %v\n", err)
 		return nil, err
 	}

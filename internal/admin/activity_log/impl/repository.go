@@ -31,13 +31,7 @@ func (l *LogRepositoryImpl) GetAll(ctx context.Context, dateStart time.Time, dat
 		return nil, err
 	}
 
-	prpd, err := l.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Logs.GetAll] error: %v", err)
-		return nil, err
-	}
-
-	rows, err := prpd.QueryContext(ctx, params...)
+	rows, err := l.DB.QueryContext(ctx, stmt, params...)
 	if err != nil {
 		log.Printf("[Logs.GetAll] error: %v", err)
 		return nil, err
@@ -60,13 +54,7 @@ func (l *LogRepositoryImpl) Store(ctx context.Context, userId int64, msg string)
 		return err
 	}
 
-	prpd, err := l.DB.PrepareContext(ctx, stmt)
-	if err != nil {
-		log.Printf("[Logs.Store] error: %v\n", err)
-		return err
-	}
-
-	if _, err := prpd.ExecContext(ctx, params...); err != nil {
+	if _, err := l.DB.ExecContext(ctx, stmt, params...); err != nil {
 		log.Printf("[Logs.Store] error: %v\n", err)
 		return err
 	}
