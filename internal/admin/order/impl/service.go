@@ -18,15 +18,16 @@ type OrderServiceImpl struct {
 	Or OrderRepositoryImpl
 }
 
-func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
+func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*bytes.Buffer, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, false)
+	trxData, err := o.Or.GetAll(ctx, companyName, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -64,15 +65,16 @@ func (o *OrderServiceImpl) GenerateDetailTrx(ctx context.Context, dateStart time
 	return csvData, nil
 }
 
-func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxDetailsJSON, error) {
+func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*dto.TrxDetailsJSON, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, true)
+	trxData, err := o.Or.GetAll(ctx, companyName, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -98,15 +100,16 @@ func (o *OrderServiceImpl) DetailTrx(ctx context.Context, dateStart time.Time, d
 	return dto.NewTrxDetailsJSON(trxData), nil
 }
 
-func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
+func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*bytes.Buffer, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, false)
+	trxData, err := o.Or.GetAll(ctx, companyName, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -144,15 +147,16 @@ func (o *OrderServiceImpl) GenerateBriefTrx(ctx context.Context, dateStart time.
 	return csvData, nil
 }
 
-func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxBriefsJSON, error) {
+func (o *OrderServiceImpl) BriefTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*dto.TrxBriefsJSON, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAll(ctx, dateStart, dateEnd, sellerID, true)
+	trxData, err := o.Or.GetAll(ctx, companyName, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -246,15 +250,16 @@ func (o *OrderServiceImpl) GenerateDailyTrx(ctx context.Context, sellerId int64)
 	return csvData, nil
 }
 
-func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*dto.TrxMonitorJSON, error) {
+func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*dto.TrxMonitorJSON, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID, true)
+	trxData, err := o.Or.GetAllMonitored(ctx, companyName, dateStart, dateEnd, sellerID, true)
 	if err != nil {
 		return nil, err
 	}
@@ -266,15 +271,16 @@ func (o *OrderServiceImpl) MonitorTrx(ctx context.Context, dateStart time.Time, 
 	return dto.NewTrxMonitorJSON(trxData), nil
 }
 
-func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time) (*bytes.Buffer, error) {
+func (o *OrderServiceImpl) GenerateMonitorTrx(ctx context.Context, dateStart time.Time, dateEnd time.Time, companyName string) (*bytes.Buffer, error) {
 	var sellerID int64 = 0
 	if user := privutil.GetAuthMetadata(ctx); user != nil {
 		if user.Role == privutil.USER_SELLER {
 			sellerID = *user.SellerID
+			companyName = ""
 		}
 	}
 
-	trxData, err := o.Or.GetAllMonitored(ctx, dateStart, dateEnd, sellerID, false)
+	trxData, err := o.Or.GetAllMonitored(ctx, companyName, dateStart, dateEnd, sellerID, false)
 	if err != nil {
 		return nil, err
 	}

@@ -81,7 +81,7 @@ func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*enti
 	return item, nil
 }
 
-func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end time.Time, id int64, desc bool) (entity.TrxDetails, error) {
+func (o *OrderRepositoryImpl) GetAll(ctx context.Context, companyName string, start time.Time, end time.Time, id int64, desc bool) (entity.TrxDetails, error) {
 	var ordType string
 	if desc {
 		ordType = "desc"
@@ -91,9 +91,9 @@ func (o *OrderRepositoryImpl) GetAll(ctx context.Context, start time.Time, end t
 
 	query := SELECT_ORDER_DETAIL
 	if id != 0 {
-		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
 	} else {
-		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
 	}
 
 	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
@@ -162,7 +162,7 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 	return data, nil
 }
 
-func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Time, end time.Time, id int64, desc bool) (entity.TrxMonitors, error) {
+func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, companyName string, start time.Time, end time.Time, id int64, desc bool) (entity.TrxMonitors, error) {
 	var ordType string
 	if desc {
 		ordType = "desc"
@@ -172,9 +172,9 @@ func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, start time.Ti
 
 	query := SELECT_ORDER_MONITORING
 	if id != 0 {
-		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
 	} else {
-		query = query.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
 	}
 
 	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()

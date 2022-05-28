@@ -49,7 +49,9 @@ func (o *OrderHandler) GenerateDetailTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.GenerateDetailTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.GenerateDetailTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -84,7 +86,9 @@ func (o *OrderHandler) GenerateBriefTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.GenerateBriefTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.GenerateBriefTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -119,7 +123,9 @@ func (o *OrderHandler) GenerateMonitorTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.GenerateMonitorTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.GenerateMonitorTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -185,7 +191,9 @@ func (o *OrderHandler) DetailTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.DetailTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.DetailTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -220,7 +228,9 @@ func (o *OrderHandler) BriefTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.BriefTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.BriefTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
@@ -255,7 +265,9 @@ func (o *OrderHandler) MonitorTrx() http.HandlerFunc {
 			return
 		}
 
-		res, err := o.Service.MonitorTrx(r.Context(), startParsed, endParsed)
+		companyName := query.Get("company")
+
+		res, err := o.Service.MonitorTrx(r.Context(), startParsed, endParsed, companyName)
 		if err != nil {
 			responseutil.WriteErrorResponse(w, err)
 			return
