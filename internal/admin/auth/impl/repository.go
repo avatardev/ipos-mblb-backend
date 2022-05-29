@@ -21,7 +21,7 @@ func NewAuthRepository(db *database.DatabaseClient) AuthRepositoryImpl {
 }
 
 func (a *AuthRepositoryImpl) GetById(ctx context.Context, userId int64) (*entity.UserData, error) {
-	stmt, params, err := SELECT_USER.Where(sq.Eq{"u.id": userId}).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id": userId}, sq.Eq{"u.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Auth.GetById] userId: %v, error:%v\n", userId, err)
 		return nil, err
@@ -42,7 +42,7 @@ func (a *AuthRepositoryImpl) GetById(ctx context.Context, userId int64) (*entity
 }
 
 func (a *AuthRepositoryImpl) GetByUsername(ctx context.Context, username string) (*entity.UserData, error) {
-	stmt, params, err := SELECT_USER.Where(sq.Eq{"username": username}).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"username": username}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Auth.GetByUsername] username: %v, error: %v\n", username, err)
 		return nil, err
