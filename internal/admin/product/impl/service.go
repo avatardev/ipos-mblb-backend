@@ -1,11 +1,16 @@
 package impl
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/avatardev/ipos-mblb-backend/internal/admin/product/entity"
 	"github.com/avatardev/ipos-mblb-backend/internal/dto"
+	"github.com/avatardev/ipos-mblb-backend/internal/global/config"
 	"github.com/avatardev/ipos-mblb-backend/pkg/errors"
 	"github.com/avatardev/ipos-mblb-backend/pkg/util/logutil"
 )
@@ -96,6 +101,34 @@ func (p *ProductServiceImpl) UpdateProduct(ctx context.Context, id int64, req *d
 	}
 
 	logutil.GenerateActivityLog(ctx, fmt.Sprintf("changed product data %s", req.Name))
+	return dto.NewProductResponse(*data), nil
+}
+
+func (p *ProductServiceImpl) EditProductImage(ctx context.Context, id int64, img *bytes.Buffer, fName string) (res *dto.ProductResponse, err error) {
+	exists, err := p.Pr.GetById(ctx, id)
+	if err != nil {
+		err = errors.ErrUnknown
+		return
+	} else if exists == nil {
+		err = errors.ErrInvalidResources
+		return
+	}
+
+	conf := config.GetConfig()
+	fName = fmt.Sprintf("img-product-%d%s", id, filepath.Ext(fName))
+
+	data, err := p.Pr.UpdateImage(ctx, id, fmt.Sprintf("%s/private/nota/%s", conf.BaseURL, fName))
+	if err != nil {
+		log.Printf("[EditProductImage] failed to insert new img, err => %+v\n", err)
+		return
+	}
+
+	err = os.WriteFile(filepath.Join(conf.LocalRepo, fName), img.Bytes(), 0666)
+	if err != nil {
+		log.Printf("[EditProductImage] failed to write data to local storage, err => %+v\n", err)
+		return
+	}
+
 	return dto.NewProductResponse(*data), nil
 }
 

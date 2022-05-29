@@ -25,6 +25,7 @@ func main() {
 	db.Ping()
 
 	m.Use(middleware.CorsMiddleware())
+	m.Use(middleware.ErrorHandlingMiddleware())
 	router.Init(m, db)
 
 	httputil.ListenAndServe(conf.ServerAddress, m)

@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  backend:
+    container_name: ipos-mblb-backend
+    image: avatarsolution/ipos-mblb-backend
+    build: .
+    ports:
+      - "7100:8080"
+    volumes:
+      - "/var/www/public/uploaded:/usr/src/localrepo/img"

@@ -18,6 +18,7 @@ const (
 
 	AdminProduct           = "/admin/v1/products"
 	AdminProductId         = "/admin/v1/products/{productId}"
+	AdminProductIdImg      = "/admin/v1/products/{productId}/img"
 	AdminProductCategory   = "/admin/v1/products/categories"
 	AdminProductCategoryId = "/admin/v1/products/categories/{categoryId}"
 

@@ -13,6 +13,7 @@ type ProductResponse struct {
 	Tax          uint64  `json:"tax"`
 	Description  string  `json:"description"`
 	Status       bool    `json:"status"`
+	Img          *string `json:"img"`
 }
 
 type ProductsResponse struct {
@@ -32,6 +33,7 @@ func NewProductResponse(product entity.Product) *ProductResponse {
 		Tax:          product.Tax,
 		Description:  product.Description,
 		Status:       product.Status,
+		Img:          product.Img,
 	}
 }
 

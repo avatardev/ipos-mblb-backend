@@ -22,7 +22,7 @@ func NewProductRepository(db *database.DatabaseClient) ProductRepositoryImpl {
 
 var (
 	COUNT_PRODUCT  = sq.Select("COUNT(*)").From("produks")
-	SELECT_PRODUCT = sq.Select("p.id", "p.id_kategori", "k.nama_kategori", "p.nama_produk", "p.harga_std_m3", "k.pajak", "p.keterangan", "p.status").
+	SELECT_PRODUCT = sq.Select("p.id", "p.id_kategori", "k.nama_kategori", "p.nama_produk", "p.harga_std_m3", "k.pajak", "p.keterangan", "p.status", "p.img").
 			From("produks p").LeftJoin("kategoris k ON p.id_kategori = k.id")
 	INSERT_PRODUCT = sq.Insert("produks").Columns("id_kategori", "nama_produk", "harga_std_m3", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_PRODUCT = sq.Update("produks")
@@ -69,7 +69,7 @@ func (pr ProductRepositoryImpl) GetAll(ctx context.Context, keyword string, limi
 
 	for rows.Next() {
 		temp := &entity.Product{}
-		err := rows.Scan(&temp.Id, &temp.CategoryId, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Tax, &temp.Description, &temp.Status)
+		err := rows.Scan(&temp.Id, &temp.CategoryId, &temp.CategoryName, &temp.Name, &temp.Price, &temp.Tax, &temp.Description, &temp.Status, &temp.Img)
 		if err != nil {
 			log.Printf("[Product.GetAll] error: %v\n", err)
 			return nil, err
@@ -91,7 +91,7 @@ func (pr ProductRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.
 	rows := pr.DB.QueryRowContext(ctx, stmt, params...)
 
 	product := &entity.Product{}
-	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status)
+	queryErr := rows.Scan(&product.Id, &product.CategoryId, &product.CategoryName, &product.Name, &product.Price, &product.Tax, &product.Description, &product.Status, &product.Img)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[Product.GetById] id: %v, error: %v\n", id, queryErr)
 		return nil, queryErr
@@ -148,6 +148,26 @@ func (pr ProductRepositoryImpl) Update(ctx context.Context, product entity.Produ
 	}
 
 	return pr.GetById(ctx, product.Id)
+}
+
+func (pr ProductRepositoryImpl) UpdateImage(ctx context.Context, id int64, img string) (*entity.Product, error) {
+	updateMap := map[string]interface{}{
+		"img":        img,
+		"updated_at": time.Now(),
+	}
+
+	stmt, params, err := UPDATE_PRODUCT.SetMap(updateMap).Where(sq.Eq{"id": id}).ToSql()
+	if err != nil {
+		log.Printf("[Product.UpdateImage] categoryId: %v, error: %v\n", id, err)
+		return nil, err
+	}
+
+	if _, err := pr.DB.ExecContext(ctx, stmt, params...); err != nil {
+		log.Printf("[Product.UpdateImage] categoryId: %v, error: %v\n", id, err)
+		return nil, err
+	}
+
+	return pr.GetById(ctx, id)
 }
 
 func (pr ProductRepositoryImpl) Delete(ctx context.Context, id int64) error {

@@ -152,6 +152,7 @@ func Init(r *mux.Router, db *database.DatabaseClient) {
 	protectedRouter.HandleFunc(AdminProduct, productHandler.StoreProduct()).Methods(http.MethodPost, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminProductId, productHandler.GetProductById()).Methods(http.MethodGet, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminProductId, productHandler.UpdateProduct()).Methods(http.MethodPut, http.MethodOptions)
+	protectedRouter.HandleFunc(AdminProductIdImg, productHandler.EditProductImage()).Methods(http.MethodPut, http.MethodOptions)
 	protectedRouter.HandleFunc(AdminProductId, productHandler.DeleteProduct()).Methods(http.MethodDelete, http.MethodOptions)
 
 	userRepository := userPkg.NewUserRepository(db)

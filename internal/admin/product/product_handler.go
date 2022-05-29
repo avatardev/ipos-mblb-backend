@@ -1,6 +1,8 @@
 package product
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -201,5 +203,41 @@ func (p *ProductHandler) DeleteProduct() http.HandlerFunc {
 		}
 
 		responseutil.WriteSuccessResponse(w, http.StatusOK, "product deleted")
+	}
+}
+
+func (p *ProductHandler) EditProductImage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !privutil.CheckUserPrivilege(r.Context(), privutil.USER_ADMIN) {
+			responseutil.WriteErrorResponse(w, errors.ErrUserPriv)
+			return
+		}
+
+		id := mux.Vars(r)["productId"]
+		parsedID, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			log.Printf("[EditProductImage] invalid product ID, id => %s, err => %+v\n", id, err)
+			panic(errors.ErrInvalidRequestBody)
+		}
+
+		imgData, meta, err := r.FormFile("img-data")
+		if err != nil {
+			log.Panicf("[EditProductImage] failed to read img data, err => %+v\n", err)
+		}
+
+		defer imgData.Close()
+
+		buff := new(bytes.Buffer)
+		_, err = io.Copy(buff, imgData)
+		if err != nil {
+			log.Panicf("[EditProductImage] failed to copy img data, err => %+v\n", err)
+		}
+
+		res, err := p.Service.EditProductImage(r.Context(), parsedID, buff, meta.Filename)
+		if err != nil {
+			log.Panicf("[EditProductImage] an error occured while processing product's img, id => %d, %+v\n", parsedID, err)
+		}
+
+		responseutil.WriteSuccessResponse(w, http.StatusOK, res)
 	}
 }
