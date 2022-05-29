@@ -25,11 +25,10 @@ var (
 	SELECT_LOCATION = sq.Select("l.id", "l.nama_lokasi").From("lokasis l")
 	INSERT_LOCATION = sq.Insert("lokasis").Columns("nama_lokasi", "created_at", "updated_at")
 	UPDATE_LOCATION = sq.Update("lokasis")
-	DELETE_LOCATION = sq.Delete("lokasis")
 )
 
 func (lr *LocationRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
-	stmt, params, err := COUNT_LOCATION.Where(sq.Like{"l.nama_lokasi": fmt.Sprintf("%%%s%%", keyword)}).ToSql()
+	stmt, params, err := COUNT_LOCATION.Where(sq.And{sq.Like{"l.nama_lokasi": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"l.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Location.Count] error: %v\n", err)
 		return 0, err
@@ -47,7 +46,7 @@ func (lr *LocationRepositoryImpl) Count(ctx context.Context, keyword string) (ui
 }
 
 func (lr *LocationRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Locations, error) {
-	stmt, params, err := SELECT_LOCATION.Where(sq.Like{"l.nama_lokasi": fmt.Sprintf("%%%s%%", keyword)}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_LOCATION.Where(sq.And{sq.Like{"l.nama_lokasi": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"l.deleted_at": nil}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Location.GetAll] error: %v\n", err)
 		return nil, err
@@ -69,7 +68,7 @@ func (lr *LocationRepositoryImpl) GetAll(ctx context.Context, keyword string, li
 }
 
 func (lr *LocationRepositoryImpl) GetById(ctx context.Context, id int64) (*entity.Location, error) {
-	stmt, params, err := SELECT_LOCATION.Where(sq.Eq{"l.id": id}).ToSql()
+	stmt, params, err := SELECT_LOCATION.Where(sq.And{sq.Eq{"l.id": id}, sq.Eq{"l.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Location.GetById] error: %v\n", err)
 		return nil, err
@@ -131,7 +130,11 @@ func (lr *LocationRepositoryImpl) Update(ctx context.Context, location entity.Lo
 }
 
 func (lr *LocationRepositoryImpl) Delete(ctx context.Context, id int64) error {
-	stmt, params, err := DELETE_LOCATION.Where(sq.Eq{"id": id}).ToSql()
+	updateMap := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+
+	stmt, params, err := UPDATE_LOCATION.SetMap(updateMap).Where(sq.Eq{"id": id}).ToSql()
 	if err != nil {
 		log.Printf("[Location.Delete] err: %v\n", err)
 		return err

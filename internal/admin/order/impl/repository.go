@@ -42,7 +42,7 @@ func NewOrderRepository(db *database.DatabaseClient) OrderRepositoryImpl {
 }
 
 func (o *OrderRepositoryImpl) Count(ctx context.Context, start time.Time, end time.Time) (uint64, error) {
-	stmt, params, err := COUNT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}).OrderBy("o.order_date").ToSql()
+	stmt, params, err := COUNT_ORDER_DETAIL.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.deleted_at": nil}}).OrderBy("o.order_date").ToSql()
 	if err != nil {
 		log.Printf("[Trx.Count] error: %v\n", err)
 		return 0, err
@@ -60,7 +60,7 @@ func (o *OrderRepositoryImpl) Count(ctx context.Context, start time.Time, end ti
 }
 
 func (o *OrderRepositoryImpl) GetById(ctx context.Context, orderId int64) (*entity.TrxDetail, error) {
-	stmt, params, err := SELECT_ORDER_DETAIL.Where(sq.Eq{"o.id": orderId}).ToSql()
+	stmt, params, err := SELECT_ORDER_DETAIL.Where(sq.And{sq.Eq{"o.id": orderId}, sq.Eq{"o.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetById] error: %v\n", err)
 		return nil, err
@@ -91,9 +91,9 @@ func (o *OrderRepositoryImpl) GetAll(ctx context.Context, companyName string, st
 
 	query := SELECT_ORDER_DETAIL
 	if id != 0 {
-		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}}, sq.Eq{"o.deleted_at": nil})
 	} else {
-		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}, sq.Eq{"o.deleted_at": nil})
 	}
 
 	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
@@ -133,7 +133,7 @@ func (o *OrderRepositoryImpl) GetAllDaily(ctx context.Context, sellerId int64, s
 		ordType = "asc"
 	}
 
-	stmt, params, err := SELECT_DAILY_TRX.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": sellerId}}).
+	stmt, params, err := SELECT_DAILY_TRX.Where(sq.And{sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": sellerId}}, sq.Eq{"o.deleted_at": nil}).
 		OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()
 	if err != nil {
 		log.Printf("[Trx.GetAllDaily] error: %v\n", err)
@@ -172,9 +172,9 @@ func (o *OrderRepositoryImpl) GetAllMonitored(ctx context.Context, companyName s
 
 	query := SELECT_ORDER_MONITORING
 	if id != 0 {
-		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}, sq.Eq{"o.id_seller": id}}, sq.Eq{"o.deleted_at": nil})
 	} else {
-		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}})
+		query = query.Where(sq.And{sq.Like{"perusahaan": fmt.Sprintf("%%%s%%", companyName)}, sq.GtOrEq{"o.order_date": start}, sq.LtOrEq{"o.order_date": end}}, sq.Eq{"o.deleted_at": nil})
 	}
 
 	stmt, params, err := query.OrderBy(fmt.Sprintf("o.order_date %s", ordType)).ToSql()

@@ -28,11 +28,10 @@ var (
 	INSERT_USER_SELLER = sq.Insert("users").Columns("username", "password", "id_role", "id_seller", "created_at", "updated_at", "status_login")
 	INSERT_USER_BUYER  = sq.Insert("users").Columns("username", "password", "id_role", "plat_truk", "created_at", "updated_at", "status_login")
 	UPDATE_USER        = sq.Update("users")
-	DELETE_USER        = sq.Delete("users")
 )
 
 func (ur UserRepositoryImpl) Count(ctx context.Context, keyword string, role int64) (uint64, error) {
-	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Like{"username": fmt.Sprintf("%%%s%%", keyword)}}).ToSql()
+	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Like{"username": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[User.Count] role: %v, err: %v\n", role, err)
 		return 0, err
@@ -49,7 +48,7 @@ func (ur UserRepositoryImpl) Count(ctx context.Context, keyword string, role int
 }
 
 func (ur UserRepositoryImpl) CountSeller(ctx context.Context, seller int64, role int64) (uint64, error) {
-	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Eq{"id_seller": seller}}).ToSql()
+	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Eq{"id_seller": seller}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[User.CountSeller] role: %v, err: %v\n", role, err)
 		return 0, err
@@ -66,7 +65,7 @@ func (ur UserRepositoryImpl) CountSeller(ctx context.Context, seller int64, role
 }
 
 func (ur UserRepositoryImpl) CountBuyer(ctx context.Context, v_plate string, role int64) (uint64, error) {
-	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Eq{"plat_truk": v_plate}}).ToSql()
+	stmt, params, err := COUNT_USER.Where(sq.And{sq.Eq{"id_role": role}, sq.Eq{"plat_truk": v_plate}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[User.CountBuyer] role: %v, err: %v\n", role, err)
 		return 0, err
@@ -83,7 +82,7 @@ func (ur UserRepositoryImpl) CountBuyer(ctx context.Context, v_plate string, rol
 }
 
 func (ur UserRepositoryImpl) CountUserByUsername(ctx context.Context, uname string) (exist bool, err error) {
-	stmt, params, err := COUNT_USER.Where(sq.Like{"username": fmt.Sprintf("%%%s%%", uname)}).ToSql()
+	stmt, params, err := COUNT_USER.Where(sq.Like{"username": fmt.Sprintf("%%%s%%", uname)}, sq.Eq{"deleted_at": nil}).ToSql()
 	if err != nil {
 		log.Printf("[User.CountUserByUsername] err: %v\n", err)
 		return
@@ -104,7 +103,7 @@ func (ur UserRepositoryImpl) CountUserByUsername(ctx context.Context, uname stri
 }
 
 func (ur UserRepositoryImpl) GetAll(ctx context.Context, role int64, keyword string, limit uint64, offset uint64) (entity.Users, error) {
-	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"deleted_at": nil}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[User.GetAll] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -132,7 +131,7 @@ func (ur UserRepositoryImpl) GetAll(ctx context.Context, role int64, keyword str
 }
 
 func (ur UserRepositoryImpl) GetAllSeller(ctx context.Context, role int64, seller int64, keyword string, limit uint64, offset uint64) (entity.Users, error) {
-	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"u.id_seller": seller}}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Like{"u.username": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"u.id_seller": seller}, sq.Eq{"deleted_at": nil}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[User.GetAllSeller] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -160,7 +159,7 @@ func (ur UserRepositoryImpl) GetAllSeller(ctx context.Context, role int64, selle
 }
 
 func (ur UserRepositoryImpl) GetAllBuyer(ctx context.Context, role int64, v_plate string, limit uint64, offset uint64) (entity.Users, error) {
-	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Eq{"plat_truk": v_plate}}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id_role": role}, sq.Eq{"plat_truk": v_plate}, sq.Eq{"deleted_at": nil}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[User.GetAllBuyer] role: %v, err: %v\n", role, err)
 		return nil, err
@@ -188,7 +187,7 @@ func (ur UserRepositoryImpl) GetAllBuyer(ctx context.Context, role int64, v_plat
 }
 
 func (ur UserRepositoryImpl) GetById(ctx context.Context, role int64, id int64) (*entity.User, error) {
-	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id": id}, sq.Eq{"u.id_role": role}}).ToSql()
+	stmt, params, err := SELECT_USER.Where(sq.And{sq.Eq{"u.id": id}, sq.Eq{"u.id_role": role}, sq.Eq{"deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[User.GetById] id: %v, err: %v\n", id, err)
 		return nil, err
@@ -267,7 +266,11 @@ func (ur UserRepositoryImpl) Update(ctx context.Context, role int64, user entity
 }
 
 func (ur UserRepositoryImpl) Delete(ctx context.Context, role int64, id int64) error {
-	stmt, params, err := DELETE_USER.Where(sq.And{sq.Eq{"id": id}, sq.Eq{"id_role": role}}).ToSql()
+	updateMap := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+
+	stmt, params, err := UPDATE_USER.SetMap(updateMap).Where(sq.And{sq.Eq{"id": id}, sq.Eq{"id_role": role}}).ToSql()
 	if err != nil {
 		log.Printf("[User.Update] id: %v, err: %v\n", id, err)
 		return err

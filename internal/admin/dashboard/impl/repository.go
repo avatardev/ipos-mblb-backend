@@ -55,7 +55,7 @@ func (r *DashboardRepositoryImpl) GetInfo(ctx context.Context, sellerID int64) (
 }
 
 func (r *DashboardRepositoryImpl) countBuyer(ctx context.Context) (int64, error) {
-	stmt, params, err := COUNT_BUYER.Where(sq.Eq{"b.status": 1}).ToSql()
+	stmt, params, err := COUNT_BUYER.Where(sq.And{sq.Eq{"b.status": 1}, sq.Eq{"b.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Dashboard.CountBuyer] err: %v\n", err)
 		return 0, err
@@ -92,7 +92,9 @@ func (r *DashboardRepositoryImpl) countTrx(ctx context.Context, sellerID int64) 
 	baseQuery := COUNT_TRX
 
 	if sellerID != 0 {
-		baseQuery = baseQuery.Where(sq.Eq{"o.id_seller": sellerID})
+		baseQuery = baseQuery.Where(sq.And{sq.Eq{"o.id_seller": sellerID}, sq.Eq{"o.deleted_at": nil}})
+	} else {
+		baseQuery = baseQuery.Where(sq.Eq{"o.deleted_at": nil})
 	}
 
 	stmt, params, err := baseQuery.ToSql()

@@ -24,8 +24,7 @@ var (
 				From("buyer_truks b").LeftJoin("kategori_kendaraans k ON b.kategori = k.id")
 	INSERT_BUYER = sq.Insert("buyer_truks").Columns("plat_truk", "kategori", "perusahaan", "telp", "alamat", "email", "name_pic", "hp_pic", "keterangan", "status", "created_at", "updated_at")
 	UPDATE_BUYER = sq.Update("buyer_truks")
-	DELETE_BUYER = sq.Delete("buyer_truks")
-	DELETE_USER  = sq.Delete("users")
+	UPDATE_USERS = sq.Update("users")
 )
 
 func NewBuyerRepository(db *database.DatabaseClient) BuyerRepositoryImpl {
@@ -33,7 +32,7 @@ func NewBuyerRepository(db *database.DatabaseClient) BuyerRepositoryImpl {
 }
 
 func (b *BuyerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64, error) {
-	stmt, params, err := COUNT_BUYER.Where(sq.Like{"b.plat_truk": fmt.Sprintf("%%%s%%", keyword)}).ToSql()
+	stmt, params, err := COUNT_BUYER.Where(sq.And{sq.Like{"b.plat_truk": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"b.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.Count] error: %v\n", err)
 		return 0, err
@@ -51,7 +50,7 @@ func (b *BuyerRepositoryImpl) Count(ctx context.Context, keyword string) (uint64
 }
 
 func (b *BuyerRepositoryImpl) GetBuyerName(ctx context.Context) (entity.BuyersCompany, error) {
-	stmt, params, err := SELECT_BUYER_PLATE.ToSql()
+	stmt, params, err := SELECT_BUYER_PLATE.Where(sq.Eq{"b.deleted_at": nil}).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.GetBuyerName] error: %v\n", err)
 		return nil, err
@@ -78,7 +77,7 @@ func (b *BuyerRepositoryImpl) GetBuyerName(ctx context.Context) (entity.BuyersCo
 }
 
 func (b *BuyerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit uint64, offset uint64) (entity.Buyers, error) {
-	stmt, params, err := SELECT_BUYER.Where(sq.Like{"b.plat_truk": fmt.Sprintf("%%%s%%", keyword)}).Limit(limit).Offset(offset).ToSql()
+	stmt, params, err := SELECT_BUYER.Where(sq.And{sq.Like{"b.plat_truk": fmt.Sprintf("%%%s%%", keyword)}, sq.Eq{"b.deleted_at": nil}}).Limit(limit).Offset(offset).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.GetAll] error: %v\n", err)
 		return nil, err
@@ -107,7 +106,7 @@ func (b *BuyerRepositoryImpl) GetAll(ctx context.Context, keyword string, limit 
 }
 
 func (b *BuyerRepositoryImpl) GetById(ctx context.Context, plate string) (*entity.Buyer, error) {
-	stmt, params, err := SELECT_BUYER.Where(sq.Eq{"b.plat_truk": plate}).ToSql()
+	stmt, params, err := SELECT_BUYER.Where(sq.And{sq.Like{"b.plat_truk": fmt.Sprintf("%%%s%%", plate)}, sq.Eq{"b.deleted_at": nil}}).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.GetById] plate: %s, error: %v\n", plate, err)
 		return nil, err
@@ -173,7 +172,10 @@ func (b *BuyerRepositoryImpl) Update(ctx context.Context, plate string, buyer en
 }
 
 func (b *BuyerRepositoryImpl) Delete(ctx context.Context, plate string) error {
-	stmt, params, err := DELETE_BUYER.Where(sq.Eq{"plat_truk": plate}).ToSql()
+	updateMap := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+	stmt, params, err := UPDATE_BUYER.SetMap(updateMap).Where(sq.Eq{"plat_truk": plate}).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.Delete] plate: %s, error: %v\n", plate, err)
 		return err
@@ -188,7 +190,11 @@ func (b *BuyerRepositoryImpl) Delete(ctx context.Context, plate string) error {
 }
 
 func (b *BuyerRepositoryImpl) DeleteUser(ctx context.Context, v_plate string) error {
-	stmt, params, err := DELETE_USER.Where(sq.And{sq.Like{"plat_truk": fmt.Sprintf("%%%s%%", v_plate)}, sq.Eq{"id_role": privutil.USER_BUYER}}).ToSql()
+	updateMap := map[string]interface{}{
+		"deleted_at": time.Now(),
+	}
+
+	stmt, params, err := UPDATE_USERS.SetMap(updateMap).Where(sq.And{sq.Like{"plat_truk": fmt.Sprintf("%%%s%%", v_plate)}, sq.Eq{"id_role": privutil.USER_BUYER}}).ToSql()
 	if err != nil {
 		log.Printf("[Buyer.DeleteUser] id: %v, err: %v\n", v_plate, err)
 		return err
