@@ -66,6 +66,27 @@ func (p *ProductServiceImpl) StoreProduct(ctx context.Context, req *dto.ProductR
 		return nil, errors.ErrUnknown
 	}
 
+	conf := config.GetConfig()
+	fName := fmt.Sprintf("img-product-%d.png", data.Id)
+
+	img, err := os.ReadFile("./static/default_product.png")
+	if err != nil {
+		log.Printf("[StoreProduct] failed to open default pics, err => %+v\n", err)
+		return
+	}
+
+	data, err = p.Pr.UpdateImage(ctx, data.Id, fmt.Sprintf("%s/private/nota/%s", conf.BaseURL, fName))
+	if err != nil {
+		log.Printf("[StoreProduct] failed to insert new img, err => %+v\n", err)
+		return
+	}
+
+	err = os.WriteFile(filepath.Join(conf.LocalRepo, fName), img, 0666)
+	if err != nil {
+		log.Printf("[StoreProduct] failed to write data to local storage, err => %+v\n", err)
+		return
+	}
+
 	sellers, err := p.Pr.FindActiveSeller(ctx)
 	if err != nil {
 		res = nil
