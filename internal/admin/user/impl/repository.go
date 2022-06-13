@@ -195,7 +195,7 @@ func (ur UserRepositoryImpl) GetById(ctx context.Context, role int64, id int64) 
 
 	user := &entity.User{}
 
-	rows, err := ur.DB.QueryContext(ctx, stmt, params...)
+	rows := ur.DB.QueryRowContext(ctx, stmt, params...)
 	queryErr := rows.Scan(&user.Id, &user.Username)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
 		log.Printf("[User.GetById] id: %v, err: %v\n", id, queryErr)
