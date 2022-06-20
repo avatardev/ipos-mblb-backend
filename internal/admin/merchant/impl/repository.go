@@ -18,7 +18,8 @@ type MerchantRepositoryImpl struct {
 
 var (
 	COUNT_ITEM  = sq.Select("COUNT(*)").From("produk_sellers").From("produk_sellers m").LeftJoin("produks p ON m.id_produk = p.id")
-	SELECT_ITEM = sq.Select("m.id", "m.id_produk", "p.nama_produk", "m.harga", "m.keterangan", "m.status").From("produk_sellers m").LeftJoin("produks p ON m.id_produk = p.id")
+	SELECT_ITEM = sq.Select("m.id", "m.id_produk", "p.nama_produk", "m.harga", "m.keterangan", "m.status").From("produk_sellers m").
+			LeftJoin("produks p ON m.id_produk = p.id").LeftJoin("kategoris c ON p.id_kategori=c.id").LeftJoin("sellers s ON m.id_seller=s.id")
 	UPDATE_ITEM = sq.Update("produk_sellers")
 )
 
@@ -49,7 +50,10 @@ func (m *MerchantRepositoryImpl) GetAll(ctx context.Context, sellerId int64, key
 		sq.Eq{"m.deleted_at": nil},
 		sq.Eq{"m.id_seller": sellerId},
 		sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)},
-		sq.Eq{"p.status": true}}).Limit(limit).Offset(offset).ToSql()
+		sq.Eq{"p.status": true},
+		sq.Eq{"m.status": true},
+		sq.Eq{"c.status": true},
+	}).Limit(limit).Offset(offset).ToSql()
 
 	if err != nil {
 		log.Printf("[MerchantItem.GetAll] error: %v\n", err)
