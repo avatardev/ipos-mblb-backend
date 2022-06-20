@@ -52,7 +52,6 @@ func (m *MerchantRepositoryImpl) GetAll(ctx context.Context, sellerId int64, key
 		sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)},
 		sq.Eq{"p.status": true},
 		sq.Eq{"m.status": true},
-		sq.Eq{"c.status": true},
 	}).Limit(limit).Offset(offset).ToSql()
 
 	if err != nil {
