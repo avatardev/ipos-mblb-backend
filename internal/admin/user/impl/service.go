@@ -95,7 +95,7 @@ func (u *UserServiceImpl) GetUserById(ctx context.Context, role int64, id int64)
 func (u *UserServiceImpl) StoreUser(ctx context.Context, role int64, req *dto.UserPostRequest) (*dto.UserResponse, error) {
 	user := req.ToEntity()
 
-	existUser, err := u.Ur.CountUserByUsername(ctx, req.Username)
+	existUser, err := u.Ur.CountDuplicateByUsername(ctx, req.Username)
 	if err != nil {
 		return nil, err
 	}

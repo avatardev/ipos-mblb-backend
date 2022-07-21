@@ -162,10 +162,20 @@ func (t *TrxDetails) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
 		{"No", "Order Date", "Seller", "Buyer", "Payment", "Status", "Produk", "Qty", "Disc", "Tax", "Unit Price"},
 	}
 
-	for idx, data := range *t {
+	var totalTax int64
+	var totalPrice int64
 
+	for idx, data := range *t {
 		res = append(res, data.ToSlice(idx))
+		totalTax += data.Tax
+		totalPrice += data.Price
 	}
+
+	res = append(res, []string{"", "", "", "", "", ""})
+	res = append(res, []string{"Summary", "", "", "", "", ""})
+	res = append(res, []string{"Total Tax", strconv.FormatInt(totalTax, 10), "", "", "", ""})
+	res = append(res, []string{"Total Price", strconv.FormatInt(totalPrice, 10), "", "", "", ""})
+
 	return res
 }
 
@@ -223,9 +233,19 @@ func (td *TrxBriefs) ToCSV(dateStart time.Time, dateEnd time.Time) [][]string {
 		{"No", "Order Date", "Seller", "Buyer", "Total Tax", "Total Price"},
 	}
 
+	var totalTax int64
+	var totalPrice int64
+
 	for idx, data := range *td {
 		res = append(res, data.ToSlice(idx))
+		totalTax += data.TotalTax
+		totalPrice += data.TotalPrice
 	}
+
+	res = append(res, []string{"", "", "", "", "", ""})
+	res = append(res, []string{"Summary", "", "", "", "", ""})
+	res = append(res, []string{"Total Tax", strconv.FormatInt(totalTax, 10), "", "", "", ""})
+	res = append(res, []string{"Total Price", strconv.FormatInt(totalPrice, 10), "", "", "", ""})
 	return res
 }
 

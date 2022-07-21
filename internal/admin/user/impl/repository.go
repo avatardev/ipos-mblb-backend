@@ -81,17 +81,17 @@ func (ur UserRepositoryImpl) CountBuyer(ctx context.Context, v_plate string, rol
 	return userCount, nil
 }
 
-func (ur UserRepositoryImpl) CountUserByUsername(ctx context.Context, uname string) (exist bool, err error) {
-	stmt, params, err := COUNT_USER.Where(sq.Like{"username": fmt.Sprintf("%%%s%%", uname)}, sq.Eq{"deleted_at": nil}).ToSql()
+func (ur UserRepositoryImpl) CountDuplicateByUsername(ctx context.Context, uname string) (exist bool, err error) {
+	stmt, params, err := COUNT_USER.Where(sq.Like{"username": uname}, sq.NotEq{"deleted_at": nil}).ToSql()
 	if err != nil {
-		log.Printf("[User.CountUserByUsername] err: %v\n", err)
+		log.Printf("[User.CountDuplicateByUsername] err: %v\n", err)
 		return
 	}
 
 	var userCount uint64
 	queryErr := ur.DB.QueryRowContext(ctx, stmt, params...).Scan(&userCount)
 	if queryErr != nil {
-		log.Printf("[User.CountUserByUsername] err: %v\n", queryErr)
+		log.Printf("[User.CountDuplicateByUsername] err: %v\n", queryErr)
 		return
 	}
 

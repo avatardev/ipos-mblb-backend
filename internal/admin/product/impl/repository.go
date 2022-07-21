@@ -224,7 +224,7 @@ func (pr ProductRepositoryImpl) FindActiveSeller(ctx context.Context) (sellers [
 
 func (pr ProductRepositoryImpl) StoreNewMerchantItem(ctx context.Context, id int64, product entity.Product) (err error) {
 	currTime := time.Now()
-	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 0, id, currTime, currTime).ToSql()
+	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 1, id, currTime, currTime).ToSql()
 	if err != nil {
 		log.Printf("[Product.StoreNewMerchantItem] error: %v\n", err)
 		return
