@@ -239,7 +239,7 @@ func (sr SellerRepositoryImpl) DeleteUser(ctx context.Context, sellerID int64) e
 
 func (sr SellerRepositoryImpl) StoreInitialMerchantItem(ctx context.Context, seller entity.Seller, product *mdEntity.Product) (err error) {
 	currTime := time.Now()
-	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 0, seller.Id, currTime, currTime).ToSql()
+	stmt, args, err := INSERT_MERCHANT_ITEM.Values(product.Id, product.Price, 1, seller.Id, currTime, currTime).ToSql()
 	if err != nil {
 		log.Printf("[StoreInitialMerchantItem] err: %v\n", err)
 		return

@@ -66,6 +66,15 @@ func (b *BuyerServiceImpl) GetBuyerById(ctx context.Context, plate string) (*dto
 func (b *BuyerServiceImpl) StoreBuyer(ctx context.Context, req *dto.BuyerRequest) (*dto.BuyerResponse, error) {
 	buyer := req.ToEntity()
 
+	exists, err := b.Br.GetById(ctx, buyer.VehiclePlate)
+	if err != nil {
+		return nil, errors.ErrUnknown
+	}
+
+	if exists != nil {
+		return nil, errors.ErrUserExisted
+	}
+
 	data, err := b.Br.Store(ctx, buyer)
 	if err != nil {
 		return nil, err

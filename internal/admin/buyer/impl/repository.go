@@ -112,7 +112,7 @@ func (b *BuyerRepositoryImpl) GetById(ctx context.Context, plate string) (*entit
 		return nil, err
 	}
 
-	rows, err := b.DB.QueryContext(ctx, stmt, params...)
+	rows := b.DB.QueryRowContext(ctx, stmt, params...)
 	buyer := &entity.Buyer{}
 	queryErr := rows.Scan(&buyer.VehiclePlate, &buyer.VehicleCategoryName, &buyer.VehicleCategoryId, &buyer.Company, &buyer.Phone, &buyer.Address, &buyer.Email, &buyer.PICName, &buyer.PICPhone, &buyer.Description, &buyer.Status)
 	if queryErr != nil && queryErr != sql.ErrNoRows {
