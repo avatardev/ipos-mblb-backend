@@ -16,7 +16,7 @@ func Init() *DatabaseClient {
 	conf := config.GetConfig()
 
 	db, err := sql.Open("mysql",
-		fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true",
+		fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&loc=Asia%%2FMakassar",
 			conf.DBUsername,
 			conf.DBPassword,
 			conf.DBAddress,
