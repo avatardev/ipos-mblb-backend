@@ -49,13 +49,12 @@ func (m *MerchantRepositoryImpl) GetAll(ctx context.Context, sellerId int64, key
 	stmt, params, err := SELECT_ITEM.Where(sq.And{
 		sq.Eq{"m.deleted_at": nil},
 		sq.Eq{"m.id_seller": sellerId},
-		sq.Eq{"m.status": true},
+		// sq.Eq{"m.status": true},
 		sq.Like{"p.nama_produk": fmt.Sprintf("%%%s%%", keyword)},
 		sq.Eq{"p.status": true},
 		sq.Eq{"p.deleted_at": nil},
 	}).Limit(limit).Offset(offset).ToSql()
 
-	log.Println(stmt, params)
 	if err != nil {
 		log.Printf("[MerchantItem.GetAll] error: %v\n", err)
 		return nil, err
